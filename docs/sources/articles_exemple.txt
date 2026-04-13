@@ -1,0 +1,54 @@
+# Données de test — Module Actualités / Articles culturels
+# Champs : titre, description (chapeau éditorial ≤ 300 car.), image_url (chemin relatif /static/articles/),
+#          source_url (lien externe optionnel), date_publication (ISO 8601), auteur, categorie
+#
+# Catégories valides (liste fermée) :
+#   Langue & Culture | Littérature | Poésie | Histoire & Mémoire | Traditions & Fêtes
+#   Musique | Danse | Gastronomie | Artisanat | Patrimoine bâti | Environnement
+#   Personnalités | Associations | Enseignement | Économie locale | Numismatique & Archives
+#   Immigration & Diaspora | Jeunesse | Régionalisme & Politique linguistique | Divers
+
+Article(
+    titre="Lo Félibrige : 170 ans de combat pour la langue provençale",
+    description="Fondé en 1854 à Font-Ségugne par Frédéric Mistral et six autres poètes, le Félibrige reste "
+                "l'une des principales associations dédiées à la promotion de la langue d'oc en graphie "
+                "mistralienne. Retour sur ses origines, son action et ses défis contemporains.",
+    image_url="/static/articles/felibrige-font-segugne.jpg",
+    source_url="https://www.felibrige.org",
+    date_publication="2026-03-15",
+    auteur="Équipe Provencal.ia",
+    categorie="Langue & Culture"
+),
+Article(
+    titre="Les Saintes-Maries-de-la-Mer : pèlerinage et culture gitane en Camargue",
+    description="Chaque année en mai, les Saintes-Maries-de-la-Mer accueillent un des rassemblements les plus "
+                "emblématiques de Provence. Entre tradition gitane, ferveur religieuse et musique camarguaise, "
+                "cet événement illustre la richesse du patrimoine immatériel du territoire.",
+    image_url="/static/articles/saintes-maries-pelerinage.jpg",
+    source_url="https://www.saintesmaries.com",
+    date_publication="2026-04-01",
+    auteur="Équipe Provencal.ia",
+    categorie="Traditions & Fêtes"
+),
+Article(
+    titre="L'occitan à l'école : bilan des filières bilingues en région PACA",
+    description="Après plusieurs décennies d'efforts militants, les cursus bilingues français–occitan se "
+                "développent progressivement dans les Bouches-du-Rhône, le Var et le Vaucluse. "
+                "Portrait des acteurs, des défis pédagogiques et des perspectives de cet enseignement.",
+    image_url="/static/articles/ecole-occitane-bilingue.jpg",
+    source_url="https://www.creo-provenca.fr",
+    date_publication="2026-02-20",
+    auteur="Équipe Provencal.ia",
+    categorie="Enseignement"
+),
+Article(
+    titre="Graphie mistralienne ou graphie classique : le grand débat de l'occitan",
+    description="Depuis le XIXe siècle, deux systèmes d'écriture coexistent pour l'occitan : la norme "
+                "mistralienne (Félibrige) et la norme classique (Institut d'Estudis Occitans). "
+                "Explication des différences, des enjeux identitaires et des usages actuels.",
+    image_url="/static/articles/graphie-occitane-comparaison.jpg",
+    source_url="",
+    date_publication="2026-01-10",
+    auteur="Équipe Provencal.ia",
+    categorie="Langue & Culture"
+)

@@ -1,0 +1,67 @@
+# Données de test — Module Agenda Culturel
+# Champs : titre, date_debut (ISO 8601), date_fin (ISO 8601), lieu (ville + code dept),
+#          description (≤ 1000 car.), lien_externe (URL optionnelle)
+# Note : date_fin = date_debut pour les événements d'une seule journée.
+
+EvenementAgenda(
+    titre="Festo Voto de la Sainte-Estelle — F\u00e9librige",
+    date_debut="2026-05-28",
+    date_fin="2026-05-30",
+    lieu="Aix-en-Provence (13)",
+    description="La Festo Voto de la Sainte-Estelle est la grande fête annuelle du Félibrige, "
+                "célébrée à la Pentecôte depuis 1876. Réunissant les félibres de toute la Provence "
+                "et d'autres régions d'oc, elle mêle processions en costume provençal, lectures de "
+                "poèmes en langue d'oc, chants mistraliens et banquets poétiques. C'est le moment "
+                "fédérateur de tout le mouvement de défense de la graphie mistralienne.",
+    lien_externe="https://www.felibrige.org"
+),
+EvenementAgenda(
+    titre="Fête de la Transhumance",
+    date_debut="2026-06-01",
+    date_fin="2026-06-01",
+    lieu="Saint-Rémy-de-Provence (13)",
+    description="Chaque premier lundi de juin, les rues de Saint-Rémy-de-Provence s'animent au "
+                "passage des troupeaux de moutons en route vers les alpages estivaux. Orchestrée "
+                "par des bergers en costume traditionnel et accompagnée de musique provençale, cette "
+                "fête inscrite au patrimoine culturel immatériel de l'UNESCO est l'occasion de "
+                "découvrir les métiers pastoraux, la cuisine locale et les chants en langue "
+                "provençale dans leur contexte vivant et populaire.",
+    lien_externe="https://www.saintremy-de-provence.com"
+),
+EvenementAgenda(
+    titre="Rencontres de la langue d'oc — Université d'Avignon",
+    date_debut="2026-10-10",
+    date_fin="2026-10-12",
+    lieu="Avignon (84)",
+    description="Colloque universitaire réunissant chercheurs, enseignants et associations autour "
+                "des enjeux contemporains de la langue occitane : normalisation graphique (mistralien "
+                "vs. classique), enseignement bilingue, littérature numérique et outils de "
+                "traitement automatique du provençal. Conférences publiques avec traduction "
+                "simultanée français–occitan. Entrée libre pour les séances ouvertes au public.",
+    lien_externe=""
+),
+EvenementAgenda(
+    titre="Pèlerinage des Saintes-Maries-de-la-Mer",
+    date_debut="2026-05-23",
+    date_fin="2026-05-25",
+    lieu="Saintes-Maries-de-la-Mer (13)",
+    description="Le grand pèlerinage annuel de Camargue rassemble des milliers de gitans et de "
+                "pèlerins venus de toute l'Europe pour honorer Sara la Noire, sainte patronne des "
+                "Gitans, ainsi que saintes Marie-Jacobé et Marie-Salomé. Processions en mer, "
+                "musiques flamenca et camarguaise, gardians à cheval et abrivados rythment ces "
+                "trois jours de fête populaire profondément ancrés dans l'identité culturelle "
+                "de la Provence maritime.",
+    lien_externe="https://www.saintesmaries.com"
+),
+EvenementAgenda(
+    titre="Concours de Joutes Provençales — Fête Votive d'Arles",
+    date_debut="2026-07-15",
+    date_fin="2026-07-20",
+    lieu="Arles (13)",
+    description="La fête votive d'Arles, organisée autour des arènes romaines de la ville, "
+                "propose six jours de festivités mêlant corridas provençales, jeux taurins, "
+                "danses folkloriques arlé\u00e9siennes en costume et chants en langue d'oc. "
+                "L'édition 2026 met à l'honneur le centenaire de la mort du poète Frédéric Mistral "
+                "(1914–2026) avec des lectures publiques du Poème du Rhône en grafie mistralenco.",
+    lien_externe=""
+)

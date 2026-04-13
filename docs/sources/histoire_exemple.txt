@@ -1,0 +1,88 @@
+# Données de test — Module Bibliothèque (Histoires & Légendes)
+# Champs : titre, typologie (valeur EXACTE : "Histoire" ou "Légende" — aucune autre valeur acceptée),
+#          periode, description_courte (≤ 200 car.), description_longue (Markdown, texte libre),
+#          source_url (optionnel)
+#
+# Périodes reconnues :
+#   - "Antiquité (avant 500 ap. J.-C.)"
+#   - "Moyen Âge (500–1500)"
+#   - "Époque Moderne (1500–1800)"
+#   - "Époque Contemporaine (1800–aujourd’hui)"
+#   - "Indéterminé / Mythologique"
+
+Histoire(
+    titre="Gyptis et Protis : la fondation de Massalia",
+    typologie="Histoire",
+    periode="Antiquité (avant 500 ap. J.-C.)",
+    description_courte="Vers 600 av. J.-C., des marins phocéens fondent Massalia (Marseille) en s'alliant "
+                       "aux Ligures par un mariage légendaire entre Protis et la princesse Gyptis.",
+    description_longue="Selon la tradition antique relayée par Aristote, le Grec Protis, navigateur "
+        "phocéen, débarqua sur les côtes ligures à l'embouchure du Lacydon. Le roi ligure Nannos "
+        "tenait ce jour-là le banquet nuptial de sa fille **Gyptis**. Selon la coutume, la jeune femme "
+        "devait choisir son époux parmi les convives en lui offrant une coupe d'eau. Au grand étonnement "
+        "de l'assemblée, Gyptis choisit l'étranger Protis. Cette union symbolique scella l'alliance entre "
+        "Ligures et Grecs, et posa les fondations de la cité de *Massalia*, future Marseille, "
+        "qui deviendra l'un des ports les plus importants de la Méditerranée occidentale.",
+    source_url="https://fr.wikipedia.org/wiki/Massalia"
+),
+Histoire(
+    titre="La Tarasque de Tarascon",
+    typologie="Légende",
+    periode="Moyen Âge (500–1500)",
+    description_courte="Sainte Marthe aurait apprivoisé un monstre aquatique ravageant les rives du Rhône "
+                       "près de l'actuelle Tarascon, donnant naissance à l'une des fêtes les plus célèbres de Provence.",
+    description_longue="La légende raconte qu'une créature mi-fauve, mi-poisson, nommée **Tarasque**, "
+        "terrorisait les habitants des rives du Rhône en dévorant hommes et bêtes et en renversant les "
+        "barques. Sainte Marthe, venue d'Orient après la mort du Christ, traversa le fleuve et se dirigea "
+        "vers la bête. Elle l'arrosa d'eau bénite, lui montra une croix et, la liant de sa ceinture, la "
+        "ramena docilement aux habitants. Depuis, la ville de Tarascon commémore cette légende à travers "
+        "la **Fête de la Tarasque**, procession populaire et jeux de rue inscrits en 2005 au patrimoine "
+        "culturel immatériel de l'UNESCO.",
+    source_url="https://fr.wikipedia.org/wiki/Tarasque"
+),
+Histoire(
+    titre="Lou Drac : l'esprit des eaux provençales",
+    typologie="Légende",
+    periode="Indéterminé / Mythologique",
+    description_courte="Dans le folklore de Provence, lou Drac est un être fantastique habitant les "
+                       "rivières et les étangs, capable de prendre l'apparence humaine pour attirer ses victimes.",
+    description_longue="*Lou Drac* (le Dragon, en provençal) hante les cours d'eau du Midi. Tantôt "
+        "décrit comme un taureau noir surgissant des gués pour emporter les voyageurs, tantôt comme un bel "
+        "homme séduisant les femmes au bord des rivières, il personnifie le danger des eaux vives. "
+        "La Durance était réputée pour ses Dracs particuliers. Certaines variantes le représentent comme "
+        "une flamme bleue dançant à la surface des marais — présage de noyade pour qui s'en approchait. "
+        "Ces croyances témoignent du rapport ancestral des provençaux à un territoire où l'eau, "
+        "précieuse et capricieuse, était à la fois source de vie et objet de crainte religieuse.",
+    source_url=""
+),
+Histoire(
+    titre="Nostradamus, l'enfant de Saint-Rémy-de-Provence",
+    typologie="Histoire",
+    periode="Époque Moderne (1500–1800)",
+    description_courte="Né en 1503 à Saint-Rémy-de-Provence, Michel de Nostredame reste l'une des figures "
+                       "les plus célèbres et controversées de la Provence moderne.",
+    description_longue="Michel de Nostredame naît le 14 décembre 1503 à Saint-Rémy-de-Provence dans "
+        "une famille de juristes et de médecins. Après des études de médecine à Montpellier, il parcourt "
+        "la France pour soigner les populations atteintes de la peste bubonique. Installé à "
+        "**Salon-de-Provence** à partir de 1547, il y rédige ses célèbres *Centuries astrologiques*, "
+        "recueil de quatrains en vieux français mêlé d'occitan. Mort en 1566, il est enterré en l'église "
+        "des Cordeliers de Salon-de-Provence. Sa maison natale à Saint-Rémy est aujourd'hui un musée visité "
+        "par des milliers de touristes chaque année.",
+    source_url="https://fr.wikipedia.org/wiki/Nostradamus"
+),
+Histoire(
+    titre="Les Baux-de-Provence : l'épopée des seigneurs des Baux",
+    typologie="Histoire",
+    periode="Moyen Âge (500–1500)",
+    description_courte="Dominant la plaine d'Arles depuis leurs falaises calcaires, les seigneurs des Baux "
+                       "forgèrent l'une des dynasties les plus orgueilleuses du Midi médiéval, protecteurs de troubadours et de cours d'amour.",
+    description_longue="Les Baux de Provence tirent leur nom de *bau* (= rocher en provençal). La famille "
+        "des Baux, qui prétendait descendre du Mage Balthazar et portait l'étoile à seize rais dans ses "
+        "armes, compta parmi les seigneurs les plus puissants de Provence du Xe au XIVe siècle. Leur "
+        "forteresse sur le plateau des Alpilles accueillit l'une des **cours d'amour** les plus raffinées "
+        "de l'Occitanie médiévale, attirant troubadours et poètes. Après des guerres incessantes et la "
+        "disgrâce royale, la ville des Baux fut rasée en 1632 sur ordre de Louis XIII, ses fortifications "
+        "démolies et ses habitants taxés pour les frais de démolition. Les ruines subsistantes en font "
+        "aujourd'hui l'un des sites touristiques les plus visités de France.",
+    source_url="https://fr.wikipedia.org/wiki/Les_Baux-de-Provence"
+)
