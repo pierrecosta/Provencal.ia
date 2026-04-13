@@ -1,7 +1,7 @@
 # 📜 Cahier des Charges : Portail Culturel Provençal (v1.2)
 
 **Date :** 13/04/2026  
-**Versions :** v1.0 → v1.1 (07/04) → v1.2 (13/04 — ajout module Articles, modèle de données, API, données de test) → v1.3 (13/04 — structure CSV dictionnaire, sources lexicographiques, Swagger) → v1.4 (13/04 — navigation desktop/mobile, catégories articles, contraintes typologies)  
+**Versions :** v1.0 → v1.1 (07/04) → v1.2 (13/04 — ajout module Articles, modèle de données, API, données de test) → v1.3 (13/04 — structure CSV dictionnaire, sources lexicographiques, Swagger) → v1.4 (13/04 — navigation desktop/mobile, catégories articles, contraintes typologies) → v1.5 (13/04 — UX/UI détaillé 30 décisions §4.2) → v1.6 (13/04 — terminologie : occitan/OC → provençal partout) → v1.7 (13/04 — états vides, pagination, filtres mobile, focus SPA, mentions légales, session, snackbar) → v1.8 (13/04 — module Dictons/Expressions, page accueil term-du-jour, graphies, traducteur, périodes auto, filtres date/lieu, session warning, À propos)  
 **Statut :** Validé pour développement  
 **Confidentialité :** Usage interne  
 **Cible :** Sponsors, Product Owner, Équipes Dev & Ops
@@ -33,12 +33,17 @@ Gestion simplifiée pour une équipe de confiance.
 - **Import :** Via fichier CSV/Excel (séparateur `;`, encodage UTF-8). En cas d'erreur de format (ligne malformée, nombre de colonnes incorrect), l'import s'arrête immédiatement et retourne le numéro de ligne fautive. Les champs de traduction vides sont acceptés.
 - **Structure du fichier d'import :** 13 colonnes (voir section 12 pour le détail complet).
 - **Logique :** Relations N-N — un mot français peut avoir plusieurs traductions provençales selon la graphie et la source lexicographique.
+- **Graphies par défaut :** Deux graphies sont activées par défaut et ont la même valeur (aucune n'est hiérarchiquement supérieure à l'autre) :
+  - **Mistralienne** (graphie du Félibrige, codifiée par Frédéric Mistral, 1854)
+  - **Classique IEO** (graphie de l'Institut d'Estudis Occitans, norme moderne)
+  Les autres graphies historiques (pré-mistralienne, régionale) sont présentes en base via les sources lexicographiques mais ne sont pas mises en avant par défaut.
 - **Affichage :** Tri par ordre alphabétique du mot français, groupement par thème puis catégorie.
-- **Filtres :** Sélection par graphie (mistralienne, classique) et par source lexicographique (Garcin, Honnorat, Pellas…).
+- **Filtres :** Sélection par graphie (mistralienne, classique IEO, toutes) et par source lexicographique (Garcin, Honnorat, Pellas…).
 - **Moteur :** Recherche avec suggestion de mots proches (distance de Levenshtein via `pg_trgm`).
 
 ### 3.2 Traducteur Lexical
-- **Mécanisme :** Traduction mot à mot basée sur le dictionnaire.
+- **Mécanisme :** Traduction **mot à mot** basée sur le dictionnaire. Il ne s'agit pas d'une traduction contextuelle ou grammaticale — chaque mot français est remplacé par sa traduction provençale la plus courante, sans accord ni conjugaison.
+- **Mention explicite dans l'interface :** Un encart permanent sous le champ de saisie précise : *« Traducteur mot à mot — la traduction automatique de phrases complètes est prévue dans une version future. »*
 - **Interface :** Traduction temps réel avec "debounce" (500ms) pour limiter les appels API.
 - **Règles :** Conservation de la ponctuation et des mots inconnus.
 
@@ -49,15 +54,10 @@ Gestion simplifiée pour une équipe de confiance.
 - **Droits :** Création, modification, suppression réservées aux contributeurs authentifiés. Consultation publique.
 
 ### 3.4 Bibliothèque (Histoires & Légendes)
-- **Champs :** `titre`, `typologie` (`Histoire` | `Légende`), `periode` (voir valeurs normalisées ci-dessous), `description_courte` (≤ 200 car., texte brut), `description_longue` (Markdown, texte libre), `source_url` (lien externe optionnel).
-- **Périodes normalisées :**
-  - `Antiquité (avant 500 ap. J.-C.)`
-  - `Moyen Âge (500–1500)`
-  - `Époque Moderne (1500–1800)`
-  - `Époque Contemporaine (1800–aujourd'hui)`
-  - `Indéterminé / Mythologique`
+- **Champs :** `titre`, `typologie` (`Histoire` | `Légende`), `periode` (texte libre), `description_courte` (≤ 200 car., texte brut), `description_longue` (Markdown, texte libre), `source_url` (lien externe optionnel).
+- **Périodes :** Champ texte libre. Les périodes disponibles dans les filtres sont **calculées dynamiquement** à partir des valeurs distinctes présentes en base — aucune liste prédéfinie. L'interface de saisie propose une autocomplétion sur les valeurs existantes pour maintenir la cohérence.
 - **Édition :** Saisie de `description_longue` en **Markdown** avec prévisualisation en temps réel.
-- **Multilinguisme :** Lien bidirectionnel optionnel entre versions OC et FR (même contenu, deux entrées liées par un `id_traduction`).
+- **Multilinguisme :** Lien bidirectionnel optionnel entre versions provençale et FR (même contenu, deux entrées liées par un `id_traduction`).
 - **Images :** Compression automatique (côté client) à **2 Mo maximum** avant stockage en base de données (PostgreSQL). Une image par entrée, champ optionnel.
 - **Droits :** Création, modification, suppression réservées aux contributeurs authentifiés. Consultation publique.
 
@@ -67,8 +67,8 @@ Gestion simplifiée pour une équipe de confiance.
 
 | Valeur exacte | Description |
 |---|---|
-| `Langue & Culture` | Défense de la langue d'oc, graphies, linguistique |
-| `Littérature` | Œuvres, auteurs, romans, nouvelles en langue d'oc ou sur la Provence |
+| `Langue & Culture` | Défense de la langue provençale, graphies, linguistique |
+| `Littérature` | Œuvres, auteurs, romans, nouvelles en langue provençale ou sur la Provence |
 | `Poésie` | Poèmes, récitations, prix littéraires poétiques |
 | `Histoire & Mémoire` | Faits historiques, commémorations, archives |
 | `Traditions & Fêtes` | Fêtes populaires, pèlerinages, jeux traditionnels |
@@ -85,34 +85,103 @@ Gestion simplifiée pour une équipe de confiance.
 | `Numismatique & Archives` | Monnaies, documents, manuscrits anciens |
 | `Immigration & Diaspora` | Communautés provençales hors de Provence |
 | `Jeunesse` | Initiatives, projets, créations portés par les jeunes |
-| `Régionalisme & Politique linguistique` | Débats institutionnels, statut de l'occitan, politiques culturelles |
+| `Régionalisme & Politique linguistique` | Débats institutionnels, statut du provençal, politiques culturelles |
 | `Divers` | Articles ne rentrant dans aucune autre catégorie |
 
 - **Affichage :** Tri par `date_publication` décroissante sur la page d'accueil. Pas de pagination au-delà de 20 articles (archivage en base, non paginé).
 - **Droits :** Création, modification, suppression réservées aux contributeurs authentifiés. Consultation publique.
 - **Pas de commentaires ni de système de like.** Portail éditorial uniquement.
 
+### 3.6 Dictons, Expressions, Proverbes & Mémoires Vivantes
+- **Objectif :** Valorisation du patrimoine oral provençal. Ce module regroupe des formes courtes transmises oralement et ancrées dans la culture locale.
+- **Types (liste fermée — 4 valeurs) :** `Dicton` · `Expression` · `Proverbe` · `Mémoire vivante`
+- **Champs (tous obligatoires) :**
+
+| Champ | Type | Contrainte |
+|-------|------|------------|
+| `terme_provencal` | VARCHAR(500) | Non vide |
+| `localite_origine` | VARCHAR(200) | Non vide (ville, département, région) |
+| `traduction_sens_fr` | TEXT | Non vide — traduction littérale et/ou sens culturel |
+
+- **Champs optionnels :** `type` (valeur parmi les 4 ci-dessus), `contexte` (texte libre, explication du contexte d'usage), `source` (origine documentaire ou personne ayant transmis le terme), `created_by` (FK users).
+- **Mise en avant quotidienne :** Chaque jour, un terme est sélectionné aléatoirement parmi tous les types et affiché en position principale sur la page d'accueil. La sélection tourne sur 24h (basée sur `CURRENT_DATE % COUNT(*)`).
+- **Droits :** Création, modification, suppression réservées aux contributeurs. Consultation publique.
+
+#### Données de test initiales (30 entrées)
+
+**10 Dictons**
+
+| Terme provençal | Localité | Traduction / Sens |
+|-----------------|----------|-------------------|
+| *A la Candèu, l'ivèr s'en vèn o s'en vau* | Provence (général) | À la Chandeleur, l'hiver s'en vient ou s'en va — le temps de la Chandeleur annonce la suite de l'hiver |
+| *Quand plèu pèr sant Mèdard, plèu quaranta jour mai tard* | Var | Quand il pleut pour la Saint-Médard, il pleut quarante jours plus tard |
+| *Lou soulèu de jàniè es la mort dóu pàusant* | Arles | Le soleil de janvier est la mort du paresseux — le beau temps d'hiver incite à travailler |
+| *Après la plueio, lou bèu tèms* | Bouches-du-Rhône | Après la pluie, le beau temps |
+| *Quand la cigalo canto, lou blad es madur* | Camargue | Quand la cigale chante, le blé est mûr |
+| *Lou vent di mount porto lou frèi, lou vent de mar porto la plueio* | Basses-Alpes | Le vent des montagnes apporte le froid, le vent de mer apporte la pluie |
+| *Figo passo, avèn gras* | Var (Fayence) | Figue passée, avoir gras — quand les figues tardent, c'est bon signe pour la récolte |
+| *En avri, fai pas çò que vòles* | Vaucluse | En avril, ne fais pas ce que tu veux — méfiance envers les caprices du temps d'avril |
+| *Lou bon Dieu fai plòure sus li bòn e sus li mauvàis* | Marseille | Le bon Dieu fait pleuvoir sur les bons et sur les mauvais — la nature ne fait pas de distinction |
+| *Felibre que canto, tèms que s'amèliouro* | Félibrige | Félibrige qui chante, temps qui s'améliore — l'art provençal est un présage heureux |
+
+**10 Expressions**
+
+| Terme provençal | Localité | Traduction / Sens |
+|-----------------|----------|-------------------|
+| *Aqueu que se buto en avans se tiro en arrié* | Aix-en-Provence | Celui qui se met en avant se tire en arrière — vantardise mal récompensée |
+| *Faire lou figa* | Marseille | Faire la figue — geste d'irrespect, insulte gestuelle |
+| *Sèn coume uno calheto* | Var | Sage comme une caille — qualité d'une personne calme et posée |
+| *Avé lou ventre que canto* | Arles | Avoir le ventre qui chante — avoir très faim |
+| *Faire bello figo de bèu fustet* | Manosque | Faire belle figue de beau fustet — belle apparence, peu de substance |
+| *Ié manquo uno douga* | Bouches-du-Rhône | Il lui manque une douve (de tonneau) — il lui manque une case, il est un peu fou |
+| *Sourti de la leissièiro* | Arles | Sortir de la lessive — être tiré d'une mauvaise situation |
+| *Faire lou mounto-en-l'èr* | Toulon | Faire le monte-en-l'air — se vanter, se donner de l'importance |
+| *Vaqui lou bèu tèms* | Aix-en-Provence | Voilà le beau temps — tout va bien, situation favorable |
+| *Bello fèsto, courto joio* | Salon-de-Provence | Belle fête, courte joie — les bons moments passent vite |
+
+**10 Proverbes**
+
+| Terme provençal | Localité | Traduction / Sens |
+|-----------------|----------|-------------------|
+| *Qu'a pas d'argent, a pas d'amis* | Provence (général) | Qui n'a pas d'argent n'a pas d'amis — la fortune conditionne les amitiés |
+| *Fau pas vendre la pèu de l'ors avant de l'avé tuat* | Var | Il ne faut pas vendre la peau de l'ours avant de l'avoir tué |
+| *La lengo n'a pas d'os, mai èu roumpo li os* | Arles | La langue n'a pas d'os, mais elle brise les os — la parole peut faire beaucoup de mal |
+| *Lou tèms es de l'argent* | Marseille | Le temps est de l'argent — adapteur provençal du proverbe universel |
+| *Quau s'assemblo, s'assemblo* | Bouches-du-Rhône | Qui se ressemble s'assemble |
+| *Mai vau un tèns que dous ou-auras* | Vaucluse | Mieux vaut un tien que deux tu l'auras — l'acquis vaut mieux que l'espéré |
+| *La flour d'un jour duro uno journado* | Camargue | La fleur d'un jour dure une journée — la beauté éphémère passe vite |
+| *Rèn que la vèritat es bello* | Aix-en-Provence | Rien que la vérité est belle |
+| *Parlo pèr parla, es pèrdre soun tèms* | Manosque | Parler pour parler, c'est perdre son temps — l'inutilité du bavardage |
+| *Aquèu qu'a pas soufèrt, coumpren pas la joio* | Haute-Provence | Celui qui n'a pas souffert ne comprend pas la joie |
+
 ---
 
 ## 4. UX & Accessibilité (Standards Seniors)
-- **Typographie :** Police sans empattement, taille de corps de texte minimale à **18px**.
+- **Typographie :** Police sans empattement, taille de corps de texte minimale à **18px**. Pas de bouton d'ajustement de taille — on respecte le réglage navigateur de l'utilisateur.
 - **Contrastes :** Respect strict des normes **WCAG AA** (ratio 4.5:1).
 - **Interactions :** Zones cliquables de **44x44px** minimum pour faciliter la navigation tactile.
 - **Navigation :** URLs uniques par contenu pour permettre le partage par lien direct.
+- **Mode sombre :** Non implémenté — palette "Terre de Provence" claire uniquement.
+- **Animations :** Transitions douces (fade-in discrets uniquement, pas de mouvements latéraux ni de zoom). Pas d'animation avec `prefers-reduced-motion: reduce`.
+- **Langue de l'interface :** Français uniquement.
+- **Focus SPA :** Après toute navigation côté client (React Router), le focus est replacé sur le `<h1>` de la nouvelle page (WCAG 2.4.3).
+- **Ancres & barre fixe :** `scroll-margin-top: 64px` sur tout élément cible d'ancre en desktop (hauteur barre de navigation). Non applicable mobile (barre en bas).
+- **`<title>` HTML :** Titre de la page courante uniquement, sans suffixe (ex. `Agenda`, `Lo Félibrige : 170 ans de combat…`).
 
 ---
 
 ## 4.1 Navigation — Spécifications
 
-### Structure des entrées (Option B — 5 entrées condensées)
+### Structure des entrées (Option B — 6 entrées)
 
 | # | Icône | Libellé | Contenu |
-|---|-------|---------|---------|
-| 1 | 🏠 | Accueil | Page principale — flux des articles actuels |
+|---|-------|---------|--------|
+| 1 | 🏠 | Accueil | Page principale — Terme du jour + flux des articles |
 | 2 | 📖 | Langue | Dictionnaire FR→Provençal + Traducteur lexical (sous-menu) |
 | 3 | 📅 | Agenda | Événements culturels à venir et archives |
 | 4 | 📚 | Culture | Bibliothèque — Histoires & Légendes |
-| 5 | 👤 | Compte | Connexion / Espace contributeur |
+| 5 | ℹ️ | À propos | Démarche, contributeurs, sources |
+| 6 | 👤 | Compte | Connexion / Espace contributeur |
 
 ### Sous-menu "Langue" (entrée n°2)
 
@@ -143,7 +212,7 @@ Déclenché au clic (desktop) ou au tap (mobile) sur "Langue" :
 - **Fond :** `#F9F7F2` — bordure haute `1px solid #D1CEC7` — ombre portée vers le haut.
 - **Hauteur :** 60px (zones tactiles ≥ 44x44px garanties).
 - **Contenu :** 5 entrées de largeur égale (flex, `flex: 1`), icône centrée au-dessus du libellé court.
-- **Libellés courts :** Accueil · Langue · Agenda · Culture · Compte (≤ 8 caractères).
+- **Libéllés courts :** Accueil · Langue · Agenda · Culture · À propos · Compte (≤ 8 caractères).
 - **Taille libellé :** 11px minimum sous l'icône.
 - **Entrée active :** icône couleur `#869121`, libellé gras `#869121`.
 - **Entrées inactives :** icône et libellé `#2D2926` à 65% d'opacité.
@@ -158,6 +227,94 @@ Déclenché au clic (desktop) ou au tap (mobile) sur "Langue" :
 - Attribut `aria-label` sur chaque entrée de menu.
 - Le bottom sheet mobile est un `<dialog>` natif ou géré avec `role="dialog"` + `aria-modal="true"`.
 - Focus piégé dans le bottom sheet tant qu'il est ouvert.
+
+---
+
+## 4.2 UX par Page et Module
+
+### Page d'accueil (Terme du jour + Articles)
+- **URL :** `/` — la page d'accueil est la page principale du site.
+- **Contenu affiché :**
+  1. **Terme du jour** (bloc mis en avant en haut de page) : terme provençal issu du module Dictons/Expressions/Proverbes, sélectionné automatiquement toutes les 24h. Affichage : terme + type + localité d'origine + traduction/sens.
+  2. **Flux des derniers articles publiés** en dessous, liste verticale type journal.
+- **Mise en page :** Titre, auteur, date et chapeau (≤ 300 car.) par article. L'image est affichée uniquement si renseignée, sinon placeholder logo du site.
+- **Pas de filtre** sur la page d'accueil.
+- **Liens externes :** Toujours ouverts dans un nouvel onglet (`target="_blank" rel="noopener noreferrer"`).
+- **Pas de barre de recherche globale.** Chaque module gère sa propre recherche.
+
+### Dictionnaire
+- **Affichage des résultats :** Tableau avec colonnes « Mot français » et « Traduction ». Les variantes par source (TradEG, TradD…) accessibles dans un bloc replié sous chaque ligne, dépliable au clic.
+- **Filtres :** Deux filtres en cascade au-dessus du tableau : **Thème** puis **Catégorie** (la liste des catégories se met à jour selon le thème choisi). Toujours visibles. Sur mobile : deux `<select>` empilés au-dessus du tableau.
+- **Recherche textuelle :** Champ de recherche libre au-dessus des filtres. Lorsqu'une recherche est saisie, les filtres Thème/Catégorie sont automatiquement désactivés (grisés) — la recherche porte sur toutes les entrées.
+- **Pagination :** Sous le tableau, sélecteur : **10 / 20 / 50 / 100** résultats par page. Valeur par défaut : 20.
+- **États vides :**
+  - Mot présent en base mais sans traduction → *« Mot non traduit »*
+  - Mot absent de la base → *« Pas de mot trouvé »*
+
+### Articles (page `/articles`)
+- **Accès :** Lien depuis la page d'accueil (« Voir tous les articles ») ou via fil d'Ariane.
+- **URL :** `/articles`
+- **Filtres :** Filtre par **date** (année/mois, sélecteur) + filtre par **lieu** (champ texte libre sur `auteur` ou lieu mentionné). Aucun autre filtre.
+- **Affichage :** Identique à la page d'accueil (liste journal) avec filtres actifs.
+
+### Traducteur lexical
+- **Desktop :** Zone de saisie à gauche, résultat à droite (layout 50/50).
+- **Mobile :** Zone de saisie en haut, résultat en dessous (empilé).
+- **Mots inconnus :** Conservés tels quels dans le résultat, mis en évidence visuellement (ex. fond jaune pâle ou italique coloré).
+- **Mention permanente :** Encart sous le champ : *« Traducteur mot à mot — la traduction automatique de phrases complètes est prévue dans une version future. »*
+
+### Agenda culturel
+- **Vue principale :** Les 3 prochains événements mis en avant (cartes larges avec date + lieu + titre). Le reste en liste compacte chronologique en dessous.
+- **Événements passés :** Accessibles uniquement via un lien « Archives » séparé — absents de la vue principale.
+- **Filtres :** Filtre par **date** (année/mois) + filtre par **lieu** (champ texte libre sur le champ `lieu`). Pas d'autres filtres.
+- **État vide :** Si aucun événement à venir, afficher un événement fictif générique avec la mention *« Mise à jour à faire par l'administrateur »* en lieu et place du titre.
+
+### Bibliothèque — Histoires & Légendes
+- **Liste :** Liste sobre : titre + description courte + période. Pas d'images en liste.
+- **Filtres :** Sélecteur **Tout / Histoire / Légende** + filtre par **période** (valeurs dynamiques issues de la base) + filtre par **lieu** (champ texte sur le champ `periode` ou métadonnées) + filtre par **date de publication** (année/mois).
+- **Chargement :** Infinite scroll — les entrées se chargent automatiquement au défilement.
+- **État vide :** Impossible en conditions normales (la base est initialisée avec des données de départ).
+- **Page de lecture :** Colonne de texte centrée, large (max 720px), style article de magazine. Police sans-empattement (cohérence charte). Texte Markdown rendu proprement.
+- **Contenu bilingue :** Toggle switch « FR / Provençal » en position `sticky` en haut de la page de lecture (reste visible au scroll), uniquement si une version dans l'autre langue existe. Pas de mémorisation entre pages.
+
+### Feedback & États de l'interface
+- **Action réussie :** Snackbar en bas de l'écran (durée 3 secondes, couleur `#869121`). Position : `bottom: 16px` desktop — `bottom: 76px` mobile (au-dessus de la barre de navigation de 60px + 16px de marge).
+- **Erreur réseau / timeout :** Snackbar rouge (durée 4 secondes), même positionnement.
+- **Session expirée :** Redirection silencieuse vers la page de connexion. Les modifications en cours sont perdues sans avertissement.
+- **Avertissement pré-expiration :** Lorsqu'un contributeur est en cours de modification d'un contenu et que sa session expire dans **5 minutes**, une bannière d'avertissement s'affiche en haut de la page :
+  *« Votre session expire dans 5 minutes. Enregistrez vos modifications pour ne pas les perdre. »*
+  La bannière se met à jour avec un compte à rebours (ex. « 3 min », « 1 min »). Elle n'apparaît que si un formulaire d'édition est ouvert.
+- **Erreur formulaire :** Texte d'erreur rouge sous le champ concerné + bordure du champ rouge. Pas de récapitulatif en haut.
+- **Chargement :** Spinner centré sur la zone concernée (pas de spinner pleine page sauf chargement initial).
+- **Page 404 :** Message clair + liens directs vers les 4 modules principaux (Dictionnaire, Agenda, Bibliothèque, Accueil).
+
+### Authentification & Espace contributeur
+- **Création de compte :** Sur invitation uniquement. Les identifiants (pseudo + mot de passe) sont créés directement en base par l'administrateur — aucun formulaire d'inscription public.
+- **Redirection post-connexion :** L'utilisateur est renvoyé sur la page depuis laquelle il s'est connecté.
+- **Interface contributeur :** Intégrée au site public — pas de section `/admin` séparée. Les boutons d'édition/création apparaissent directement sur les pages concernées lorsqu'un contributeur est connecté.
+
+### Fil d'Ariane & Retour
+- **Fil d'Ariane :** Présent sur toutes les pages de détail (article, histoire, événement).
+- **Bouton Retour :** Bouton "← Retour" explicite en haut à gauche de chaque page de détail, en plus du fil d'Ariane.
+
+### Page « À propos »
+- **URL :** `/a-propos`
+- **Objectif :** Instaurer la confiance auprès du public local avant toute contribution ou utilisation. Les Provençaux aiment savoir à qui ils ont affaire.
+- **Structure de la page (3 blocs) :**
+  1. **La démarche** — Pourquoi ce site ? Quel problème cherche-t-on à résoudre ? Texte éditorial, à renseigner par l'administrateur.
+  2. **Les contributeurs** — Liste des contributeurs actifs avec leur pseudo et (optionnellement) leur domaine de compétence. Pas de nom réel si l'auteur choisit l'anonymat.
+  3. **Les sources** — Références des 7 sources lexicographiques du dictionnaire (reprises de §12.4) + liste des fonds documentaires utilisés pour la bibliothèque.
+- **Mise à jour :** Contenu statique géré directement en base ou via fichier de configuration — pas d’interface d’édition dédiée.
+
+### Pied de page (footer)
+- **Mobile :** Absent (la barre de navigation en bas remplace le footer).
+- **Desktop :** Minimal — crédits lexicographiques (liste des 7 auteurs sources) + lien « Mentions légales ».
+- **Page `/mentions-legales` (statique) :**
+  - *Hébergeur :* non applicable (hébergement local / privé).
+  - *Éditeur :* non applicable (auteur anonyme, projet privé non commercial).
+  - *SIRET :* non applicable (particulier).
+  - *Données personnelles :* aucune collecte de données personnelles identifiables. Pas de cookies tiers. Pas de tracking.
+  - *Contact :* adresse e-mail de contact (à renseigner).
 
 ---
 
@@ -178,7 +335,7 @@ Déclenché au clic (desktop) ou au tap (mobile) sur "Langue" :
 
 ## 7. Charte graphique
 **Thème principal :** style général proche de franceinfo  
-**Palette de couleur :** "Terre d'Oc" (Chaleureuse et Culturelle) Cette palette utilise des tons liés à la Provence (ocre, olivier, pierre) tout en restant très sobre pour ne pas tomber dans le "cliché" touristique.
+**Palette de couleur :** "Terre de Provence" (Chaleureuse et Culturelle) Cette palette utilise des tons liés à la Provence (ocre, olivier, pierre) tout en restant très sobre pour ne pas tomber dans le "cliché" touristique.
 
 | Élément | Couleur (Hex) | Rôle |
 |---|---:|---|
@@ -242,13 +399,13 @@ library_entries        -- Histoires & Légendes
   id                SERIAL PK
   titre             VARCHAR(200) NOT NULL
   typologie         VARCHAR(20)  CHECK IN ('Histoire','Légende')
-  periode           VARCHAR(60)
+  periode           VARCHAR(200) -- texte libre, autocomplétion sur valeurs existantes
   description_courte VARCHAR(200)
   description_longue TEXT         -- Markdown
   source_url        VARCHAR(500)
   image             BYTEA        -- compressé ≤ 2 Mo
   lang              CHAR(2) DEFAULT 'fr'
-  traduction_id     FK → library_entries.id (optionnel, lien OC↔FR)
+  traduction_id     FK → library_entries.id (optionnel, lien Provençal↔FR)
   locked_by         FK → users.id (optionnel)
   created_by        FK → users.id
   created_at        TIMESTAMP DEFAULT now()
@@ -262,6 +419,17 @@ articles
   date_publication DATE NOT NULL
   auteur           VARCHAR(100)
   categorie        VARCHAR(100)  -- valeur parmi les 20 catégories définies en section 3.5
+  created_by       FK → users.id
+  created_at       TIMESTAMP DEFAULT now()
+
+sayings                -- Dictons, Expressions, Proverbes & Mémoires vivantes
+  id               SERIAL PK
+  terme_provencal  TEXT NOT NULL
+  localite_origine VARCHAR(200) NOT NULL
+  traduction_sens_fr TEXT NOT NULL
+  type             VARCHAR(30)  CHECK IN ('Dicton','Expression','Proverbe','Mémoire vivante')
+  contexte         TEXT         -- explication contexte d'usage (optionnel)
+  source           VARCHAR(300) -- référence ou transmetteur (optionnel)
   created_by       FK → users.id
   created_at       TIMESTAMP DEFAULT now()
 ```
@@ -281,6 +449,11 @@ Base URL en production : `https://<domaine>/api/v1`
 | GET | `/health` | Non | Santé de l'API et de la BDD |
 | GET | `/dictionary` | Non | Liste paginée + recherche (`?q=`) avec suggestions Levenshtein |
 | POST | `/dictionary/import` | Oui | Import CSV/Excel (arrêt immédiat sur erreur de format) |
+| GET | `/sayings/today` | Non | Terme du jour (sélection automatique 24h) |
+| GET | `/sayings` | Non | Liste paginée + filtre `?type=Dicton\|Expression\|Proverbe\|Mémoire vivante` |
+| POST | `/sayings` | Oui | Créer une entrée |
+| PUT | `/sayings/{id}` | Oui | Modifier une entrée |
+| DELETE | `/sayings/{id}` | Oui | Supprimer une entrée |
 | GET | `/events` | Non | Événements à venir (`?archive=true` pour les archives) |
 | POST | `/events` | Oui | Créer un événement |
 | PUT | `/events/{id}` | Oui | Modifier un événement |
@@ -307,9 +480,10 @@ Les fichiers suivants dans `docs/sources/` constituent les jeux de données de t
 | Fichier | Module | Contenu |
 |---------|--------|---------|
 | `src_dict.csv` | Dictionnaire | 6 049 entrées réelles FR→Provençal, 13 thèmes, 41 catégories (UTF-8, séparateur `;`) |
-| `articles_exemple.txt` | Actualités | 4 articles culturels réalistes (Félibrige, Saintes-Maries, enseignement OC, graphies) |
+| `articles_exemple.txt` | Actualités | 4 articles culturels réalistes (Félibrige, Saintes-Maries, enseignement provençal, graphies) |
 | `histoire_exemple.txt` | Bibliothèque | 5 entrées (3 Histoires, 2 Légendes) avec contenu Markdown réel |
 | `agenda_exemple.txt` | Agenda | 5 événements culturels avec dates et lieux réels |
+| `sayings_exemple.txt` | Dictons/Expressions | 30 entrées (10 dictons, 10 expressions, 10 proverbes) issues de §3.6 |
 
 > Ces données permettent de valider les imports, l'affichage, la recherche et les filtres de chaque module sans dépendre de données de production.
 
@@ -365,7 +539,7 @@ Les fichiers suivants dans `docs/sources/` constituent les jeux de données de t
 
 ### 12.4 Sources lexicographiques provençales
 
-Les sept sources correspondent à des lexicographes et dictionnaires historiques qui constituent la base documentaire du dictionnaire. Chacune représente une zone géographique ou une époque précise de la langue d'oc en Provence.
+Les sept sources correspondent à des lexicographes et dictionnaires historiques qui constituent la base documentaire du dictionnaire. Chacune représente une zone géographique ou une époque précise de la langue provençale.
 
 | Code colonne | Auteur | Ouvrage / Référence | Année | Zone géographique |
 |---|---|---|---|---|
