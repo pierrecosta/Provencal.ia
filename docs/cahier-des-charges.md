@@ -1,7 +1,7 @@
 # 📜 Cahier des Charges : Portail Culturel Provençal (v1.2)
 
-**Date :** 13/04/2026  
-**Versions :** v1.0 → v1.1 (07/04) → v1.2 (13/04 — ajout module Articles, modèle de données, API, données de test) → v1.3 (13/04 — structure CSV dictionnaire, sources lexicographiques, Swagger) → v1.4 (13/04 — navigation desktop/mobile, catégories articles, contraintes typologies) → v1.5 (13/04 — UX/UI détaillé 30 décisions §4.2) → v1.6 (13/04 — terminologie : occitan/OC → provençal partout) → v1.7 (13/04 — états vides, pagination, filtres mobile, focus SPA, mentions légales, session, snackbar) → v1.8 (13/04 — module Dictons/Expressions, page accueil term-du-jour, graphies, traducteur, périodes auto, filtres date/lieu, session warning, À propos)  
+**Date :** 14/04/2026  
+**Versions :** v1.0 → v1.1 (07/04) → v1.2 (13/04 — ajout module Articles, modèle de données, API, données de test) → v1.3 (13/04 — structure CSV dictionnaire, sources lexicographiques, Swagger) → v1.4 (13/04 — navigation desktop/mobile, catégories articles, contraintes typologies) → v1.5 (13/04 — UX/UI détaillé 30 décisions §4.2) → v1.6 (13/04 — terminologie : occitan/OC → provençal partout) → v1.7 (13/04 — états vides, pagination, filtres mobile, focus SPA, mentions légales, session, snackbar) → v1.8 (13/04 — module Dictons/Expressions, page accueil term-du-jour, graphies, traducteur, périodes auto, filtres date/lieu, session warning, À propos) → **v1.9 (14/04 — locked_by tous modules, stockage images filesystem/URL, recherche prov→fr, page accueil = Mémoire vivante, articles page séparée, icônes thématiques, fichiers _init, décisions architecture tranchées)**  
 **Statut :** Validé pour développement  
 **Confidentialité :** Usage interne  
 **Cible :** Sponsors, Product Owner, Équipes Dev & Ops
@@ -23,7 +23,7 @@ Gestion simplifiée pour une équipe de confiance.
 - **Contributeurs :** Maximum 10 personnes.
 - **Authentification :** JWT + bcrypt (Pseudo / Mot de passe uniquement).
 - **Administration :** Pas d'interface d'administration applicative. La création de compte et la maintenance lourde se font directement en base de données par l'administrateur système.
-- **Gestion des conflits :** Verrouillage d'édition (`locked_by`) et système de **rollback** limité à la toute dernière action effectuée.
+- **Gestion des conflits :** Verrouillage d'édition (`locked_by` + `locked_at`) appliqué **sur tous les modules éditoriaux** (dictionnaire, bibliothèque, articles, agenda, dictons/expressions). Le verrou expire automatiquement après 30 minutes si non libéré. Système de **rollback** limité à la toute dernière action effectuée (table `edit_log`).
 
 ---
 
@@ -37,9 +37,11 @@ Gestion simplifiée pour une équipe de confiance.
   - **Mistralienne** (graphie du Félibrige, codifiée par Frédéric Mistral, 1854)
   - **Classique IEO** (graphie de l'Institut d'Estudis Occitans, norme moderne)
   Les autres graphies historiques (pré-mistralienne, régionale) sont présentes en base via les sources lexicographiques mais ne sont pas mises en avant par défaut.
+- **Graphie du site (hors dictionnaire) :** Le reste du portail utilise une **graphie neutre** : une seule traduction provençale par terme, sans contrôle de graphie source. Seul le dictionnaire présente les deux graphies (mistralienne et classique IEO) à égalité.
 - **Affichage :** Tri par ordre alphabétique du mot français, groupement par thème puis catégorie.
 - **Filtres :** Sélection par graphie (mistralienne, classique IEO, toutes) et par source lexicographique (Garcin, Honnorat, Pellas…).
 - **Moteur :** Recherche avec suggestion de mots proches (distance de Levenshtein via `pg_trgm`).
+- **Recherche bidirectionnelle :** En plus de FR→Provençal, le dictionnaire supporte la recherche **Provençal→FR** (toutes graphies confondues). Le champ de recherche détecte automatiquement la direction selon les caractères saisis, ou l'utilisateur bascule via un sélecteur. La recherche provençale porte sur toutes les colonnes de traduction (`dict_translations`), sans distinction de graphie.
 
 ### 3.2 Traducteur Lexical
 - **Mécanisme :** Traduction **mot à mot** basée sur le dictionnaire. Il ne s'agit pas d'une traduction contextuelle ou grammaticale — chaque mot français est remplacé par sa traduction provençale la plus courante, sans accord ni conjugaison.
@@ -58,11 +60,12 @@ Gestion simplifiée pour une équipe de confiance.
 - **Périodes :** Champ texte libre. Les périodes disponibles dans les filtres sont **calculées dynamiquement** à partir des valeurs distinctes présentes en base — aucune liste prédéfinie. L'interface de saisie propose une autocomplétion sur les valeurs existantes pour maintenir la cohérence.
 - **Édition :** Saisie de `description_longue` en **Markdown** avec prévisualisation en temps réel.
 - **Multilinguisme :** Lien bidirectionnel optionnel entre versions provençale et FR (même contenu, deux entrées liées par un `id_traduction`).
-- **Images :** Compression automatique (côté client) à **2 Mo maximum** avant stockage en base de données (PostgreSQL). Une image par entrée, champ optionnel.
+- **Images :** Une image par entrée, champ optionnel. Le champ `image_ref` (VARCHAR 500) contient soit un chemin local (`/static/images/<nom_fichier>`) soit une URL web complète (`https://...`). Compression automatique côté client à **2 Mo maximum** avant upload. En développement local, les fichiers sont stockés dans `backend/static/images/`. En production, les fichiers sont stockés dans un bucket **S3-compatible** (voir §6).
 - **Droits :** Création, modification, suppression réservées aux contributeurs authentifiés. Consultation publique.
 
 ### 3.5 Actualités / Articles Culturels
-- **Champs :** `titre`, `description` (chapeau éditorial ≤ 300 car.), `image_url` (chemin relatif `/static/articles/`), `source_url` (lien externe optionnel), `date_publication` (date ISO), `auteur` (texte libre), `categorie` (valeur parmi la liste fixe ci-dessous).
+- **Champs :** `titre`, `description` (chapeau éditorial ≤ 300 car.), `image_ref` (chemin local `/static/images/` **ou** URL web complète, optionnel), `source_url` (lien externe optionnel), `date_publication` (date ISO), `auteur` (texte libre), `categorie` (valeur parmi la liste fixe ci-dessous).
+- **Page dédiée :** Les articles sont affichés sur la page `/articles`, **séparée de la page d'accueil**. La page d'accueil (§4.2) est exclusivement réservée à la Mémoire vivante.
 - **Catégories (liste fermée — 20 valeurs) :**
 
 | Valeur exacte | Description |
@@ -172,24 +175,25 @@ Gestion simplifiée pour une équipe de confiance.
 
 ## 4.1 Navigation — Spécifications
 
-### Structure des entrées (Option B — 6 entrées)
+### Structure des entrées (Option C — 7 entrées)
 
 | # | Icône | Libellé | Contenu |
 |---|-------|---------|--------|
-| 1 | 🏠 | Accueil | Page principale — Terme du jour + flux des articles |
-| 2 | 📖 | Langue | Dictionnaire FR→Provençal + Traducteur lexical (sous-menu) |
-| 3 | 📅 | Agenda | Événements culturels à venir et archives |
-| 4 | 📚 | Culture | Bibliothèque — Histoires & Légendes |
-| 5 | ℹ️ | À propos | Démarche, contributeurs, sources |
-| 6 | 👤 | Compte | Connexion / Espace contributeur |
+| 1 | 🏠 | Accueil | Page principale — Mémoire vivante (terme du jour + liste dictons/expressions/proverbes) |
+| 2 | 📰 | Actualités | Articles culturels |
+| 3 | 📖 | Langue | Dictionnaire FR→Provençal + Prov→FR + Traducteur lexical (sous-menu) |
+| 4 | 📅 | Agenda | Événements culturels à venir et archives |
+| 5 | 📚 | Culture | Bibliothèque — Histoires & Légendes |
+| 6 | ℹ️ | À propos | Démarche, contributeurs, sources |
+| 7 | 👤 | Compte | Connexion / Espace contributeur |
 
-### Sous-menu "Langue" (entrée n°2)
+### Sous-menu "Langue" (entrée n°3)
 
 Déclenché au clic (desktop) ou au tap (mobile) sur "Langue" :
 
 | Entrée sous-menu | Cible |
 |---|---|
-| Dictionnaire | Recherche FR→Provençal avec filtres par source et graphie |
+| Dictionnaire | Recherche FR→Provençal et Prov→FR avec filtres par source et graphie |
 | Traducteur | Traducteur lexical temps réel (debounce 500 ms) |
 
 ---
@@ -211,8 +215,8 @@ Déclenché au clic (desktop) ou au tap (mobile) sur "Langue" :
 - **Position :** Barre horizontale fixe en **bas** de page (`position: fixed; bottom: 0`).
 - **Fond :** `#F9F7F2` — bordure haute `1px solid #D1CEC7` — ombre portée vers le haut.
 - **Hauteur :** 60px (zones tactiles ≥ 44x44px garanties).
-- **Contenu :** 5 entrées de largeur égale (flex, `flex: 1`), icône centrée au-dessus du libellé court.
-- **Libéllés courts :** Accueil · Langue · Agenda · Culture · À propos · Compte (≤ 8 caractères).
+- **Contenu :** 6 entrées de largeur égale (flex, `flex: 1`), icône centrée au-dessus du libellé court. Sur mobile, l'entrée "Actualités" peut être intégrée dans un menu "Plus" si 7 entrées dépassent l'espace disponible.
+- **Libellés courts :** Accueil · Actualités · Langue · Agenda · Culture · À propos · Compte (≤ 8 caractères).
 - **Taille libellé :** 11px minimum sous l'icône.
 - **Entrée active :** icône couleur `#869121`, libellé gras `#869121`.
 - **Entrées inactives :** icône et libellé `#2D2926` à 65% d'opacité.
@@ -232,13 +236,14 @@ Déclenché au clic (desktop) ou au tap (mobile) sur "Langue" :
 
 ## 4.2 UX par Page et Module
 
-### Page d'accueil (Terme du jour + Articles)
-- **URL :** `/` — la page d'accueil est la page principale du site.
+### Page d'accueil (Mémoire vivante)
+- **URL :** `/` — la page d'accueil est la page principale du site, exclusivement dédiée à la Mémoire vivante.
 - **Contenu affiché :**
   1. **Terme du jour** (bloc mis en avant en haut de page) : terme provençal issu du module Dictons/Expressions/Proverbes, sélectionné automatiquement toutes les 24h. Affichage : terme + type + localité d'origine + traduction/sens.
-  2. **Flux des derniers articles publiés** en dessous, liste verticale type journal.
-- **Mise en page :** Titre, auteur, date et chapeau (≤ 300 car.) par article. L'image est affichée uniquement si renseignée, sinon placeholder logo du site.
-- **Pas de filtre** sur la page d'accueil.
+  2. **Liste des dictons, expressions, proverbes & mémoires vivantes** en dessous, liste verticale avec filtres par type et localité.
+- **Pas d'articles** sur la page d'accueil. Les articles sont accessibles via la navigation "Actualités" (`/articles`).
+- **Mise en page :** Terme du jour mis en exergue (carte large, fond légèrement coloré). Liste sobre en dessous.
+- **Pas de filtre** sur le terme du jour. Filtres par `type` et `localite_origine` sur la liste.
 - **Liens externes :** Toujours ouverts dans un nouvel onglet (`target="_blank" rel="noopener noreferrer"`).
 - **Pas de barre de recherche globale.** Chaque module gère sa propre recherche.
 
@@ -252,10 +257,10 @@ Déclenché au clic (desktop) ou au tap (mobile) sur "Langue" :
   - Mot absent de la base → *« Pas de mot trouvé »*
 
 ### Articles (page `/articles`)
-- **Accès :** Lien depuis la page d'accueil (« Voir tous les articles ») ou via fil d'Ariane.
+- **Accès :** Navigation principale "Actualités" ou lien direct. **Page complètement séparée de la page d'accueil.**
 - **URL :** `/articles`
-- **Filtres :** Filtre par **date** (année/mois, sélecteur) + filtre par **lieu** (champ texte libre sur `auteur` ou lieu mentionné). Aucun autre filtre.
-- **Affichage :** Identique à la page d'accueil (liste journal) avec filtres actifs.
+- **Affichage :** Liste journal — titre, auteur, date, chapeau (≤ 300 car.) par article. L'image (`image_ref`) est affichée si renseignée (chemin local ou URL), sinon placeholder logo du site.
+- **Filtres :** Filtre par **date** (année/mois, sélecteur) + filtre par **catégorie** (liste fermée 20 valeurs). Aucun autre filtre.
 
 ### Traducteur lexical
 - **Desktop :** Zone de saisie à gauche, résultat à droite (layout 50/50).
@@ -326,8 +331,14 @@ Déclenché au clic (desktop) ou au tap (mobile) sur "Langue" :
 ---
 
 ## 6. Infrastructure & Production (Ops)
-- **Hébergement :** Cluster Kubernetes (3 pods minimum : Front, Back, BDD).
-- **Certificat SSL :** Let's Encrypt automatique via Certbot ou Ingress Controller.
+- **Hébergement :** Cluster Kubernetes (3 pods minimum : Front, Back, BDD). **Provider cloud : non encore choisi** (OVH, Scaleway ou Hetzner en évaluation pour la production).
+- **Nom de domaine :** `le-provencal.ovh` (réservé).
+- **Certificat SSL en production :** Let's Encrypt automatique via Certbot ou Ingress Controller.
+- **Certificat SSL en développement local :** Certificat **auto-signé** généré localement (ex. `mkcert` ou `openssl`) pour tester les cookies `Secure` et le comportement HTTPS en local. Non requis pour les tests unitaires CI.
+- **Stockage des images :**
+  - **Développement local :** Système de fichiers local, répertoire `backend/static/images/`. Servi par FastAPI via `/static/images/<nom>`.
+  - **Production :** Bucket **S3-compatible** (AWS S3, OVH Object Storage ou Scaleway Object Storage selon le provider retenu). Le champ `image_ref` contient l'URL S3 complète.
+  - **Logique commune :** Le champ `image_ref` accepte indifféremment un chemin local (`/static/images/xxx.jpg`) ou une URL web (`https://...`). Le frontend choisit le mode de rendu selon le préfixe.
 - **Disponibilité Nocturne :** Arrêt automatisé des pods de 20h à 8h via **CronJob K8s** (économie de ressources).
 - **Maintenance :** Sauvegardes hebdomadaires du volume PostgreSQL. Logs console Docker.
 
@@ -344,17 +355,42 @@ Déclenché au clic (desktop) ou au tap (mobile) sur "Langue" :
 | Accent Primaire | #869121 | Vert Olive sourd pour les boutons et titres. |
 | Accent Secondaire | #D5713F | Terre cuite pour les alertes ou éléments d'agenda. |
 | Bordures | #D1CEC7 | Gris |
+### Icônes
+Les icônes du portail sont des fichiers SVG (`stroke="#869121"`, viewBox 24×24) stockés dans `docs/sources/icons/`. Ils respectent la palette "Terre de Provence".
 
+| Fichier | Usage |
+|---------|-------|
+| `icon-accueil.svg` | Navigation : Accueil / Mémoire vivante |
+| `icon-articles.svg` | Navigation : Actualités |
+| `icon-langue.svg` | Navigation : Langue (livre ouvert) |
+| `icon-dictionnaire.svg` | Sous-menu : Dictionnaire |
+| `icon-traducteur.svg` | Sous-menu : Traducteur |
+| `icon-agenda.svg` | Navigation : Agenda |
+| `icon-culture.svg` | Navigation : Culture / Bibliothèque |
+| `icon-a-propos.svg` | Navigation : À propos |
+| `icon-compte.svg` | Navigation : Compte |
+| `icon-memoire-vivante.svg` | Page accueil : guillemets + fleur |
+| `icon-recherche.svg` | Champ de recherche |
+| `icon-image.svg` | Placeholder image absente |
+| `icon-cigale.svg` | Décoratif : cigale provençale |
+| `icon-lavande.svg` | Décoratif : brin de lavande |
+| `icon-olivier.svg` | Décoratif : rameau d'olivier |
+| `icon-soleil.svg` | Décoratif : soleil de Provence |
 ---
 
-## 8. Points à Trancher (Ouverts)
-1. **Provider Cloud :** Choix de l'hébergeur Kubernetes (OVH, Scaleway, Hetzner…).
-2. **Nom de domaine :** À réserver (provencal.ia ou autre).
-3. **Graphie par défaut du dictionnaire :** Quelle graphie afficher en premier dans les résultats de recherche et dans le traducteur ? (Mistralienne recommandée comme graphie principale, les autres en secondaire.)
-4. **Stockage des images :** Images en base PostgreSQL (blob) ou stockage objet S3-compatible (MinIO, OVH Object Storage) ? La limite de 2 Mo par image rend le stockage en base acceptable à court terme mais risqué à l'échelle.
-5. **Workflow de validation du contenu :** Les contributeurs publient-ils directement (`published`) ou via un statut `draft` → validation par un relecteur avant mise en ligne ?
-6. **Import dictionnaire — encodage :** Le fichier source CSV utilise un encodage non-UTF-8 (Windows-1252 probable). Confirmer l'encodage attendu lors des imports Excel/CSV et documenter la procédure de conversion.
-7. **SSL en développement :** HTTPS non applicable en local (voir plan de travail). Confirmer si des certificats auto-signés sont nécessaires pour tester les cookies `Secure` en local.
+## 8. Décisions Architecturales (Tranchées)
+
+Les points à trancher ont été résolus le 14/04/2026 :
+
+| # | Sujet | Décision |
+|---|-------|-----------|
+| 8.1 | **Environnements** | **Développement local** (Docker Compose). **Production cloud à choisir** parmi OVH / Scaleway / Hetzner. |
+| 8.2 | **Nom de domaine** | `le-provencal.ovh` (réservé). |
+| 8.3 | **Graphie par défaut du site** | **Graphie neutre** sur l'ensemble du site : une seule traduction provençale par terme, sans contrôle de graphie source. **Exception : le dictionnaire** affiche les graphies mistralienne et classique IEO à égalité (aucune en avant sur l'autre). |
+| 8.4 | **Stockage des images** | **Local (dev) :** système de fichiers `backend/static/images/`. **Production :** bucket S3-compatible. Le champ `image_ref` accepte un chemin local ou une URL web. |
+| 8.5 | **Workflow de validation** | **Publication directe** sans étape de relecture. Les contributeurs publient immédiatement (`published`), pas de statut `draft`. |
+| 8.6 | **Encodage du dictionnaire** | L'encodage du fichier CSV importé est **détecté automatiquement** (détection BOM ou librairie `chardet`). Si non détectable, UTF-8 est attendu par défaut. Une erreur explicite est retournée si l'encodage ne peut être déterminé. |
+| 8.7 | **SSL en développement** | Certificat **auto-signé** local (via `mkcert` ou `openssl`) pour tester les cookies `Secure`. Non requis pour CI. |
 
 ---
 
@@ -376,13 +412,22 @@ dict_entries           -- mots français
   description   TEXT
   theme         VARCHAR(100)
   categorie     VARCHAR(100)
+  locked_by     FK → users.id
+  locked_at     TIMESTAMP
+  created_by    FK → users.id
+  created_at    TIMESTAMP DEFAULT now()
 
 dict_translations      -- traductions provençales (relation N-N)
   id            SERIAL PK
   entry_id      FK → dict_entries.id
-  graphie       VARCHAR(50)  -- ex. "mistralienne", "classique", "doublon"
+  graphie       VARCHAR(50)  -- ex. "mistralienne", "classique_ieo", "pre_mistralienne"
+  source        VARCHAR(20)  -- ex. "TradEG", "TradH", "TradP"
   traduction    VARCHAR(500) NOT NULL
-  region        VARCHAR(50)  -- ex. "EG", "D", "A", "H", "Av", "P"
+  region        VARCHAR(50)
+  locked_by     FK → users.id
+  locked_at     TIMESTAMP
+  created_by    FK → users.id
+  created_at    TIMESTAMP DEFAULT now()
 
 agenda_events
   id            SERIAL PK
@@ -392,33 +437,38 @@ agenda_events
   lieu          VARCHAR(200)
   description   VARCHAR(1000)
   lien_externe  VARCHAR(500)
+  locked_by     FK → users.id
+  locked_at     TIMESTAMP
   created_by    FK → users.id
   created_at    TIMESTAMP DEFAULT now()
 
 library_entries        -- Histoires & Légendes
-  id                SERIAL PK
-  titre             VARCHAR(200) NOT NULL
-  typologie         VARCHAR(20)  CHECK IN ('Histoire','Légende')
-  periode           VARCHAR(200) -- texte libre, autocomplétion sur valeurs existantes
+  id                 SERIAL PK
+  titre              VARCHAR(200) NOT NULL
+  typologie          VARCHAR(20)  CHECK IN ('Histoire','Légende')
+  periode            VARCHAR(200) -- texte libre, autocomplétion sur valeurs existantes
   description_courte VARCHAR(200)
   description_longue TEXT         -- Markdown
-  source_url        VARCHAR(500)
-  image             BYTEA        -- compressé ≤ 2 Mo
-  lang              CHAR(2) DEFAULT 'fr'
-  traduction_id     FK → library_entries.id (optionnel, lien Provençal↔FR)
-  locked_by         FK → users.id (optionnel)
-  created_by        FK → users.id
-  created_at        TIMESTAMP DEFAULT now()
+  source_url         VARCHAR(500)
+  image_ref          VARCHAR(500) -- chemin local /static/images/ OU URL web https://...
+  lang               CHAR(2) DEFAULT 'fr'
+  traduction_id      FK → library_entries.id (optionnel, lien Provençal↔FR)
+  locked_by          FK → users.id
+  locked_at          TIMESTAMP
+  created_by         FK → users.id
+  created_at         TIMESTAMP DEFAULT now()
 
 articles
   id               SERIAL PK
   titre            VARCHAR(200) NOT NULL
   description      VARCHAR(300)
-  image_url        VARCHAR(500)
+  image_ref        VARCHAR(500) -- chemin local /static/images/ OU URL web https://...
   source_url       VARCHAR(500)
   date_publication DATE NOT NULL
   auteur           VARCHAR(100)
   categorie        VARCHAR(100)  -- valeur parmi les 20 catégories définies en section 3.5
+  locked_by        FK → users.id
+  locked_at        TIMESTAMP
   created_by       FK → users.id
   created_at       TIMESTAMP DEFAULT now()
 
@@ -428,13 +478,27 @@ sayings                -- Dictons, Expressions, Proverbes & Mémoires vivantes
   localite_origine VARCHAR(200) NOT NULL
   traduction_sens_fr TEXT NOT NULL
   type             VARCHAR(30)  CHECK IN ('Dicton','Expression','Proverbe','Mémoire vivante')
-  contexte         TEXT         -- explication contexte d'usage (optionnel)
-  source           VARCHAR(300) -- référence ou transmetteur (optionnel)
+  contexte         TEXT
+  source           VARCHAR(300)
+  locked_by        FK → users.id
+  locked_at        TIMESTAMP
   created_by       FK → users.id
   created_at       TIMESTAMP DEFAULT now()
+
+edit_log               -- Journal rollback (1 dernière action par objet)
+  id          SERIAL PK
+  table_name  VARCHAR(50) NOT NULL
+  row_id      INTEGER NOT NULL
+  action      VARCHAR(10) CHECK IN ('INSERT','UPDATE','DELETE')
+  old_data    JSONB
+  new_data    JSONB
+  done_by     FK → users.id
+  done_at     TIMESTAMP DEFAULT now()
 ```
 
-> **Verrouillage d'édition :** Le champ `locked_by` sur `library_entries` (et potentiellement sur `articles`) empêche deux contributeurs d'éditer simultanément. Le verrou est levé à la sauvegarde ou après un timeout de 30 minutes.
+> **Verrouillage d'édition :** Le champ `locked_by` (+ `locked_at`) est présent sur **tous les modules éditoriaux** : `dict_entries`, `dict_translations`, `agenda_events`, `library_entries`, `articles`, `sayings`. Le verrou est levé à la sauvegarde ou après un timeout de 30 minutes.
+
+> **Stockage des images :** Le champ `image_ref VARCHAR(500)` remplace tout champ `BYTEA` ou `image_url` des versions précédentes. Il stocke soit un chemin local (`/static/images/...`) soit une URL web complète (`https://...`).
 
 ---
 
@@ -447,7 +511,8 @@ Base URL en production : `https://<domaine>/api/v1`
 | POST | `/auth/login` | Non | Retourne un JWT (`access_token`) |
 | POST | `/auth/logout` | Oui | Invalide le token côté serveur (blacklist) |
 | GET | `/health` | Non | Santé de l'API et de la BDD |
-| GET | `/dictionary` | Non | Liste paginée + recherche (`?q=`) avec suggestions Levenshtein |
+| GET | `/dictionary` | Non | Liste paginée + recherche FR→Provençal (`?q=&dir=fr_to_prov`) avec suggestions Levenshtein |
+| GET | `/dictionary/search` | Non | Recherche **Provençal→FR** (`?q=&dir=prov_to_fr`) — toutes graphies confondues |
 | POST | `/dictionary/import` | Oui | Import CSV/Excel (arrêt immédiat sur erreur de format) |
 | GET | `/sayings/today` | Non | Terme du jour (sélection automatique 24h) |
 | GET | `/sayings` | Non | Liste paginée + filtre `?type=Dicton\|Expression\|Proverbe\|Mémoire vivante` |
@@ -479,11 +544,12 @@ Les fichiers suivants dans `docs/sources/` constituent les jeux de données de t
 
 | Fichier | Module | Contenu |
 |---------|--------|---------|
-| `src_dict.csv` | Dictionnaire | 6 049 entrées réelles FR→Provençal, 13 thèmes, 41 catégories (UTF-8, séparateur `;`) |
-| `articles_exemple.txt` | Actualités | 4 articles culturels réalistes (Félibrige, Saintes-Maries, enseignement provençal, graphies) |
-| `histoire_exemple.txt` | Bibliothèque | 5 entrées (3 Histoires, 2 Légendes) avec contenu Markdown réel |
-| `agenda_exemple.txt` | Agenda | 5 événements culturels avec dates et lieux réels |
-| `sayings_exemple.txt` | Dictons/Expressions | 30 entrées (10 dictons, 10 expressions, 10 proverbes) issues de §3.6 |
+| `src_dict.csv` | Dictionnaire | 6 049 entrées réelles FR→Provençal, 13 thèmes, 41 catégories (UTF-8, séparateur `;`) |
+| `db_schema_init.sql` | Tous modules | Script SQL CREATE TABLE complet (schéma v1.9, `locked_by` sur tous les modules, `image_ref`) |
+| `sayings_init.txt` | Dictons/Expressions | 30 entrées (10 dictons, 10 expressions, 10 proverbes) issues de §3.6 |
+| `articles_init.txt` | Actualités | 4 articles culturels réalistes (Félibrige, Saintes-Maries, enseignement provençal, graphies) |
+| `histoire_init.txt` | Bibliothèque | 5 entrées (3 Histoires, 2 Légendes) avec contenu Markdown réel |
+| `agenda_init.txt` | Agenda | 5 événements culturels avec dates et lieux réels |
 
 > Ces données permettent de valider les imports, l'affichage, la recherche et les filtres de chaque module sans dépendre de données de production.
 
