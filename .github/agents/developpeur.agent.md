@@ -14,12 +14,12 @@ Implémenter **une tâche à la fois** du plan d'action du projet Provençal.ia.
 
 ## Stack du projet
 
-- **Backend :** FastAPI 0.115.0, SQLAlchemy 2.0.36 async, asyncpg, Alembic, Pydantic 2
+- **Backend :** FastAPI 0.115.0, SQLAlchemy 2.0.36 async, asyncpg 0.30.0, Alembic 1.14.0, Pydantic 2.12.5
 - **Frontend :** React 18, TypeScript, Vite
 - **BDD :** PostgreSQL 16 (pg_trgm)
-- **Auth :** JWT HS256, bcrypt (passlib)
+- **Auth :** JWT HS256, passlib 1.7.4 + **bcrypt 3.2.2** (ne pas monter au-delà — incompatible passlib)
 - **Conteneurisation :** Docker + docker-compose
-- **Tests :** pytest + httpx (backend), Vitest (frontend)
+- **Tests :** pytest 8.3.3 + httpx 0.27.2 + pytest-asyncio 0.24.0 (backend), Vitest (frontend)
 
 ## Contraintes absolues
 
@@ -29,6 +29,7 @@ Implémenter **une tâche à la fois** du plan d'action du projet Provençal.ia.
 - Tu écris les tests automatisés demandés dans la description de tâche.
 - Tu ne sur-ingénieries pas : pas d'abstraction inutile, pas de feature non demandée, pas de refactoring hors périmètre.
 - Tu sécurises ton code (validation des entrées, requêtes paramétrées, pas de secrets en dur, gestion des erreurs aux frontières système).
+- **Toutes les dépendances Python sont épinglées avec `==` dans `requirements.txt`, y compris les dépendances transitives connues comme critiques** (ex. `bcrypt==3.2.2`). Ne jamais laisser une version flottante.
 
 ## Approche
 
@@ -73,6 +74,30 @@ Implémenter **une tâche à la fois** du plan d'action du projet Provençal.ia.
 - Upload de fichiers : vérification MIME type + taille max
 - CORS restreint aux origines autorisées
 - Pas de secrets dans le code — tout en variables d'environnement
+
+## Pièges connus — à éviter systématiquement
+
+### Alembic
+- Lancer `alembic` depuis `backend/` **avec les variables d'env exportées** : `export $(grep -v '^#' ../.env | xargs) && alembic ...`  
+  (le `.env` est à la racine du projet, pas dans `backend/`)
+- La commande `alembic revision --autogenerate` ne génère **pas** `CREATE EXTENSION`. Ajouter manuellement `op.execute("CREATE EXTENSION IF NOT EXISTS pg_trgm")` en début de `upgrade()` dans la migration initiale, et `op.execute("DROP EXTENSION IF EXISTS pg_trgm")` en fin de `downgrade()`.
+
+### Tests async (pytest-asyncio + SQLAlchemy asyncpg)
+- Les fixtures async qui interagissent avec la BDD **doivent appeler `await engine.dispose()` avant d'ouvrir une session**. Sans cela, asyncpg lève `RuntimeError: Future attached to a different loop` car le pool de connexions survit d'un test à l'autre avec un référence au loop précédent.
+- Exemple de pattern correct :
+  ```python
+  @pytest.fixture(autouse=True)
+  async def clean_db():
+      await engine.dispose()
+      async with async_session_maker() as session:
+          # setup...
+          await session.commit()
+      yield
+      await engine.dispose()
+  ```
+
+### Dépendances Python
+- `passlib[bcrypt]==1.7.4` est **incompatible avec `bcrypt>=4.0.0`** (la méthode `detect_wrap_bug` échoue au chargement). Toujours épingler `bcrypt==3.2.2` explicitement dans `requirements.txt`.
 
 ## Ce que tu ne fais PAS
 

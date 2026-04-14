@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
+from app.api.auth import router as auth_router
 
 # Swagger UI et ReDoc sont exposés uniquement en développement local.
 # En production (ENVIRONMENT=production), les routes /docs et /redoc sont désactivées.
@@ -34,3 +35,6 @@ app.add_middleware(
 @app.get("/health", tags=["Système"], summary="Santé de l'API")
 def health_check():
     return {"status": "ok", "environment": settings.ENVIRONMENT}
+
+
+app.include_router(auth_router, prefix="/api/v1")
