@@ -1,7 +1,7 @@
-# 📜 Cahier des Charges : Portail Culturel Provençal (v1.2)
+# 📜 Cahier des Charges : Portail Culturel Provençal (v2.0)
 
 **Date :** 14/04/2026  
-**Versions :** v1.0 → v1.1 (07/04) → v1.2 (13/04 — ajout module Articles, modèle de données, API, données de test) → v1.3 (13/04 — structure CSV dictionnaire, sources lexicographiques, Swagger) → v1.4 (13/04 — navigation desktop/mobile, catégories articles, contraintes typologies) → v1.5 (13/04 — UX/UI détaillé 30 décisions §4.2) → v1.6 (13/04 — terminologie : occitan/OC → provençal partout) → v1.7 (13/04 — états vides, pagination, filtres mobile, focus SPA, mentions légales, session, snackbar) → v1.8 (13/04 — module Dictons/Expressions, page accueil term-du-jour, graphies, traducteur, périodes auto, filtres date/lieu, session warning, À propos) → **v1.9 (14/04 — locked_by tous modules, stockage images filesystem/URL, recherche prov→fr, page accueil = Mémoire vivante, articles page séparée, icônes thématiques, fichiers _init, décisions architecture tranchées)**  
+**Versions :** v1.0 → ... → v1.9 (14/04 — locked_by tous modules, stockage images filesystem/URL, recherche prov→fr, page accueil = Mémoire vivante, articles page séparée, icônes thématiques, fichiers _init, décisions architecture tranchées) → **v2.0 (14/04 — échelle typo senior, référentiel spacing base-8, logos option A/B, jeu d'icônes seniors complet, UX contributeur inline, UX verrou, UX rollback, page connexion, sélecteur dict bidirectionnel, responsive 15"–22", colonne dict Trad→FR, fin de liste infinite scroll, suppression type Mémoire vivante, groupement traductions sous mot FR)**  
 **Statut :** Validé pour développement  
 **Confidentialité :** Usage interne  
 **Cible :** Sponsors, Product Owner, Équipes Dev & Ops
@@ -97,7 +97,8 @@ Gestion simplifiée pour une équipe de confiance.
 
 ### 3.6 Dictons, Expressions, Proverbes & Mémoires Vivantes
 - **Objectif :** Valorisation du patrimoine oral provençal. Ce module regroupe des formes courtes transmises oralement et ancrées dans la culture locale.
-- **Types (liste fermée — 4 valeurs) :** `Dicton` · `Expression` · `Proverbe` · `Mémoire vivante`
+- **Types (liste fermée — 3 valeurs) :** `Dicton` · `Expression` · `Proverbe`
+> **Note :** Le type `Mémoire vivante` a été supprimé. C'est le nom de la page d'accueil qui regroupe les trois types ci-dessus, pas un type de contenu à part entière.
 - **Champs (tous obligatoires) :**
 
 | Champ | Type | Contrainte |
@@ -160,7 +161,87 @@ Gestion simplifiée pour une équipe de confiance.
 ---
 
 ## 4. UX & Accessibilité (Standards Seniors)
-- **Typographie :** Police sans empattement, taille de corps de texte minimale à **18px**. Pas de bouton d'ajustement de taille — on respecte le réglage navigateur de l'utilisateur.
+
+### 4.0 Échelle typographique
+
+Base calculée pour le public cible (Provençaux de 20 à 90 ans) :
+- Acuité visuelle moyenne senior : +30 % besoin de taille vs. adulte actif
+- Respect du réglage navigateur (base HTML 100% = 16px navigateur)
+- Tous les tailles en `rem` pour s'adapter au zoom navigateur
+
+| Échelon | Nom | Taille rem | Taille px équiv. | Utilisation |
+|---------|-----|-----------|-----------------|-------------|
+| `--text-xs`  | Micro | 0.75 rem | 12px | Légendes techniques, labels de champs |
+| `--text-sm`  | Petit | 0.875 rem | 14px | Libellés nav mobile (min autorisé : 11px) |
+| `--text-base`| Corps | 1.125 rem | **18px** | Texte courant — MINIMUM pour seniors |
+| `--text-md`  | Moyen | 1.25 rem | 20px | Description courte, chapeau article |
+| `--text-lg`  | Grand | 1.5 rem | 24px | Titres de carte, sous-titres de section |
+| `--text-xl`  | Titre | 1.875 rem | 30px | Titres de page `<h2>` |
+| `--text-2xl` | Gros titre | 2.25 rem | 36px | Terme du jour `<h1>` accueil |
+| `--text-3xl` | Héros | 2.75 rem | 44px | Titres exceptionnels (usage rare) |
+
+**Graisse :**
+- Corps (`font-weight: 400`) pour la lecture longue
+- Titres et labels actifs (`font-weight: 700`)
+- Navigation active (`font-weight: 700`)
+
+**Interlignes :**
+- Corps : `line-height: 1.7` (airé pour la lecture senior)
+- Titres : `line-height: 1.3`
+- Navigation : `line-height: 1.2`
+
+**Police :**
+- Corps et titres : `Inter, system-ui, sans-serif` (réglage navigateur respecté)
+- Termes provençaux (affichage culturel) : `Georgia, 'Times New Roman', serif` — évoque le manuscrit sans nuire à la lisibilité
+
+---
+
+### 4.1 Référentiel de Spacing (base 8px)
+
+Système modifiable via variables CSS. Toutes les valeurs sont des multiples de 8px.
+
+```css
+:root {
+  /* Unité de base — modifier UNIQUEMENT cette valeur pour rescaler tout le site */
+  --space-unit: 8px;
+
+  --space-1:  8px;   /* s : séparation interne de composant (icone/label) */
+  --space-2:  16px;  /* m : padding interne de card, espacement entre éléments proches */
+  --space-3:  24px;  /* l : espacement entre sections associées */
+  --space-4:  32px;  /* xl : marge entre blocs indépendants */
+  --space-5:  40px;  /* 2xl : section à section, marges latérales sur mobile */
+  --space-6:  48px;  /* 3xl : espacement majeur (entre modules de page) */
+  --space-8:  64px;  /* navbar-h : hauteur barre nav desktop + padding-top page */
+  --space-7:  60px;  /* mobile-nav-h : hauteur barre nav mobile + padding-bottom page */
+
+  /* Marges de conteneur principal */
+  --container-px-mobile:  --space-2;   /* 16px de chaque côté */
+  --container-px-tablet:  --space-4;   /* 32px de chaque côté */
+  --container-px-desktop: --space-6;   /* 48px de chaque côté */
+  --container-max-width:  1100px;       /* max-width page principale */
+  --container-text-max:   720px;        /* max-width colonnes de lecture (bibliothèque, article) */
+
+  /* Zones cliquables (WCAG tactile) */
+  --touch-target: 44px;  /* taille minimale bouton/lien */
+
+  /* Rayon des coins */
+  --radius-sm: 4px;   /* chips, badges */
+  --radius-md: 8px;   /* cartes, popovers */
+  --radius-lg: 12px;  /* modals, bottom sheet */
+}
+```
+
+**Règles d'application :**
+- Padding interne des cartes : `--space-2` (16px) sur mobile, `--space-3` (24px) sur desktop
+- Gap entre cartes en liste : `--space-2` (16px)
+- Marge entre `<section>` : `--space-5` (40px)
+- Marge entre `<h2>` et son premier contenu : `--space-2` (16px)
+- Formulaires : espacement entre champs `--space-3` (24px), label-input `--space-1` (8px)
+
+---
+
+### 4.2 Règles générales UX
+- **Typographie :** Police sans empattement (voir §4.0), taille de corps de texte minimale à **18px**. Pas de bouton d'ajustement de taille — on respecte le réglage navigateur de l'utilisateur.
 - **Contrastes :** Respect strict des normes **WCAG AA** (ratio 4.5:1).
 - **Interactions :** Zones cliquables de **44x44px** minimum pour faciliter la navigation tactile.
 - **Navigation :** URLs uniques par contenu pour permettre le partage par lien direct.
@@ -173,7 +254,7 @@ Gestion simplifiée pour une équipe de confiance.
 
 ---
 
-## 4.1 Navigation — Spécifications
+## 4.3 Navigation — Spécifications
 
 ### Structure des entrées (Option C — 7 entrées)
 
@@ -197,6 +278,12 @@ Déclenché au clic (desktop) ou au tap (mobile) sur "Langue" :
 | Traducteur | Traducteur lexical temps réel (debounce 500 ms) |
 
 ---
+
+### Cibles d'affichage web
+
+- **Écrans cibles :** 15" à 22" (résolutions ~1280px à ~1920px). Pas de support spécifique ultrawide/4K.
+- Le `max-width: 1100px` du conteneur absorbe les écrans au-delà de 1440px sans mise en page dédiée — le layout reste centré avec des marges blanches.
+- **Résolutions mobiles cibles :** 375px–430px (smartphones standards). Pas de support tablette distinct dans cette version.
 
 ### Navigation Desktop (≥ 768px)
 
@@ -234,23 +321,25 @@ Déclenché au clic (desktop) ou au tap (mobile) sur "Langue" :
 
 ---
 
-## 4.2 UX par Page et Module
+## 4.4 UX par Page et Module
 
 ### Page d'accueil (Mémoire vivante)
 - **URL :** `/` — la page d'accueil est la page principale du site, exclusivement dédiée à la Mémoire vivante.
 - **Contenu affiché :**
   1. **Terme du jour** (bloc mis en avant en haut de page) : terme provençal issu du module Dictons/Expressions/Proverbes, sélectionné automatiquement toutes les 24h. Affichage : terme + type + localité d'origine + traduction/sens.
-  2. **Liste des dictons, expressions, proverbes & mémoires vivantes** en dessous, liste verticale avec filtres par type et localité.
+  2. **Liste des dictons, expressions et proverbes** en dessous, liste verticale avec filtres par type et localité.
 - **Pas d'articles** sur la page d'accueil. Les articles sont accessibles via la navigation "Actualités" (`/articles`).
-- **Mise en page :** Terme du jour mis en exergue (carte large, fond légèrement coloré). Liste sobre en dessous.
+- **Mise en page :** Terme du jour mis en exergue (carte large, fond légèrement coloré `#F9F7F2` avec bordure `#D5713F`). Liste sobre en dessous.
 - **Pas de filtre** sur le terme du jour. Filtres par `type` et `localite_origine` sur la liste.
+- **Fin de liste :** Lorsque toutes les entrées ont été chargées (infinite scroll), afficher le message : *« Vous avez parcouru toute la Mémoire vivante »* avec l'icône `icon-cigale.svg` — pas de spinner.
 - **Liens externes :** Toujours ouverts dans un nouvel onglet (`target="_blank" rel="noopener noreferrer"`).
 - **Pas de barre de recherche globale.** Chaque module gère sa propre recherche.
 
 ### Dictionnaire
-- **Affichage des résultats :** Tableau avec colonnes « Mot français » et « Traduction ». Les variantes par source (TradEG, TradD…) accessibles dans un bloc replié sous chaque ligne, dépliable au clic.
-- **Filtres :** Deux filtres en cascade au-dessus du tableau : **Thème** puis **Catégorie** (la liste des catégories se met à jour selon le thème choisi). Toujours visibles. Sur mobile : deux `<select>` empilés au-dessus du tableau.
-- **Recherche textuelle :** Champ de recherche libre au-dessus des filtres. Lorsqu'une recherche est saisie, les filtres Thème/Catégorie sont automatiquement désactivés (grisés) — la recherche porte sur toutes les entrées.
+- **Sélecteur de direction (au-dessus des filtres) :** Bouton toggle `FR → Provençal | Provençal → FR` (icône `icon-toggle-langue.svg`). En mode Prov→FR, les colonnes s'inversent : **colonne Traduction provençale en premier**, colonne Mot français en second. L'ordre change car le point d'entrée change.
+- **Affichage des résultats :** Tableau deux colonnes. Les traductions multiples (par source) sont **groupées sous le mot français** dans un bloc accordéon, dépliable au clic (icône `icon-deplier.svg`). Une ligne par mot français — toutes les traductions disponibles sont regroupées dessous.
+- **Filtres (sous le sélecteur de direction) :** Deux filtres en cascade : **Thème** puis **Catégorie** (la liste des catégories se met à jour selon le thème choisi). Toujours visibles. Sur mobile : deux `<select>` empilés.
+- **Recherche textuelle :** Champ de recherche libre au-dessus des filtres. Lorsqu'une recherche est saisie, les filtres Thème/Catégorie sont automatiquement désactivés (grisés).
 - **Pagination :** Sous le tableau, sélecteur : **10 / 20 / 50 / 100** résultats par page. Valeur par défaut : 20.
 - **États vides :**
   - Mot présent en base mais sans traduction → *« Mot non traduit »*
@@ -261,26 +350,88 @@ Déclenché au clic (desktop) ou au tap (mobile) sur "Langue" :
 - **URL :** `/articles`
 - **Affichage :** Liste journal — titre, auteur, date, chapeau (≤ 300 car.) par article. L'image (`image_ref`) est affichée si renseignée (chemin local ou URL), sinon placeholder logo du site.
 - **Filtres :** Filtre par **date** (année/mois, sélecteur) + filtre par **catégorie** (liste fermée 20 valeurs). Aucun autre filtre.
+- **Page de détail `/articles/{id}` :** Image en-tête (hero, 100% de largeur, hauteur max 400px), chapeau en `--text-md`, corps de l'article (Markdown rendu), bloc auteur/date/catégorie à gauche sous le titre. Fil d'ariane + bouton Retour. Lien `source_url` si renseigné (icône `icon-lien-externe.svg`).
 
 ### Traducteur lexical
 - **Desktop :** Zone de saisie à gauche, résultat à droite (layout 50/50).
 - **Mobile :** Zone de saisie en haut, résultat en dessous (empilé).
-- **Mots inconnus :** Conservés tels quels dans le résultat, mis en évidence visuellement (ex. fond jaune pâle ou italique coloré).
+- **Mots inconnus :** Conservés tels quels dans le résultat, mis en évidence visuellement (fond jaune pâle `#FFF9C4`).
 - **Mention permanente :** Encart sous le champ : *« Traducteur mot à mot — la traduction automatique de phrases complètes est prévue dans une version future. »*
 
 ### Agenda culturel
 - **Vue principale :** Les 3 prochains événements mis en avant (cartes larges avec date + lieu + titre). Le reste en liste compacte chronologique en dessous.
-- **Événements passés :** Accessibles uniquement via un lien « Archives » séparé — absents de la vue principale.
+- **Événements passés :** Accessibles uniquement via un lien « Archives » séparé (icône `icon-archive.svg`) — absents de la vue principale.
 - **Filtres :** Filtre par **date** (année/mois) + filtre par **lieu** (champ texte libre sur le champ `lieu`). Pas d'autres filtres.
 - **État vide :** Si aucun événement à venir, afficher un événement fictif générique avec la mention *« Mise à jour à faire par l'administrateur »* en lieu et place du titre.
+- **Page de détail `/agenda/{id}` :** Titre en `--text-xl`, dates et lieu en bande colorée `#D5713F` (terracotta), description complète, lien externe si renseigné. Fil d'ariane + bouton Retour.
 
 ### Bibliothèque — Histoires & Légendes
 - **Liste :** Liste sobre : titre + description courte + période. Pas d'images en liste.
-- **Filtres :** Sélecteur **Tout / Histoire / Légende** + filtre par **période** (valeurs dynamiques issues de la base) + filtre par **lieu** (champ texte sur le champ `periode` ou métadonnées) + filtre par **date de publication** (année/mois).
+- **Filtres :** Sélecteur **Tout / Histoire / Légende** + filtre par **période** (valeurs dynamiques issues de la base) + filtre par **lieu** + filtre par **date de publication** (année/mois).
 - **Chargement :** Infinite scroll — les entrées se chargent automatiquement au défilement.
+- **Fin de liste :** Lorsque toutes les entrées ont été chargées, afficher : *« Toutes les histoires ont été chargées »* + icône `icon-olivier.svg` — pas de spinner.
 - **État vide :** Impossible en conditions normales (la base est initialisée avec des données de départ).
-- **Page de lecture :** Colonne de texte centrée, large (max 720px), style article de magazine. Police sans-empattement (cohérence charte). Texte Markdown rendu proprement.
-- **Contenu bilingue :** Toggle switch « FR / Provençal » en position `sticky` en haut de la page de lecture (reste visible au scroll), uniquement si une version dans l'autre langue existe. Pas de mémorisation entre pages.
+- **Page de lecture :** Colonne de texte centrée, large (max 720px), style article de magazine. Texte Markdown rendu proprement. Fil d'ariane + bouton Retour.
+- **Contenu bilingue :** Toggle switch « FR / Provençal » en position `sticky` en haut de la page de lecture, uniquement si une version dans l'autre langue existe.
+
+---
+
+## 4.5 UX Contributeur — Mode Édition Inline
+
+Les contributeurs authentifiés voient des **icônes d'action** directement sur les pages publiques, sans interface `/admin` séparée.
+
+### Icônes d'action
+
+| Icône | Fichier | Visibilité | Action |
+|-------|---------|------------|--------|
+| ➕ Ajouter | `icon-ajouter.svg` | Sur la **page** (en bas de liste ou en-tête de section) | Ouvre le formulaire de création d'un nouvel élément |
+| ✏️ Modifier | `icon-editer.svg` | Sur chaque **élément** (coin supérieur droit de la carte) | Bascule l'élément en mode édition inline |
+| ✅ Valider | `icon-valider.svg` | Remplace le crayon après clic sur Modifier | Enregistre les modifications en base (PUT /api/...) |
+| 🗑️ Supprimer | `icon-supprimer.svg` | Apparaît **après clic sur Modifier** | Supprime l'élément (DELETE /api/...) avec confirmation modal |
+| ↩️ Rollback | `icon-rollback.svg` | Apparaît **après clic sur Modifier** | Annule la **dernière action** sur cet élément (`edit_log`) |
+| ✖️ Annuler | `icon-annuler.svg` | Apparaît en mode édition | Ferme le mode édition sans enregistrer |
+
+**Séquence d'état d'un élément :**
+```
+État normal      → clic ✏️ Modifier
+Estado édition   → icônes ✅ Valider / 🗑️ Supprimer / ↩️ Rollback / ✖️ Annuler visibles
+Clic ✅ Valider  → enregistrement → snackbar succès → retour état normal
+Clic ✖️ Annuler  → annulation → retour état normal sans sauvegarde
+Clic 🗑️ Supprimer → modal de confirmation → suppression → snackbar → retour liste
+Clic ↩️ Rollback → rollback dernière action → snackbar → retour état précédent
+```
+
+**Règle de visibilité :**
+- **Contributeur B** : si `locked_by` est renseigné pour cet élément et pointe vers un autre utilisateur, le bouton ✏️ Modifier **n'apparaît pas**. À la place, une icône verrou `icon-verrou.svg` (terracotta) est affichée en lecture seule avec le tooltip *« En cours de modification »*.
+- Le verrou expiré (> 30 min) est ignoré : le bouton ✏️ apparaît normalement.
+
+### Formulaires d'édition — règles communes
+
+- **Image :** Deux modes de saisie, **upload fichier prioritaire sur saisie URL** :
+  1. **Upload fichier** (icône `icon-upload-image.svg`) : sélection fichier local, compression automatique côté client ≤ 2 Mo, stockage `backend/static/images/` (dev) ou S3 (prod). Si un fichier est sélectionné, le champ URL est grisé.
+  2. **Saisie URL** : champ texte `https://...`. Activé uniquement si aucun fichier n'est uploadé.
+- **Prévisualisation Markdown :** (bibliothèque uniquement)
+  - **Desktop / web :** Layout côte-à-côte 50/50 — éditeur à gauche, prévisualisation à droite, en temps réel.
+  - **Mobile :** Deux onglets (tabs) :  `Éditeur` | `Prévisualisation` — l'utilisateur bascule manuellement.
+
+---
+
+## 4.6 Page de Connexion
+
+- **URL :** `/connexion`
+- **Layout :** Centré verticalement et horizontalement. Carte unique, max-width 400px.
+- **Contenu :**
+  1. Logo du site (centré, voir §7 Charte graphique)
+  2. Message informatif : *« Identifiants fournis par l'administrateur »* (texte `--text-sm`, couleur `#869121`)
+  3. Champ `Login` (label visible, placeholder vide)
+  4. Champ `Mot de passe` (label visible, type password, sans icône œil)
+  5. Bouton **Se connecter** (pleine largeur, couleur `#869121`)
+- **Pas de lien "Mot de passe oublié"** — les credentials sont gérés directement en base par l'administrateur.
+- **Pas de formulaire d'inscription public.**
+- **Erreur d'authentification :** Message rouge sous le bouton *« Identifiant ou mot de passe incorrect »* — pas de distinction pour des raisons de sécurité.
+- **Redirection :** POST-connexion → retour sur la page d'origine (ou `/` si accès direct).
+
+---
 
 ### Feedback & États de l'interface
 - **Action réussie :** Snackbar en bas de l'écran (durée 3 secondes, couleur `#869121`). Position : `bottom: 16px` desktop — `bottom: 76px` mobile (au-dessus de la barre de navigation de 60px + 16px de marge).
@@ -356,7 +507,16 @@ Déclenché au clic (desktop) ou au tap (mobile) sur "Langue" :
 | Accent Secondaire | #D5713F | Terre cuite pour les alertes ou éléments d'agenda. |
 | Bordures | #D1CEC7 | Gris |
 ### Icônes
-Les icônes du portail sont des fichiers SVG (`stroke="#869121"`, viewBox 24×24) stockés dans `docs/sources/icons/`. Ils respectent la palette "Terre de Provence".
+Les icônes du portail sont des fichiers SVG (`stroke="#869121"`, viewBox 24×24, `stroke-width="2"` à `2.5`) stockés dans `docs/sources/icons/`. Ils respectent la palette "Terre de Provence". Épaisseur de trait renforcée pour lisibilité seniors.
+
+**Logos**
+
+| Fichier | Usage |
+|---------|-------|
+| `logo-option-a.svg` | Logo option A — Cigale + livre (horizontal, 120×40) |
+| `logo-option-b.svg` | Logo option B — Soleil + Croix de Provence (horizontal, 120×40) |
+
+**Icônes de navigation (menu)**
 
 | Fichier | Usage |
 |---------|-------|
@@ -372,10 +532,72 @@ Les icônes du portail sont des fichiers SVG (`stroke="#869121"`, viewBox 24×24
 | `icon-memoire-vivante.svg` | Page accueil : guillemets + fleur |
 | `icon-recherche.svg` | Champ de recherche |
 | `icon-image.svg` | Placeholder image absente |
+
+**Icônes décoratives thématiques**
+
+| Fichier | Usage |
+|---------|-------|
 | `icon-cigale.svg` | Décoratif : cigale provençale |
 | `icon-lavande.svg` | Décoratif : brin de lavande |
 | `icon-olivier.svg` | Décoratif : rameau d'olivier |
 | `icon-soleil.svg` | Décoratif : soleil de Provence |
+
+**Icônes fonctionnelles — Actions contributeur**
+
+| Fichier | Couleur | Usage |
+|---------|---------|-------|
+| `icon-ajouter.svg` | `#869121` | Créer un nouvel élément (+ dans cercle) |
+| `icon-editer.svg` | `#869121` | Passer un élément en mode édition (crayon) |
+| `icon-valider.svg` | `#869121` | Enregistrer les modifications (✓ dans cercle) |
+| `icon-supprimer.svg` | `#D5713F` | Supprimer un élément (corbeille, terracotta) |
+| `icon-rollback.svg` | `#869121` | Annuler la dernière action (flèche arrière courbe) |
+| `icon-annuler.svg` | `#2D2926` | Fermer le mode édition sans sauvegarder (× dans cercle) |
+
+**Icônes fonctionnelles — Authentification**
+
+| Fichier | Usage |
+|---------|-------|
+| `icon-connexion.svg` | Page connexion, bouton Se connecter (cadenas ouvert) |
+| `icon-deconnexion.svg` | Menu compte — Se déconnecter (cadenas fermé) |
+| `icon-verrou.svg` | Élément verrouillé par un autre contributeur (cadenas fermé, terracotta `#D5713F`) |
+
+**Icônes fonctionnelles — Navigation**
+
+| Fichier | Usage |
+|---------|-------|
+| `icon-retour.svg` | Bouton Retour (arrière) dans les pages de détail |
+| `icon-precedent.svg` | Pagination : page précédente |
+| `icon-suivant.svg` | Pagination : page suivante |
+| `icon-deplier.svg` | Accordéon / liste repliée : ouvrir (chevron bas) |
+| `icon-replier.svg` | Accordéon / liste dépliée : fermer (chevron haut) |
+
+**Icônes fonctionnelles — Données et filtres**
+
+| Fichier | Usage |
+|---------|-------|
+| `icon-filtre.svg` | Bouton Filtres / afficher les filtres |
+| `icon-date.svg` | Filtre par date / champ date |
+| `icon-localite.svg` | Filtre par localité / lieu (pin de carte) |
+| `icon-archive.svg` | Lien vers les archives (événements passés) |
+| `icon-lien-externe.svg` | Lien s'ouvrant dans un nouvel onglet |
+| `icon-partager.svg` | Partager une page / un contenu |
+| `icon-toggle-langue.svg` | Sélecteur de direction FR ↔ OC (dictionnaire) |
+
+**Icônes fonctionnelles — Médias et upload**
+
+| Fichier | Usage |
+|---------|-------|
+| `icon-upload-image.svg` | Upload d'un fichier image |
+
+**Icônes d'état et feedback**
+
+| Fichier | Couleur | Usage |
+|---------|---------|-------|
+| `icon-chargement.svg` | `#869121` | Spinner de chargement (arc de cercle) |
+| `icon-alerte.svg` | `#D5713F` | Message d'alerte (triangle !) |
+| `icon-succes.svg` | `#869121` | Opération réussie (✓) |
+| `icon-erreur.svg` | `#B94040` | Erreur système ou de validation (×) |
+
 ---
 
 ## 8. Décisions Architecturales (Tranchées)
@@ -477,7 +699,7 @@ sayings                -- Dictons, Expressions, Proverbes & Mémoires vivantes
   terme_provencal  TEXT NOT NULL
   localite_origine VARCHAR(200) NOT NULL
   traduction_sens_fr TEXT NOT NULL
-  type             VARCHAR(30)  CHECK IN ('Dicton','Expression','Proverbe','Mémoire vivante')
+  type             VARCHAR(30)  CHECK IN ('Dicton','Expression','Proverbe')
   contexte         TEXT
   source           VARCHAR(300)
   locked_by        FK → users.id
@@ -515,7 +737,7 @@ Base URL en production : `https://<domaine>/api/v1`
 | GET | `/dictionary/search` | Non | Recherche **Provençal→FR** (`?q=&dir=prov_to_fr`) — toutes graphies confondues |
 | POST | `/dictionary/import` | Oui | Import CSV/Excel (arrêt immédiat sur erreur de format) |
 | GET | `/sayings/today` | Non | Terme du jour (sélection automatique 24h) |
-| GET | `/sayings` | Non | Liste paginée + filtre `?type=Dicton\|Expression\|Proverbe\|Mémoire vivante` |
+| GET | `/sayings` | Non | Liste paginée + filtre `?type=Dicton\|Expression\|Proverbe` |
 | POST | `/sayings` | Oui | Créer une entrée |
 | PUT | `/sayings/{id}` | Oui | Modifier une entrée |
 | DELETE | `/sayings/{id}` | Oui | Supprimer une entrée |

@@ -1,6 +1,6 @@
 # Données d'initialisation — Module Dictons, Expressions, Proverbes & Mémoires vivantes
 # Champs : terme_provencal, localite_origine, traduction_sens_fr (obligatoires)
-#          type (valeur parmi : Dicton | Expression | Proverbe | Mémoire vivante), contexte, source
+#          type (valeur parmi : Dicton | Expression | Proverbe), contexte, source
 #
 # Source : §3.6 du Cahier des Charges Provencal.ia v1.9
 

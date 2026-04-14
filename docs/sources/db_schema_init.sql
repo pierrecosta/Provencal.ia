@@ -153,8 +153,8 @@ CREATE TABLE sayings (
     terme_provencal    TEXT         NOT NULL,
     localite_origine   VARCHAR(200) NOT NULL,
     traduction_sens_fr TEXT         NOT NULL,
-    -- 'Dicton' | 'Expression' | 'Proverbe' | 'Mémoire vivante'
-    type               VARCHAR(30)  CHECK (type IN ('Dicton', 'Expression', 'Proverbe', 'Mémoire vivante')),
+    -- 'Dicton' | 'Expression' | 'Proverbe'
+    type               VARCHAR(30)  CHECK (type IN ('Dicton', 'Expression', 'Proverbe')),
     contexte           TEXT,
     source             VARCHAR(300),
     locked_by          INTEGER      REFERENCES users(id) ON DELETE SET NULL,
