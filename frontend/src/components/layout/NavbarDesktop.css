@@ -85,4 +85,14 @@
 
 .navbar-desktop__compte {
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.navbar-desktop__pseudo {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-primary);
+  white-space: nowrap;
 }

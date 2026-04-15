@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 import iconAccueil from '../../assets/icons/icon-accueil.svg'
 import iconArticles from '../../assets/icons/icon-articles.svg'
 import iconLangue from '../../assets/icons/icon-langue.svg'
 import iconAgenda from '../../assets/icons/icon-agenda.svg'
 import iconCulture from '../../assets/icons/icon-culture.svg'
 import iconAPropos from '../../assets/icons/icon-a-propos.svg'
-import iconCompte from '../../assets/icons/icon-compte.svg'
+import iconConnexion from '../../assets/icons/icon-connexion.svg'
+import iconDeconnexion from '../../assets/icons/icon-deconnexion.svg'
 import LanguageSubmenu from './LanguageSubmenu'
 import './NavbarDesktop.css'
 
@@ -15,6 +17,7 @@ const LANGUAGE_ROUTES = ['/dictionnaire', '/traducteur']
 export default function NavbarDesktop() {
   const [langMenuOpen, setLangMenuOpen] = useState(false)
   const location = useLocation()
+  const { isAuthenticated, pseudo, logout } = useAuth()
 
   const isLangueActive = LANGUAGE_ROUTES.includes(location.pathname)
 
@@ -107,14 +110,28 @@ export default function NavbarDesktop() {
           </li>
         </ul>
 
-        <NavLink
-          to="/connexion"
-          className="navbar-desktop__entry navbar-desktop__compte"
-          aria-label="Compte"
-        >
-          <img src={iconCompte} alt="" aria-hidden="true" width={20} height={20} />
-          <span>Compte</span>
-        </NavLink>
+        {isAuthenticated ? (
+          <div className="navbar-desktop__compte">
+            <span className="navbar-desktop__pseudo">{pseudo}</span>
+            <button
+              className="navbar-desktop__entry navbar-desktop__entry--button"
+              aria-label="Se déconnecter"
+              onClick={() => { void logout() }}
+            >
+              <img src={iconDeconnexion} alt="" aria-hidden="true" width={20} height={20} />
+              <span>Déconnexion</span>
+            </button>
+          </div>
+        ) : (
+          <NavLink
+            to="/connexion"
+            className="navbar-desktop__entry navbar-desktop__compte"
+            aria-label="Connexion"
+          >
+            <img src={iconConnexion} alt="" aria-hidden="true" width={20} height={20} />
+            <span>Connexion</span>
+          </NavLink>
+        )}
       </div>
     </nav>
   )

@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'
 import Layout from './components/layout/Layout'
 import HomePage from './pages/HomePage'
 import ArticlesPage from './pages/ArticlesPage'
@@ -13,19 +14,21 @@ import NotFoundPage from './pages/NotFoundPage'
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route element={<Layout />}>
-          <Route index element={<HomePage />} />
-          <Route path="articles" element={<ArticlesPage />} />
-          <Route path="dictionnaire" element={<DictionnairePage />} />
-          <Route path="traducteur" element={<TraducteurPage />} />
-          <Route path="agenda" element={<AgendaPage />} />
-          <Route path="bibliotheque" element={<BibliothequePage />} />
-          <Route path="a-propos" element={<AProposPage />} />
-          <Route path="connexion" element={<ConnexionPage />} />
-          <Route path="*" element={<NotFoundPage />} />
-        </Route>
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route index element={<HomePage />} />
+            <Route path="articles" element={<ArticlesPage />} />
+            <Route path="dictionnaire" element={<DictionnairePage />} />
+            <Route path="traducteur" element={<TraducteurPage />} />
+            <Route path="agenda" element={<AgendaPage />} />
+            <Route path="bibliotheque" element={<BibliothequePage />} />
+            <Route path="a-propos" element={<AProposPage />} />
+            <Route path="connexion" element={<ConnexionPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   )
 }
