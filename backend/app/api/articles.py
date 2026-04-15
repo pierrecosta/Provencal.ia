@@ -10,7 +10,7 @@ from app.models.article import Article
 from app.models.user import User
 from app.schemas.article import ArticleCreate, ArticleResponse, ArticleUpdate
 from app.schemas.pagination import PaginatedResponse, paginate
-from app.services.edit_log import log_action
+from app.services.edit_log import log_action, rollback_last_action
 from app.services.locking import acquire_lock, is_locked, release_lock
 
 router = APIRouter(prefix="/articles", tags=["Actualités"])
@@ -184,3 +184,19 @@ async def delete_article(
     await db.delete(article)
     await db.commit()
     return {"message": "Article supprimé"}
+
+
+@router.post("/{article_id}/rollback", summary="Annuler la dernière action sur un article")
+async def rollback_article(
+    article_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    result = await rollback_last_action(db, "articles", article_id, current_user.id)
+    if result is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Aucune action à annuler",
+        )
+    await db.commit()
+    return result

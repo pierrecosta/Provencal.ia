@@ -11,7 +11,7 @@ from app.models.agenda_event import AgendaEvent
 from app.models.user import User
 from app.schemas.event import EventCreate, EventResponse, EventUpdate
 from app.schemas.pagination import PaginatedResponse, paginate
-from app.services.edit_log import log_action
+from app.services.edit_log import log_action, rollback_last_action
 from app.services.locking import acquire_lock, is_locked, release_lock
 
 router = APIRouter(prefix="/events", tags=["Agenda"])
@@ -191,3 +191,19 @@ async def delete_event(
     await db.delete(event)
     await db.commit()
     return {"message": "Événement supprimé"}
+
+
+@router.post("/{event_id}/rollback", summary="Annuler la dernière action sur un événement")
+async def rollback_event(
+    event_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    result = await rollback_last_action(db, "agenda_events", event_id, current_user.id)
+    if result is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Aucune action à annuler",
+        )
+    await db.commit()
+    return result

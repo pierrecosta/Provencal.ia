@@ -11,7 +11,7 @@ from app.models.saying import Saying
 from app.models.user import User
 from app.schemas.pagination import PaginatedResponse, paginate
 from app.schemas.saying import SayingCreate, SayingResponse, SayingUpdate
-from app.services.edit_log import log_action
+from app.services.edit_log import log_action, rollback_last_action
 from app.services.locking import acquire_lock, is_locked, release_lock
 
 router = APIRouter(prefix="/sayings", tags=["Mémoire vivante"])
@@ -210,3 +210,19 @@ async def delete_saying(
     await db.delete(saying)
     await db.commit()
     return {"message": "Supprimé"}
+
+
+@router.post("/{saying_id}/rollback", summary="Annuler la dernière action sur un dicton")
+async def rollback_saying(
+    saying_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    result = await rollback_last_action(db, "sayings", saying_id, current_user.id)
+    if result is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Aucune action à annuler",
+        )
+    await db.commit()
+    return result
