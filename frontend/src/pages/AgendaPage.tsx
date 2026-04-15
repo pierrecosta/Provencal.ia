@@ -425,17 +425,17 @@ export default function AgendaPage() {
 
   return (
     <div>
-      {/* En-tête : titre + bouton Ajouter + archives */}
+      {/* En-tête */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 'var(--space-2)', marginBottom: 'var(--space-3)' }}>
         <h1 style={{ margin: 0 }}>{isArchive ? 'Archives Agenda' : 'Agenda culturel'}</h1>
         <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center', flexWrap: 'wrap' }}>
-          {isAuthenticated && !showCreateForm && (
+          {isAuthenticated && !isArchive && !showCreateForm && (
             <button
               onClick={openCreateForm}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'var(--color-primary)', color: 'white', border: 'none', borderRadius: 'var(--radius-md)', padding: '6px 16px', cursor: 'pointer', fontWeight: 600, fontSize: 'var(--text-sm)' }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'var(--color-primary)', border: 'none', borderRadius: 'var(--radius-md)', padding: '6px 16px', color: 'white', cursor: 'pointer', fontWeight: 600, fontSize: 'var(--text-sm)' }}
             >
               <img src={iconAjouter} alt="" width={16} height={16} style={{ filter: 'brightness(0) invert(1)' }} />
-              Ajouter
+              Ajouter un événement
             </button>
           )}
           {isArchive ? (
@@ -460,7 +460,7 @@ export default function AgendaPage() {
       {/* Formulaire de création */}
       {showCreateForm && (
         <div style={{ border: '2px solid var(--color-primary)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-3)', background: '#fff', marginBottom: 'var(--space-3)' }}>
-          <h2 style={{ marginTop: 0, marginBottom: 'var(--space-3)', fontSize: 'var(--text-lg)' }}>Nouvel événement</h2>
+          <h2 style={{ marginTop: 0, marginBottom: 'var(--space-3)', fontSize: 'var(--text-md)' }}>Nouvel événement</h2>
           {renderField('Titre *', 'titre', createForm, setCreateForm, createErrors)}
           {renderField('Date de début *', 'date_debut', createForm, setCreateForm, createErrors, 'date')}
           {renderField('Date de fin *', 'date_fin', createForm, setCreateForm, createErrors, 'date')}
@@ -512,12 +512,10 @@ export default function AgendaPage() {
 
       {loading && <p>Chargement…</p>}
 
-      {!loading && events.length === 0 && !isArchive && (
-        <div style={{ border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-3)', background: '#fff', opacity: 0.6 }}>
-          <div style={{ fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--color-text)' }}>
-            Aucun événement à venir
-          </div>
-        </div>
+      {!loading && events.length === 0 && (
+        <p style={{ textAlign: 'center', color: 'var(--color-text)', opacity: 0.6, fontStyle: 'italic', padding: 'var(--space-4)' }}>
+          {isArchive ? 'Aucune archive disponible.' : 'Aucun événement à venir.'}
+        </p>
       )}
 
       {/* 3 prochains événements en cartes larges */}
@@ -548,11 +546,11 @@ export default function AgendaPage() {
       {/* Pagination */}
       {pages > 1 && (
         <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center', justifyContent: 'center' }}>
-          <button onClick={() => fetchEvents(page - 1)} disabled={page <= 1} style={{ padding: '6px 12px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', background: 'none', cursor: page > 1 ? 'pointer' : 'not-allowed' }}>
+          <button onClick={() => void fetchEvents(page - 1)} disabled={page <= 1} style={{ padding: '6px 12px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', background: 'none', cursor: page > 1 ? 'pointer' : 'not-allowed' }}>
             ←
           </button>
           <span style={{ fontSize: 'var(--text-sm)' }}>Page {page} / {pages} ({total} événements)</span>
-          <button onClick={() => fetchEvents(page + 1)} disabled={page >= pages} style={{ padding: '6px 12px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', background: 'none', cursor: page < pages ? 'pointer' : 'not-allowed' }}>
+          <button onClick={() => void fetchEvents(page + 1)} disabled={page >= pages} style={{ padding: '6px 12px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', background: 'none', cursor: page < pages ? 'pointer' : 'not-allowed' }}>
             →
           </button>
         </div>
