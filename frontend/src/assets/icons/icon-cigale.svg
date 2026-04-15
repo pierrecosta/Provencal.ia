@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#869121" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-label="Cigale — symbole de la Provence">
+  <!-- Corps de la cigale -->
+  <ellipse cx="12" cy="13" rx="3" ry="4.5" fill="#869121" stroke="#2D2926" stroke-width="1.2" opacity="0.85"/>
+  <!-- Tête -->
+  <circle cx="12" cy="8" r="2.2" fill="#2D2926"/>
+  <!-- Yeux -->
+  <circle cx="11" cy="7.5" r="0.5" fill="#F9F7F2" stroke="none"/>
+  <circle cx="13" cy="7.5" r="0.5" fill="#F9F7F2" stroke="none"/>
+  <!-- Antennes -->
+  <path d="M11 6.2 Q9 3 7 2" stroke="#2D2926" stroke-width="1"/>
+  <path d="M13 6.2 Q15 3 17 2" stroke="#2D2926" stroke-width="1"/>
+  <!-- Aile gauche -->
+  <path d="M9 10 Q3 7 3 13 Q5 16 9 14" fill="#D5713F" stroke="#2D2926" stroke-width="1" opacity="0.6"/>
+  <!-- Aile droite -->
+  <path d="M15 10 Q21 7 21 13 Q19 16 15 14" fill="#D5713F" stroke="#2D2926" stroke-width="1" opacity="0.6"/>
+  <!-- Nervures aile gauche -->
+  <line x1="9" y1="10" x2="4" y2="11" stroke="#2D2926" stroke-width="0.7"/>
+  <line x1="9" y1="11.5" x2="4" y2="13" stroke="#2D2926" stroke-width="0.7"/>
+  <!-- Nervures aile droite -->
+  <line x1="15" y1="10" x2="20" y2="11" stroke="#2D2926" stroke-width="0.7"/>
+  <line x1="15" y1="11.5" x2="20" y2="13" stroke="#2D2926" stroke-width="0.7"/>
+  <!-- Pattes -->
+  <line x1="9" y1="14"  x2="6"  y2="17" stroke="#2D2926" stroke-width="1"/>
+  <line x1="12" y1="15" x2="12" y2="19" stroke="#2D2926" stroke-width="1"/>
+  <line x1="15" y1="14" x2="18" y2="17" stroke="#2D2926" stroke-width="1"/>
+</svg>
