@@ -93,6 +93,9 @@ async def search_prov_to_fr(
         )
     else:
         # Suggestions via similarité trigram
+        # Récupérer sans DISTINCT pour éviter l'erreur PostgreSQL
+        # "for SELECT DISTINCT, ORDER BY expressions must appear in select list"
+        # et dédupliquer en Python en préservant l'ordre de similarité décroissante.
         sim_ids_result = await db.execute(
             select(DictTranslation.entry_id)
             .where(
@@ -103,9 +106,13 @@ async def search_prov_to_fr(
             .order_by(
                 text("similarity(traduction, :q) DESC").bindparams(q=q)
             )
-            .distinct()
         )
-        sim_ids = [r[0] for r in sim_ids_result.all()]
+        seen: set[int] = set()
+        sim_ids: list[int] = []
+        for (eid,) in sim_ids_result.all():
+            if eid not in seen:
+                seen.add(eid)
+                sim_ids.append(eid)
         if not sim_ids:
             return {"items": [], "total": 0, "page": page, "per_page": per_page, "pages": 1}
         query = (
