@@ -1,23 +1,32 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Layout from './components/layout/Layout'
+import HomePage from './pages/HomePage'
+import ArticlesPage from './pages/ArticlesPage'
+import DictionnairePage from './pages/DictionnairePage'
+import TraducteurPage from './pages/TraducteurPage'
+import AgendaPage from './pages/AgendaPage'
+import BibliothequePage from './pages/BibliothequePage'
+import AProposPage from './pages/AProposPage'
+import ConnexionPage from './pages/ConnexionPage'
+import NotFoundPage from './pages/NotFoundPage'
+
 function App() {
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
-      }}
-    >
-      <h1
-        style={{
-          color: 'var(--color-primary)',
-          fontSize: 'var(--text-2xl)',
-          fontWeight: 700,
-        }}
-      >
-        Provençal.ia
-      </h1>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route index element={<HomePage />} />
+          <Route path="articles" element={<ArticlesPage />} />
+          <Route path="dictionnaire" element={<DictionnairePage />} />
+          <Route path="traducteur" element={<TraducteurPage />} />
+          <Route path="agenda" element={<AgendaPage />} />
+          <Route path="bibliotheque" element={<BibliothequePage />} />
+          <Route path="a-propos" element={<AProposPage />} />
+          <Route path="connexion" element={<ConnexionPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   )
 }
 

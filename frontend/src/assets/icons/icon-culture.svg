@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#869121" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-label="Culture — Bibliothèque Histoires et Légendes">
+  <!-- Colonnes grecques évoquant la bibliothèque / patrimoine bâti -->
+  <!-- Socle -->
+  <line x1="2" y1="21" x2="22" y2="21"/>
+  <!-- Architrave -->
+  <rect x="3" y="5" width="18" height="2" rx="0.5" fill="#869121" stroke="none"/>
+  <!-- 3 colonnes -->
+  <rect x="5"  y="7" width="2.5" height="12" rx="0.5"/>
+  <rect x="10.75" y="7" width="2.5" height="12" rx="0.5"/>
+  <rect x="16.5" y="7" width="2.5" height="12" rx="0.5"/>
+  <!-- Fronton triangulaire -->
+  <polyline points="2 5 12 1 22 5"/>
+</svg>

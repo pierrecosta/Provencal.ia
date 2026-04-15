@@ -1,0 +1,54 @@
+.layout__main {
+  padding: var(--space-3);
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+}
+
+/* Desktop: offset for fixed top navbar */
+@media (min-width: 768px) {
+  .layout__main {
+    padding-top: calc(64px + var(--space-3));
+  }
+}
+
+/* Mobile: offset for fixed bottom navbar */
+@media (max-width: 767px) {
+  .layout__main {
+    padding-bottom: calc(60px + var(--space-3));
+    padding-top: calc(48px + var(--space-2));
+  }
+}
+
+/* Mobile header with page title */
+.layout__mobile-header {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .layout__mobile-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 48px;
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+    z-index: 40;
+  }
+}
+
+.layout__mobile-title {
+  font-weight: 700;
+  font-size: var(--text-md);
+  color: var(--color-text);
+}
+
+/* scroll-margin-top for anchor targets (desktop navbar height) */
+@media (min-width: 768px) {
+  :target {
+    scroll-margin-top: 64px;
+  }
+}

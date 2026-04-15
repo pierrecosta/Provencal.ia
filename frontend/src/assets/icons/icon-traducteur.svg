@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#869121" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-label="Traducteur lexical FR ↔ Provençal">
+  <!-- Flèche vers la droite (FR → Prov) -->
+  <path d="M3 8h14"/>
+  <polyline points="13 4 17 8 13 12"/>
+  <!-- Flèche vers la gauche (Prov → FR) -->
+  <path d="M21 16H7"/>
+  <polyline points="11 12 7 16 11 20"/>
+</svg>
