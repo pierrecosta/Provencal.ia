@@ -32,7 +32,7 @@ async def get_last_log(
     result = await db.execute(
         select(EditLog)
         .where(EditLog.table_name == table_name, EditLog.row_id == row_id)
-        .order_by(EditLog.done_at.desc())
+        .order_by(EditLog.done_at.desc(), EditLog.id.desc())
         .limit(1)
     )
     return result.scalar_one_or_none()
