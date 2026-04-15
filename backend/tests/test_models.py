@@ -8,6 +8,7 @@ from app.models import (
     EditLog,
     LibraryEntry,
     Saying,
+    TokenBlacklist,
     User,
 )
 
@@ -20,6 +21,7 @@ EXPECTED_TABLES = {
     "articles",
     "sayings",
     "edit_log",
+    "token_blacklist",
 }
 
 
@@ -32,6 +34,7 @@ def test_all_models_importable():
     assert Article is not None
     assert Saying is not None
     assert EditLog is not None
+    assert TokenBlacklist is not None
 
 
 def test_base_metadata_contains_all_tables():
@@ -39,6 +42,6 @@ def test_base_metadata_contains_all_tables():
 
 
 def test_all_models_have_tablename():
-    models = [User, DictEntry, DictTranslation, AgendaEvent, LibraryEntry, Article, Saying, EditLog]
+    models = [User, DictEntry, DictTranslation, AgendaEvent, LibraryEntry, Article, Saying, EditLog, TokenBlacklist]
     for model in models:
         assert hasattr(model, "__tablename__"), f"{model} missing __tablename__"

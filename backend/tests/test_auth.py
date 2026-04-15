@@ -6,7 +6,7 @@ from app.main import app
 from app.core.database import async_session_maker, engine
 from app.core.security import hash_password
 from app.models.user import User
-from app.api.blacklist import token_blacklist
+from app.models.token_blacklist import TokenBlacklist
 
 TEST_PSEUDO = "test_user_auth"
 TEST_PASSWORD = "S3cur3P@ssw0rd!"
@@ -14,17 +14,17 @@ TEST_PASSWORD = "S3cur3P@ssw0rd!"
 
 @pytest.fixture(autouse=True)
 async def clean_test_user():
-    """Réinitialise le pool, la blacklist et supprime le user de test."""
-    token_blacklist.clear()
+    """Réinitialise le pool, la blacklist BDD et supprime le user de test."""
     await engine.dispose()
     async with async_session_maker() as session:
+        await session.execute(delete(TokenBlacklist))
         await session.execute(delete(User).where(User.pseudo == TEST_PSEUDO))
         await session.commit()
     yield
     async with async_session_maker() as session:
+        await session.execute(delete(TokenBlacklist))
         await session.execute(delete(User).where(User.pseudo == TEST_PSEUDO))
         await session.commit()
-    token_blacklist.clear()
     await engine.dispose()
 
 
