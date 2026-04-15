@@ -222,6 +222,138 @@
   font-style: italic;
 }
 
+/* ── Carte : en-tête avec bouton modifier ── */
+.saying-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-1);
+}
+
+.saying-card__header .saying-card__terme {
+  flex: 1;
+}
+
+/* ── Boutons d'action contributeur ── */
+.saying-card__action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1);
+  cursor: pointer;
+  min-width: var(--touch-target);
+  min-height: var(--touch-target);
+  transition: border-color 0.15s;
+}
+
+.saying-card__action-btn:hover {
+  border-color: var(--color-primary);
+}
+
+.saying-card__action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.saying-card__action-btn--danger:hover {
+  border-color: var(--color-error);
+}
+
+.saying-card__lock {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-1);
+  color: var(--color-secondary);
+}
+
+.saying-card__actions {
+  display: flex;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+  justify-content: flex-end;
+}
+
+/* ── Carte en mode édition ── */
+.saying-card--editing {
+  border-color: var(--color-primary);
+  border-width: 2px;
+}
+
+/* ── Formulaire inline ── */
+.saying-form__field {
+  margin-bottom: var(--space-2);
+}
+
+.saying-form__label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 4px;
+}
+
+.saying-form__input {
+  display: block;
+  width: 100%;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  color: var(--color-text);
+  background: white;
+  box-sizing: border-box;
+}
+
+.saying-form__input:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+.saying-form__input--error {
+  border-color: var(--color-error);
+}
+
+.saying-form__textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.saying-form__error {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--color-error);
+  margin-top: 2px;
+}
+
+/* ── Bouton Ajouter ── */
+.sayings-list__add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border: 2px solid var(--color-primary);
+  border-radius: 50%;
+  background: var(--color-primary);
+  cursor: pointer;
+  margin: var(--space-3) auto;
+  transition: opacity 0.15s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.sayings-list__add-btn:hover {
+  opacity: 0.85;
+}
+
+.sayings-list__add-btn img {
+  filter: brightness(0) invert(1);
+}
+
 /* ── Mobile ── */
 @media (max-width: 767px) {
   .today-card {

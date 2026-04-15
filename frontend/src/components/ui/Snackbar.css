@@ -1,0 +1,41 @@
+.snackbar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 16px;
+  z-index: 1100;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  color: white;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  max-width: 90vw;
+  text-align: center;
+  animation: snackbar-in 0.25s ease-out;
+}
+
+.snackbar--success {
+  background: #869121;
+}
+
+.snackbar--error {
+  background: #B94040;
+}
+
+@keyframes snackbar-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@media (max-width: 767px) {
+  .snackbar {
+    bottom: 76px;
+  }
+}
