@@ -1,7 +1,7 @@
 import datetime
 
 from sqlalchemy import DateTime, ForeignKey, Index, Integer, String, Text, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
 
@@ -24,6 +24,10 @@ class DictEntry(Base):
     )
     created_at: Mapped[datetime.datetime | None] = mapped_column(
         DateTime, server_default=func.now()
+    )
+
+    translations: Mapped[list["DictTranslation"]] = relationship(  # noqa: F821
+        "DictTranslation", back_populates="entry", cascade="all, delete-orphan"
     )
 
     __table_args__ = (

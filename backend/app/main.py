@@ -8,6 +8,7 @@ from app.api.sayings import router as sayings_router
 from app.api.events import router as events_router
 from app.api.articles import router as articles_router
 from app.api.upload import router as upload_router
+from app.api.dictionary import router as dictionary_router
 
 # Swagger UI et ReDoc sont exposés uniquement en développement local.
 # En production (ENVIRONMENT=production), les routes /docs et /redoc sont désactivées.
@@ -47,5 +48,6 @@ app.include_router(sayings_router, prefix="/api/v1")
 app.include_router(events_router, prefix="/api/v1")
 app.include_router(articles_router, prefix="/api/v1")
 app.include_router(upload_router, prefix="/api/v1")
+app.include_router(dictionary_router, prefix="/api/v1")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
