@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#869121" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-label="Stockage image — local ou URL">
+  <!-- Cadre photo -->
+  <rect x="3" y="3" width="18" height="16" rx="2"/>
+  <!-- Montagne / paysage stylisé dans la photo -->
+  <polyline points="3 15 7 9 11 13 14 10 21 15"/>
+  <!-- Soleil dans le coin -->
+  <circle cx="17" cy="7.5" r="2" fill="#D5713F" stroke="none" opacity="0.8"/>
+  <!-- Lien / chaîne URL (en bas) -->
+  <line x1="6" y1="21" x2="10" y2="21"/>
+  <path d="M8 21 Q12 18 16 21"/>
+  <line x1="14" y1="21" x2="18" y2="21"/>
+</svg>

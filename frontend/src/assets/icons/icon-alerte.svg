@@ -1,0 +1,6 @@
+<!-- NOTIFICATION / ALERTE — triangle d'avertissement -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#D5713F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Avertissement">
+  <path d="M10.3 3.3L2 20h20L13.7 3.3a2 2 0 0 0-3.4 0z" fill="#D5713F" fill-opacity="0.1"/>
+  <line x1="12" y1="9"  x2="12" y2="14"/>
+  <circle cx="12" cy="17.5" r="0.8" fill="#D5713F"/>
+</svg>

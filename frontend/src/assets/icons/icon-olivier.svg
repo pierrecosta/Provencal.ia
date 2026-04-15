@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#869121" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-label="Rameau d'olivier — symbole provençal de paix et d'abondance">
+  <!-- Tige courbe principale -->
+  <path d="M4 21 Q8 15 12 10 Q15 6 19 3" stroke="#2D2926" stroke-width="1.6"/>
+  <!-- Feuilles d'olivier (ellipses oblongues caractéristiques) -->
+  <ellipse cx="10" cy="12.5" rx="2.5" ry="1" transform="rotate(-45 10 12.5)"  fill="#869121" opacity="0.9" stroke="none"/>
+  <ellipse cx="13" cy="9.5"  rx="2.5" ry="1" transform="rotate(-50 13 9.5)"   fill="#869121" opacity="0.9" stroke="none"/>
+  <ellipse cx="16" cy="6.5"  rx="2.5" ry="1" transform="rotate(-55 16 6.5)"   fill="#869121" opacity="0.9" stroke="none"/>
+  <ellipse cx="8"  cy="15"   rx="2.2" ry="0.9" transform="rotate(-30 8 15)"   fill="#869121" opacity="0.75" stroke="none"/>
+  <ellipse cx="11.5" cy="11" rx="2.2" ry="0.9" transform="rotate(-60 11.5 11)" fill="#869121" opacity="0.75" stroke="none"/>
+  <ellipse cx="14.5" cy="8"  rx="2.2" ry="0.9" transform="rotate(-35 14.5 8)" fill="#869121" opacity="0.75" stroke="none"/>
+  <!-- Olives (petits cercles terracotta) -->
+  <circle cx="9"  cy="13.5" r="1.2" fill="#D5713F" opacity="0.85" stroke="none"/>
+  <circle cx="14" cy="8.5"  r="1.2" fill="#D5713F" opacity="0.85" stroke="none"/>
+  <circle cx="17" cy="5.5"  r="1"   fill="#D5713F" opacity="0.75" stroke="none"/>
+</svg>
