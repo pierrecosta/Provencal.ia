@@ -1,19 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { apiFetch } from '../services/api'
+import { fetchEvent } from '../services/eventsService'
+import type { AgendaEvent } from '../services/types'
 import Breadcrumb from '../components/ui/Breadcrumb'
 import BackButton from '../components/ui/BackButton'
 import iconLienExterne from '../assets/icons/icon-lien-externe.svg'
-
-interface EventDetail {
-  id: number
-  titre: string
-  date_debut: string
-  date_fin: string
-  lieu: string | null
-  description: string | null
-  lien_externe: string | null
-}
 
 function formatDate(iso: string) {
   return new Date(iso + 'T00:00:00').toLocaleDateString('fr-FR', {
@@ -25,13 +16,13 @@ function formatDate(iso: string) {
 
 export default function AgendaDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const [event, setEvent] = useState<EventDetail | null>(null)
+  const [event, setEvent] = useState<AgendaEvent | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
   useEffect(() => {
-    apiFetch(`/api/v1/events/${id}`)
-      .then(r => (r.ok ? r.json() : Promise.reject()))
+    if (!id) return
+    fetchEvent(id)
       .then(setEvent)
       .catch(() => setError(true))
       .finally(() => setLoading(false))

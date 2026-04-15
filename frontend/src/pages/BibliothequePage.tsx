@@ -1,7 +1,10 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { apiFetch } from '../services/api'
 import { useAuth } from '../context/AuthContext'
+import { fetchLibraryEntries, fetchLibraryPeriodes, createLibraryEntry, updateLibraryEntry, deleteLibraryEntry, rollbackLibraryEntry } from '../services/libraryService'
+import { uploadImageFile } from '../services/uploadService'
+import { ApiError } from '../services/types'
+import type { LibraryEntry, LibraryBody } from '../services/types'
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll'
 import Snackbar from '../components/ui/Snackbar'
 import ConfirmModal from '../components/ui/ConfirmModal'
@@ -15,21 +18,6 @@ import iconSupprimer from '../assets/icons/icon-supprimer.svg'
 import iconAnnuler from '../assets/icons/icon-annuler.svg'
 import iconVerrou from '../assets/icons/icon-verrou.svg'
 import iconRollback from '../assets/icons/icon-rollback.svg'
-
-interface LibraryItem {
-  id: number
-  titre: string
-  description_courte: string | null
-  description_longue: string | null
-  periode: string | null
-  typologie: string | null
-  source_url: string | null
-  image_ref: string | null
-  lang: string | null
-  traduction_id: number | null
-  is_locked: boolean
-  locked_by: number | null
-}
 
 interface LibraryFormData {
   titre: string
@@ -90,14 +78,14 @@ const INPUT_STYLE: React.CSSProperties = {
 
 export default function BibliothequePage() {
   const { isAuthenticated } = useAuth()
-  const [items, setItems] = useState<LibraryItem[]>([])
+  const [items, setItems] = useState<LibraryEntry[]>([])
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
   const [loading, setLoading] = useState(false)
   const [allLoaded, setAllLoaded] = useState(false)
 
   const [periodes, setPeriodes] = useState<string[]>([])
-  const [allEntries, setAllEntries] = useState<LibraryItem[]>([])
+  const [allEntries, setAllEntries] = useState<LibraryEntry[]>([])
   const [filterType, setFilterType] = useState<FilterType>('')
   const [filterPeriode, setFilterPeriode] = useState('')
   const [filterLieu, setFilterLieu] = useState('')
@@ -112,7 +100,7 @@ export default function BibliothequePage() {
   const [editErrors, setEditErrors] = useState<FormErrors>({})
   const [editSubmitting, setEditSubmitting] = useState(false)
 
-  const [deleteTarget, setDeleteTarget] = useState<LibraryItem | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<LibraryEntry | null>(null)
   const [snackbar, setSnackbar] = useState<SnackbarState | null>(null)
 
   const createFileRef = useRef<HTMLInputElement>(null)
@@ -135,19 +123,20 @@ export default function BibliothequePage() {
     if (loading) return
     setLoading(true)
     try {
-      const params = new URLSearchParams({ page: String(p), per_page: '20' })
-      if (filterType) params.set('type', filterType)
-      if (filterPeriode) params.set('periode', filterPeriode)
-      if (filterLieu) params.set('lieu', filterLieu)
-      const resp = await apiFetch(`/api/v1/library?${params}`)
-      if (resp.ok) {
-        const data = await resp.json()
-        setItems(prev => p === 1 ? data.items : [...prev, ...data.items])
-        setPage(p)
-        const more = p < data.pages
-        setHasMore(more)
-        if (!more) setAllLoaded(true)
-      }
+      const data = await fetchLibraryEntries({
+        page: p,
+        per_page: 20,
+        type: filterType || undefined,
+        periode: filterPeriode || undefined,
+        lieu: filterLieu || undefined,
+      })
+      setItems(prev => p === 1 ? data.items : [...prev, ...data.items])
+      setPage(p)
+      const more = p < data.pages
+      setHasMore(more)
+      if (!more) setAllLoaded(true)
+    } catch {
+      // Erreur réseau — liste inchangée
     } finally {
       setLoading(false)
     }
@@ -159,16 +148,16 @@ export default function BibliothequePage() {
   }, [filterType, filterPeriode, filterLieu])
 
   useEffect(() => {
-    apiFetch('/api/v1/library/periodes')
-      .then(r => r.ok ? r.json() : [])
-      .then((data: string[]) => setPeriodes(data))
+    fetchLibraryPeriodes()
+      .then(data => setPeriodes(data))
+      .catch(() => {})
   }, [])
 
   // Pour le select lien traduction : charger toutes les entrées (sans filtre, page 1)
   useEffect(() => {
-    apiFetch('/api/v1/library?per_page=200')
-      .then(r => r.ok ? r.json() : { items: [] })
-      .then((data: { items: LibraryItem[] }) => setAllEntries(data.items))
+    fetchLibraryEntries({ per_page: 200 })
+      .then(data => setAllEntries(data.items))
+      .catch(() => {})
   }, [])
 
   const sentinelRef = useInfiniteScroll({
@@ -179,15 +168,12 @@ export default function BibliothequePage() {
 
   async function uploadImage(file: File): Promise<string | null> {
     const compressed = await compressImage(file, 2)
-    const formData = new FormData()
-    formData.append('file', compressed)
-    const res = await apiFetch('/api/v1/upload/image', { method: 'POST', body: formData })
-    if (!res.ok) {
+    try {
+      return await uploadImageFile(compressed)
+    } catch {
       setSnackbar({ message: "Erreur lors de l'upload de l'image", type: 'error' })
       return null
     }
-    const data = await res.json() as { image_ref: string }
-    return data.image_ref
   }
 
   async function buildBody(form: LibraryFormData): Promise<Record<string, unknown> | null> {
@@ -232,17 +218,18 @@ export default function BibliothequePage() {
     try {
       const body = await buildBody(createForm)
       if (!body) return
-      const res = await apiFetch('/api/v1/library', { method: 'POST', body: JSON.stringify(body) })
-      if (!res.ok) { setSnackbar({ message: 'Erreur lors de la création', type: 'error' }); return }
+      await createLibraryEntry(body as unknown as LibraryBody)
       setShowCreateForm(false)
       setCreateForm(EMPTY_FORM)
       setSnackbar({ message: 'Entrée créée avec succès', type: 'success' })
       setItems([])
       await loadPage(1)
+    } catch {
+      setSnackbar({ message: 'Erreur lors de la création', type: 'error' })
     } finally { setCreateSubmitting(false) }
   }
 
-  function startEdit(item: LibraryItem) {
+  function startEdit(item: LibraryEntry) {
     setEditingId(item.id)
     setEditForm({
       titre: item.titre,
@@ -275,39 +262,51 @@ export default function BibliothequePage() {
     try {
       const body = await buildBody(editForm)
       if (!body) return
-      const res = await apiFetch(`/api/v1/library/${editingId}`, { method: 'PUT', body: JSON.stringify(body) })
-      if (res.status === 403) { setSnackbar({ message: 'Entrée verrouillée par un autre contributeur', type: 'error' }); cancelEdit(); return }
-      if (!res.ok) { setSnackbar({ message: 'Erreur lors de la modification', type: 'error' }); return }
-      const updated: LibraryItem = await res.json()
-      setItems(prev => prev.map(i => i.id === updated.id ? updated : i))
-      cancelEdit()
-      setSnackbar({ message: 'Entrée modifiée avec succès', type: 'success' })
+      try {
+        const updated = await updateLibraryEntry(editingId, body as unknown as LibraryBody)
+        setItems(prev => prev.map(i => i.id === updated.id ? updated : i))
+        cancelEdit()
+        setSnackbar({ message: 'Entrée modifiée avec succès', type: 'success' })
+      } catch (err) {
+        if (err instanceof ApiError && err.status === 403) {
+          setSnackbar({ message: 'Entrée verrouillée par un autre contributeur', type: 'error' })
+          cancelEdit()
+        } else {
+          setSnackbar({ message: 'Erreur lors de la modification', type: 'error' })
+        }
+      }
     } finally { setEditSubmitting(false) }
   }
 
   async function confirmDelete() {
     if (!deleteTarget) return
     try {
-      const res = await apiFetch(`/api/v1/library/${deleteTarget.id}`, { method: 'DELETE' })
-      if (res.status === 403) { setSnackbar({ message: 'Entrée verrouillée par un autre contributeur', type: 'error' }) }
-      else if (!res.ok) { setSnackbar({ message: 'Erreur lors de la suppression', type: 'error' }) }
-      else {
-        setItems(prev => prev.filter(i => i.id !== deleteTarget.id))
-        setSnackbar({ message: 'Entrée supprimée', type: 'success' })
-        cancelEdit()
+      await deleteLibraryEntry(deleteTarget.id)
+      setItems(prev => prev.filter(i => i.id !== deleteTarget.id))
+      setSnackbar({ message: 'Entrée supprimée', type: 'success' })
+      cancelEdit()
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 403) {
+        setSnackbar({ message: 'Entrée verrouillée par un autre contributeur', type: 'error' })
+      } else {
+        setSnackbar({ message: 'Erreur lors de la suppression', type: 'error' })
       }
     } finally { setDeleteTarget(null) }
   }
 
-  async function doRollback(item: LibraryItem) {
-    const res = await apiFetch(`/api/v1/library/${item.id}/rollback`, { method: 'POST' })
-    if (res.status === 404) { setSnackbar({ message: 'Aucune action à annuler', type: 'error' }) }
-    else if (!res.ok) { setSnackbar({ message: 'Erreur lors du rollback', type: 'error' }) }
-    else {
+  async function doRollback(item: LibraryEntry) {
+    try {
+      await rollbackLibraryEntry(item.id)
       setSnackbar({ message: 'Dernière action annulée', type: 'success' })
       cancelEdit()
       setItems([])
       await loadPage(1)
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 404) {
+        setSnackbar({ message: 'Aucune action à annuler', type: 'error' })
+      } else {
+        setSnackbar({ message: 'Erreur lors du rollback', type: 'error' })
+      }
     }
   }
 

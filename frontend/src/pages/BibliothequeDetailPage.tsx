@@ -1,40 +1,25 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
-import { apiFetch } from '../services/api'
+import { fetchLibraryEntry } from '../services/libraryService'
+import type { LibraryEntryDetail } from '../services/types'
 import Breadcrumb from '../components/ui/Breadcrumb'
 import BackButton from '../components/ui/BackButton'
 import iconToggleLangue from '../assets/icons/icon-toggle-langue.svg'
 import iconLienExterne from '../assets/icons/icon-lien-externe.svg'
 
-interface LibraryDetail {
-  id: number
-  titre: string
-  description_courte: string | null
-  description_longue: string | null
-  periode: string | null
-  typologie: string | null
-  source_url: string | null
-  image_ref: string | null
-  lang: string | null
-  traduction_id: number | null
-  has_translation: boolean
-  translation_lang: string | null
-}
-
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 export default function BibliothequeDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const [entry, setEntry] = useState<LibraryDetail | null>(null)
+  const [entry, setEntry] = useState<LibraryEntryDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
   const loadEntry = (entryId: string | number) => {
     setLoading(true)
-    apiFetch(`/api/v1/library/${entryId}`)
-      .then(r => (r.ok ? r.json() : Promise.reject()))
-      .then((data: LibraryDetail) => setEntry(data))
+    fetchLibraryEntry(entryId)
+      .then((data: LibraryEntryDetail) => setEntry(data))
       .catch(() => setError(true))
       .finally(() => setLoading(false))
   }

@@ -1,17 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
-import { apiFetch } from '../services/api'
-
-interface TranslateResponse {
-  translated: string
-  unknown_words: string[]
-}
+import { translate } from '../services/translateService'
+import type { TranslateResult } from '../services/types'
 
 export default function TraducteurPage() {
   const headingRef = useRef<HTMLHeadingElement>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const [text, setText] = useState('')
-  const [result, setResult] = useState<TranslateResponse | null>(null)
+  const [result, setResult] = useState<TranslateResult | null>(null)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -23,9 +19,8 @@ export default function TraducteurPage() {
     if (!text.trim()) { setResult(null); return }
     debounceRef.current = setTimeout(() => {
       setLoading(true)
-      apiFetch('/api/v1/translate', { method: 'POST', body: JSON.stringify({ text }) })
-        .then(r => r.ok ? r.json() : Promise.reject())
-        .then((data: TranslateResponse) => setResult(data))
+      translate(text)
+        .then(data => setResult(data))
         .catch(() => setResult(null))
         .finally(() => setLoading(false))
     }, 500)

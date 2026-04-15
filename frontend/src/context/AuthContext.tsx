@@ -7,7 +7,8 @@ import {
   type ReactNode,
 } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { apiFetch, configureApi } from '../services/api'
+import { configureApi } from '../services/api'
+import { login as authLogin, logout as authLogout } from '../services/authService'
 
 interface AuthState {
   pseudo: string | null
@@ -41,16 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(
     async (userPseudo: string, password: string) => {
-      const response = await apiFetch('/api/v1/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ pseudo: userPseudo, password }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Identifiant ou mot de passe incorrect')
-      }
-
-      const data = await response.json()
+      const data = await authLogin(userPseudo, password)
       setToken(data.access_token)
       setPseudo(userPseudo)
     },
@@ -59,7 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async () => {
     try {
-      await apiFetch('/api/v1/auth/logout', { method: 'POST' })
+      await authLogout()
     } finally {
       clearAuth()
       navigate('/connexion')

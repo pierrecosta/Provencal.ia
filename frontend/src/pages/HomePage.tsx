@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { apiFetch } from '../services/api'
 import { useAuth } from '../context/AuthContext'
+import { fetchTodaySaying, fetchSayings, createSaying, updateSaying, deleteSaying } from '../services/sayingsService'
+import { ApiError } from '../services/types'
+import type { Saying, SayingCreate } from '../services/types'
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll'
 import Snackbar from '../components/ui/Snackbar'
 import ConfirmModal from '../components/ui/ConfirmModal'
@@ -12,26 +14,6 @@ import iconSupprimer from '../assets/icons/icon-supprimer.svg'
 import iconAnnuler from '../assets/icons/icon-annuler.svg'
 import iconVerrou from '../assets/icons/icon-verrou.svg'
 import './HomePage.css'
-
-interface Saying {
-  id: number
-  terme_provencal: string
-  localite_origine: string
-  traduction_sens_fr: string
-  type: string | null
-  contexte: string | null
-  source: string | null
-  is_locked: boolean
-  locked_by: number | null
-}
-
-interface PaginatedSayings {
-  items: Saying[]
-  total: number
-  page: number
-  per_page: number
-  pages: number
-}
 
 interface SayingFormData {
   terme_provencal: string
@@ -122,21 +104,10 @@ export default function HomePage() {
     setTodayLoading(true)
     setTodayError(false)
 
-    apiFetch('/api/v1/sayings/today')
-      .then(async (res) => {
-        if (cancelled) return
-        if (res.ok) {
-          setTodaySaying(await res.json())
-        } else {
-          setTodayError(true)
-        }
-      })
-      .catch(() => {
-        if (!cancelled) setTodayError(true)
-      })
-      .finally(() => {
-        if (!cancelled) setTodayLoading(false)
-      })
+    fetchTodaySaying()
+      .then((data) => { if (!cancelled) setTodaySaying(data) })
+      .catch(() => { if (!cancelled) setTodayError(true) })
+      .finally(() => { if (!cancelled) setTodayLoading(false) })
 
     return () => { cancelled = true }
   }, [])
@@ -145,20 +116,18 @@ export default function HomePage() {
   const fetchPage = useCallback(
     async (pageNum: number, type: string | null, localite: string, reset: boolean) => {
       setListLoading(true)
-      const params = new URLSearchParams()
-      params.set('page', String(pageNum))
-      params.set('per_page', '20')
-      if (type) params.set('type', type)
-      if (localite.trim()) params.set('localite', localite.trim())
-
       try {
-        const res = await apiFetch(`/api/v1/sayings?${params.toString()}`)
-        if (!res.ok) return
-        const data: PaginatedSayings = await res.json()
-
+        const data = await fetchSayings({
+          page: pageNum,
+          per_page: 20,
+          type: type ?? undefined,
+          localite: localite.trim() || undefined,
+        })
         setItems((prev) => (reset ? data.items : [...prev, ...data.items]))
         setHasMore(pageNum < data.pages)
         setPage(pageNum)
+      } catch {
+        // Erreur réseau — ne pas mettre à jour la liste
       } finally {
         setListLoading(false)
       }
@@ -227,19 +196,13 @@ export default function HomePage() {
         contexte: createForm.contexte.trim() || null,
         source: createForm.source.trim() || null,
       }
-      const res = await apiFetch('/api/v1/sayings', {
-        method: 'POST',
-        body: JSON.stringify(body),
-      })
-      if (!res.ok) {
-        setSnackbar({ message: 'Erreur lors de la création', type: 'error' })
-        return
-      }
-      const created: Saying = await res.json()
+      const created = await createSaying(body as unknown as SayingCreate)
       setItems((prev) => [created, ...prev])
       setShowCreateForm(false)
       setCreateForm(EMPTY_FORM)
       setSnackbar({ message: 'Terme ajouté avec succès', type: 'success' })
+    } catch {
+      setSnackbar({ message: 'Erreur lors de la création', type: 'error' })
     } finally {
       setCreateSubmitting(false)
     }
@@ -281,23 +244,17 @@ export default function HomePage() {
         contexte: editForm.contexte.trim() || null,
         source: editForm.source.trim() || null,
       }
-      const res = await apiFetch(`/api/v1/sayings/${editingId}`, {
-        method: 'PUT',
-        body: JSON.stringify(body),
-      })
-      if (res.status === 403) {
-        setSnackbar({ message: 'Ce terme est verrouillé par un autre contributeur', type: 'error' })
-        cancelEdit()
-        return
-      }
-      if (!res.ok) {
-        setSnackbar({ message: 'Erreur lors de la modification', type: 'error' })
-        return
-      }
-      const updated: Saying = await res.json()
+      const updated = await updateSaying(editingId, body as unknown as SayingCreate)
       setItems((prev) => prev.map((s) => (s.id === updated.id ? updated : s)))
       cancelEdit()
       setSnackbar({ message: 'Terme modifié avec succès', type: 'success' })
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 403) {
+        setSnackbar({ message: 'Ce terme est verrouillé par un autre contributeur', type: 'error' })
+        cancelEdit()
+      } else {
+        setSnackbar({ message: 'Erreur lors de la modification', type: 'error' })
+      }
     } finally {
       setEditSubmitting(false)
     }
@@ -307,17 +264,15 @@ export default function HomePage() {
   async function confirmDelete() {
     if (!deleteTarget) return
     try {
-      const res = await apiFetch(`/api/v1/sayings/${deleteTarget.id}`, {
-        method: 'DELETE',
-      })
-      if (res.status === 403) {
+      await deleteSaying(deleteTarget.id)
+      setItems((prev) => prev.filter((s) => s.id !== deleteTarget.id))
+      setSnackbar({ message: 'Terme supprimé', type: 'success' })
+      cancelEdit()
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 403) {
         setSnackbar({ message: 'Ce terme est verrouillé par un autre contributeur', type: 'error' })
-      } else if (!res.ok) {
-        setSnackbar({ message: 'Erreur lors de la suppression', type: 'error' })
       } else {
-        setItems((prev) => prev.filter((s) => s.id !== deleteTarget.id))
-        setSnackbar({ message: 'Terme supprimé', type: 'success' })
-        cancelEdit()
+        setSnackbar({ message: 'Erreur lors de la suppression', type: 'error' })
       }
     } finally {
       setDeleteTarget(null)

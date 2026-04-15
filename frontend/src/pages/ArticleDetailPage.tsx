@@ -1,22 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
-import { apiFetch } from '../services/api'
+import { fetchArticle } from '../services/articlesService'
+import type { Article } from '../services/types'
 import Breadcrumb from '../components/ui/Breadcrumb'
 import BackButton from '../components/ui/BackButton'
 import iconImage from '../assets/icons/icon-image.svg'
 import iconLienExterne from '../assets/icons/icon-lien-externe.svg'
-
-interface ArticleDetail {
-  id: number
-  titre: string
-  description: string | null
-  auteur: string | null
-  date_publication: string | null
-  categorie: string | null
-  image_ref: string | null
-  source_url: string | null
-}
 
 function formatDate(iso: string | null) {
   if (!iso) return ''
@@ -27,13 +17,13 @@ const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 export default function ArticleDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const [article, setArticle] = useState<ArticleDetail | null>(null)
+  const [article, setArticle] = useState<Article | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
   useEffect(() => {
-    apiFetch(`/api/v1/articles/${id}`)
-      .then(r => (r.ok ? r.json() : Promise.reject()))
+    if (!id) return
+    fetchArticle(id)
       .then(setArticle)
       .catch(() => setError(true))
       .finally(() => setLoading(false))

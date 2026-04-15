@@ -1,7 +1,9 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { apiFetch } from '../services/api'
 import { useAuth } from '../context/AuthContext'
+import { fetchEvents, createEvent, updateEvent, deleteEvent, rollbackEvent } from '../services/eventsService'
+import { ApiError } from '../services/types'
+import type { AgendaEvent } from '../services/types'
 import Snackbar from '../components/ui/Snackbar'
 import ConfirmModal from '../components/ui/ConfirmModal'
 import iconArchive from '../assets/icons/icon-archive.svg'
@@ -14,26 +16,6 @@ import iconSupprimer from '../assets/icons/icon-supprimer.svg'
 import iconAnnuler from '../assets/icons/icon-annuler.svg'
 import iconVerrou from '../assets/icons/icon-verrou.svg'
 import iconRollback from '../assets/icons/icon-rollback.svg'
-
-interface EventItem {
-  id: number
-  titre: string
-  date_debut: string
-  date_fin: string
-  lieu: string | null
-  description: string | null
-  lien_externe: string | null
-  is_locked: boolean
-  locked_by: number | null
-}
-
-interface Page {
-  items: EventItem[]
-  total: number
-  page: number
-  per_page: number
-  pages: number
-}
 
 interface EventFormData {
   titre: string
@@ -101,7 +83,7 @@ export default function AgendaPage() {
   const isArchive = searchParams.get('archive') === 'true'
   const { isAuthenticated } = useAuth()
 
-  const [events, setEvents] = useState<EventItem[]>([])
+  const [events, setEvents] = useState<AgendaEvent[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
   const [pages, setPages] = useState(1)
@@ -124,34 +106,34 @@ export default function AgendaPage() {
   const [editSubmitting, setEditSubmitting] = useState(false)
 
   /* ── Suppression / Snackbar ── */
-  const [deleteTarget, setDeleteTarget] = useState<EventItem | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<AgendaEvent | null>(null)
   const [snackbar, setSnackbar] = useState<SnackbarState | null>(null)
 
-  const fetchEvents = useCallback(async (p: number) => {
+  const loadEvents = useCallback(async (p: number) => {
     setLoading(true)
     try {
-      const params = new URLSearchParams({ page: String(p), per_page: '20' })
-      if (isArchive) params.set('archive', 'true')
-      if (lieu) params.set('lieu', lieu)
-      if (annee) params.set('annee', annee)
-      if (mois) params.set('mois', mois)
-
-      const resp = await apiFetch(`/api/v1/events?${params}`)
-      if (resp.ok) {
-        const data: Page = await resp.json()
-        setEvents(data.items)
-        setTotal(data.total)
-        setPages(data.pages)
-        setPage(data.page)
-      }
+      const data = await fetchEvents({
+        page: p,
+        per_page: 20,
+        archive: isArchive || undefined,
+        lieu: lieu || undefined,
+        annee: annee || undefined,
+        mois: mois || undefined,
+      })
+      setEvents(data.items)
+      setTotal(data.total)
+      setPages(data.pages)
+      setPage(data.page)
+    } catch {
+      // Erreur réseau — liste inchangée
     } finally {
       setLoading(false)
     }
   }, [isArchive, lieu, annee, mois])
 
   useEffect(() => {
-    fetchEvents(1)
-  }, [fetchEvents])
+    loadEvents(1)
+  }, [loadEvents])
 
   /* ── Création ── */
   function openCreateForm() {
@@ -181,22 +163,20 @@ export default function AgendaPage() {
         description: createForm.description.trim() || null,
         lien_externe: createForm.lien_externe.trim() || null,
       }
-      const res = await apiFetch('/api/v1/events', { method: 'POST', body: JSON.stringify(body) })
-      if (!res.ok) {
-        setSnackbar({ message: 'Erreur lors de la création', type: 'error' })
-        return
-      }
+      await createEvent(body)
       setShowCreateForm(false)
       setCreateForm(EMPTY_FORM)
       setSnackbar({ message: 'Événement ajouté', type: 'success' })
-      await fetchEvents(1)
+      await loadEvents(1)
+    } catch {
+      setSnackbar({ message: 'Erreur lors de la création', type: 'error' })
     } finally {
       setCreateSubmitting(false)
     }
   }
 
   /* ── Édition ── */
-  function startEdit(ev: EventItem) {
+  function startEdit(ev: AgendaEvent) {
     setEditingId(ev.id)
     setEditForm({
       titre: ev.titre,
@@ -231,23 +211,19 @@ export default function AgendaPage() {
         description: editForm.description.trim() || null,
         lien_externe: editForm.lien_externe.trim() || null,
       }
-      const res = await apiFetch(`/api/v1/events/${editingId}`, {
-        method: 'PUT',
-        body: JSON.stringify(body),
-      })
-      if (res.status === 403) {
-        setSnackbar({ message: 'Événement verrouillé par un autre contributeur', type: 'error' })
+      try {
+        const updated = await updateEvent(editingId, body)
+        setEvents(prev => prev.map(e => e.id === updated.id ? updated : e))
         cancelEdit()
-        return
+        setSnackbar({ message: 'Événement modifié', type: 'success' })
+      } catch (err) {
+        if (err instanceof ApiError && err.status === 403) {
+          setSnackbar({ message: 'Événement verrouillé par un autre contributeur', type: 'error' })
+          cancelEdit()
+        } else {
+          setSnackbar({ message: 'Erreur lors de la modification', type: 'error' })
+        }
       }
-      if (!res.ok) {
-        setSnackbar({ message: 'Erreur lors de la modification', type: 'error' })
-        return
-      }
-      const updated: EventItem = await res.json()
-      setEvents(prev => prev.map(e => e.id === updated.id ? updated : e))
-      cancelEdit()
-      setSnackbar({ message: 'Événement modifié', type: 'success' })
     } finally {
       setEditSubmitting(false)
     }
@@ -257,15 +233,15 @@ export default function AgendaPage() {
   async function confirmDelete() {
     if (!deleteTarget) return
     try {
-      const res = await apiFetch(`/api/v1/events/${deleteTarget.id}`, { method: 'DELETE' })
-      if (res.status === 403) {
+      await deleteEvent(deleteTarget.id)
+      setEvents(prev => prev.filter(e => e.id !== deleteTarget.id))
+      setSnackbar({ message: 'Événement supprimé', type: 'success' })
+      cancelEdit()
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 403) {
         setSnackbar({ message: 'Événement verrouillé par un autre contributeur', type: 'error' })
-      } else if (!res.ok) {
-        setSnackbar({ message: 'Erreur lors de la suppression', type: 'error' })
       } else {
-        setEvents(prev => prev.filter(e => e.id !== deleteTarget.id))
-        setSnackbar({ message: 'Événement supprimé', type: 'success' })
-        cancelEdit()
+        setSnackbar({ message: 'Erreur lors de la suppression', type: 'error' })
       }
     } finally {
       setDeleteTarget(null)
@@ -273,16 +249,18 @@ export default function AgendaPage() {
   }
 
   /* ── Rollback ── */
-  async function doRollback(ev: EventItem) {
-    const res = await apiFetch(`/api/v1/events/${ev.id}/rollback`, { method: 'POST' })
-    if (res.status === 404) {
-      setSnackbar({ message: 'Aucune action à annuler', type: 'error' })
-    } else if (!res.ok) {
-      setSnackbar({ message: 'Erreur lors du rollback', type: 'error' })
-    } else {
+  async function doRollback(ev: AgendaEvent) {
+    try {
+      await rollbackEvent(ev.id)
       setSnackbar({ message: 'Dernière action annulée', type: 'success' })
       cancelEdit()
-      await fetchEvents(page)
+      await loadEvents(page)
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 404) {
+        setSnackbar({ message: 'Aucune action à annuler', type: 'error' })
+      } else {
+        setSnackbar({ message: 'Erreur lors du rollback', type: 'error' })
+      }
     }
   }
 
@@ -336,7 +314,7 @@ export default function AgendaPage() {
   }
 
   /* ── Rendu d'un événement en mode édition ── */
-  function renderEditCard(ev: EventItem) {
+  function renderEditCard(ev: AgendaEvent) {
     return (
       <div style={{ border: '2px solid var(--color-primary)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-3)', background: '#fff' }}>
         {renderField('Titre *', 'titre', editForm, setEditForm, editErrors)}
@@ -364,7 +342,7 @@ export default function AgendaPage() {
   }
 
   /* ── Rendu d'une carte événement (mode lecture) ── */
-  function renderEventCard(ev: EventItem, compact: boolean) {
+  function renderEventCard(ev: AgendaEvent, compact: boolean) {
     const cardStyle: React.CSSProperties = compact
       ? { display: 'flex', gap: 'var(--space-2)', alignItems: 'center', padding: 'var(--space-1) 0', borderBottom: '1px solid var(--color-border)' }
       : { border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-3)', background: '#fff', height: '100%' }
@@ -546,11 +524,11 @@ export default function AgendaPage() {
       {/* Pagination */}
       {pages > 1 && (
         <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center', justifyContent: 'center' }}>
-          <button onClick={() => void fetchEvents(page - 1)} disabled={page <= 1} style={{ padding: '6px 12px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', background: 'none', cursor: page > 1 ? 'pointer' : 'not-allowed' }}>
+          <button onClick={() => void loadEvents(page - 1)} disabled={page <= 1} style={{ padding: '6px 12px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', background: 'none', cursor: page > 1 ? 'pointer' : 'not-allowed' }}>
             ←
           </button>
           <span style={{ fontSize: 'var(--text-sm)' }}>Page {page} / {pages} ({total} événements)</span>
-          <button onClick={() => void fetchEvents(page + 1)} disabled={page >= pages} style={{ padding: '6px 12px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', background: 'none', cursor: page < pages ? 'pointer' : 'not-allowed' }}>
+          <button onClick={() => void loadEvents(page + 1)} disabled={page >= pages} style={{ padding: '6px 12px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', background: 'none', cursor: page < pages ? 'pointer' : 'not-allowed' }}>
             →
           </button>
         </div>

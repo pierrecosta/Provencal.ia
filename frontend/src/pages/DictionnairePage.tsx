@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { apiFetch } from '../services/api'
 import { useAuth } from '../context/AuthContext'
+import { fetchThemes, searchDictionary, searchProvencal, importDictionary } from '../services/dictionaryService'
+import type { DictEntry, ThemeCategories } from '../services/types'
 import Snackbar from '../components/ui/Snackbar'
 import iconToggleLangue from '../assets/icons/icon-toggle-langue.svg'
 import iconUpload from '../assets/icons/icon-upload-image.svg'
@@ -11,34 +12,6 @@ import iconPrecedent from '../assets/icons/icon-precedent.svg'
 import iconSuivant from '../assets/icons/icon-suivant.svg'
 
 type Direction = 'fr_to_oc' | 'oc_to_fr'
-
-interface Translation {
-  id: number
-  traduction: string
-  graphie: string | null
-  source: string | null
-  region: string | null
-}
-
-interface DictEntry {
-  id: number
-  mot_fr: string
-  theme: string | null
-  categorie: string | null
-  translations: Translation[]
-}
-
-interface DictPage {
-  items: DictEntry[]
-  total: number
-  page: number
-  per_page: number
-  suggestions?: string[]
-}
-
-interface ThemesMap {
-  [theme: string]: string[]
-}
 
 const SOURCES = ['TradEG', 'TradD', 'TradA', 'TradH', 'TradAv', 'TradP', 'TradX']
 const PER_PAGE_OPTIONS = [10, 20, 50, 100]
@@ -69,7 +42,7 @@ export default function DictionnairePage() {
   const [loading, setLoading] = useState(false)
   const [openAccordion, setOpenAccordion] = useState<Set<number>>(new Set())
 
-  const [themesMap, setThemesMap] = useState<ThemesMap>({})
+  const [themesMap, setThemesMap] = useState<ThemeCategories>({})
 
   /* ── Import dictionnaire ── */
   const [importFile, setImportFile] = useState<File | null>(null)
@@ -78,9 +51,8 @@ export default function DictionnairePage() {
 
   useEffect(() => {
     headingRef.current?.focus()
-    apiFetch('/api/v1/dictionary/themes')
-      .then(r => r.ok ? r.json() : {})
-      .then((data: ThemesMap) => setThemesMap(data))
+    fetchThemes()
+      .then(data => setThemesMap(data))
       .catch(() => {})
   }, [])
 
@@ -90,22 +62,18 @@ export default function DictionnairePage() {
   }) => {
     setLoading(true)
     setOpenAccordion(new Set())
-    const params = new URLSearchParams()
-    if (opts.q) params.set('q', opts.q)
-    if (!opts.q && opts.theme) params.set('theme', opts.theme)
-    if (!opts.q && opts.categorie) params.set('categorie', opts.categorie)
-    if (opts.graphie) params.set('graphie', opts.graphie)
-    if (opts.source) params.set('source', opts.source)
-    params.set('page', String(opts.page))
-    params.set('per_page', String(opts.perPage))
-
-    const endpoint = opts.dir === 'oc_to_fr'
-      ? `/api/v1/dictionary/search?${params}`
-      : `/api/v1/dictionary?${params}`
-
-    apiFetch(endpoint)
-      .then(r => r.ok ? r.json() : Promise.reject())
-      .then((data: DictPage) => {
+    const params = {
+      q: opts.q || undefined,
+      theme: !opts.q && opts.theme ? opts.theme : undefined,
+      categorie: !opts.q && opts.categorie ? opts.categorie : undefined,
+      graphie: opts.graphie || undefined,
+      source: opts.source || undefined,
+      page: opts.page,
+      per_page: opts.perPage,
+    }
+    const search = opts.dir === 'oc_to_fr' ? searchProvencal(params) : searchDictionary(params)
+    search
+      .then(data => {
         setResults(data.items)
         setTotal(data.total)
         setSuggestions(data.suggestions ?? [])
@@ -147,22 +115,14 @@ export default function DictionnairePage() {
     if (!importFile) return
     setImporting(true)
     try {
-      const formData = new FormData()
-      formData.append('file', importFile)
-      const res = await apiFetch('/api/v1/dictionary/import', { method: 'POST', body: formData })
-      if (res.ok) {
-        const data = await res.json() as { imported: number; skipped: number }
-        setSnackbar({ message: `${data.imported} entrée${data.imported > 1 ? 's' : ''} importée${data.imported > 1 ? 's' : ''}`, type: 'success' })
-        setImportFile(null)
-        if (importFileRef.current) importFileRef.current.value = ''
-        // Recharger le dictionnaire
-        doSearch({ dir: direction, q, theme, categorie, graphie, source, page, perPage })
-      } else {
-        const err = await res.json().catch(() => ({ detail: 'Erreur lors de l\'import' })) as { detail: string }
-        setSnackbar({ message: err.detail ?? 'Erreur lors de l\'import', type: 'error' })
-      }
-    } catch {
-      setSnackbar({ message: 'Erreur réseau lors de l\'import', type: 'error' })
+      const data = await importDictionary(importFile)
+      setSnackbar({ message: `${data.imported} entrée${data.imported > 1 ? 's' : ''} importée${data.imported > 1 ? 's' : ''}`, type: 'success' })
+      setImportFile(null)
+      if (importFileRef.current) importFileRef.current.value = ''
+      doSearch({ dir: direction, q, theme, categorie, graphie, source, page, perPage })
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Erreur lors de l'import"
+      setSnackbar({ message: msg, type: 'error' })
     } finally {
       setImporting(false)
     }

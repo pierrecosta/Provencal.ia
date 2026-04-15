@@ -1,7 +1,10 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { apiFetch } from '../services/api'
 import { useAuth } from '../context/AuthContext'
+import { fetchArticles, createArticle, updateArticle, deleteArticle, rollbackArticle } from '../services/articlesService'
+import { uploadImageFile } from '../services/uploadService'
+import { ApiError } from '../services/types'
+import type { Article, ArticleBody } from '../services/types'
 import Snackbar from '../components/ui/Snackbar'
 import ConfirmModal from '../components/ui/ConfirmModal'
 import { compressImage } from '../utils/imageCompression'
@@ -22,26 +25,6 @@ const CATEGORIES = [
   'Immigration & Diaspora', 'Jeunesse', 'Régionalisme & Politique linguistique',
   'Divers',
 ]
-
-interface Article {
-  id: number
-  titre: string
-  description: string | null
-  auteur: string | null
-  date_publication: string | null
-  categorie: string | null
-  image_ref: string | null
-  source_url: string | null
-  is_locked: boolean
-  locked_by: number | null
-}
-
-interface PageData {
-  items: Article[]
-  total: number
-  page: number
-  pages: number
-}
 
 interface ArticleFormData {
   titre: string
@@ -137,39 +120,37 @@ export default function ArticlesPage() {
   const createFileRef = useRef<HTMLInputElement>(null)
   const editFileRef = useRef<HTMLInputElement>(null)
 
-  const fetchArticles = useCallback(async (p: number) => {
+  const loadArticles = useCallback(async (p: number) => {
     setLoading(true)
     try {
-      const params = new URLSearchParams({ page: String(p), per_page: '20' })
-      if (categorie) params.set('categorie', categorie)
-      if (annee) params.set('annee', annee)
-      if (mois) params.set('mois', mois)
-      const resp = await apiFetch(`/api/v1/articles?${params}`)
-      if (resp.ok) {
-        const data: PageData = await resp.json()
-        setArticles(data.items)
-        setTotal(data.total)
-        setPages(data.pages)
-        setPage(data.page)
-      }
+      const data = await fetchArticles({
+        page: p,
+        per_page: 20,
+        categorie: categorie || undefined,
+        annee: annee || undefined,
+        mois: mois || undefined,
+      })
+      setArticles(data.items)
+      setTotal(data.total)
+      setPages(data.pages)
+      setPage(data.page)
+    } catch {
+      // Erreur réseau — liste inchangée
     } finally {
       setLoading(false)
     }
   }, [categorie, annee, mois])
 
-  useEffect(() => { void fetchArticles(1) }, [fetchArticles])
+  useEffect(() => { void loadArticles(1) }, [loadArticles])
 
   async function uploadImage(file: File): Promise<string | null> {
     const compressed = await compressImage(file, 2)
-    const formData = new FormData()
-    formData.append('file', compressed)
-    const res = await apiFetch('/api/v1/upload/image', { method: 'POST', body: formData })
-    if (!res.ok) {
+    try {
+      return await uploadImageFile(compressed)
+    } catch {
       setSnackbar({ message: "Erreur lors de l'upload de l'image", type: 'error' })
       return null
     }
-    const data = await res.json() as { image_ref: string }
-    return data.image_ref
   }
 
   async function buildBody(form: ArticleFormData): Promise<Record<string, unknown> | null> {
@@ -212,12 +193,13 @@ export default function ArticlesPage() {
     try {
       const body = await buildBody(createForm)
       if (!body) return
-      const res = await apiFetch('/api/v1/articles', { method: 'POST', body: JSON.stringify(body) })
-      if (!res.ok) { setSnackbar({ message: 'Erreur lors de la création', type: 'error' }); return }
+      await createArticle(body as unknown as ArticleBody)
       setShowCreateForm(false)
       setCreateForm(EMPTY_FORM)
       setSnackbar({ message: 'Article créé avec succès', type: 'success' })
-      await fetchArticles(1)
+      await loadArticles(1)
+    } catch {
+      setSnackbar({ message: 'Erreur lors de la création', type: 'error' })
     } finally { setCreateSubmitting(false) }
   }
 
@@ -252,38 +234,50 @@ export default function ArticlesPage() {
     try {
       const body = await buildBody(editForm)
       if (!body) return
-      const res = await apiFetch(`/api/v1/articles/${editingId}`, { method: 'PUT', body: JSON.stringify(body) })
-      if (res.status === 403) { setSnackbar({ message: 'Article verrouillé par un autre contributeur', type: 'error' }); cancelEdit(); return }
-      if (!res.ok) { setSnackbar({ message: 'Erreur lors de la modification', type: 'error' }); return }
-      const updated: Article = await res.json()
-      setArticles(prev => prev.map(a => a.id === updated.id ? updated : a))
-      cancelEdit()
-      setSnackbar({ message: 'Article modifié avec succès', type: 'success' })
+      try {
+        const updated = await updateArticle(editingId, body as unknown as ArticleBody)
+        setArticles(prev => prev.map(a => a.id === updated.id ? updated : a))
+        cancelEdit()
+        setSnackbar({ message: 'Article modifié avec succès', type: 'success' })
+      } catch (err) {
+        if (err instanceof ApiError && err.status === 403) {
+          setSnackbar({ message: 'Article verrouillé par un autre contributeur', type: 'error' })
+          cancelEdit()
+        } else {
+          setSnackbar({ message: 'Erreur lors de la modification', type: 'error' })
+        }
+      }
     } finally { setEditSubmitting(false) }
   }
 
   async function confirmDelete() {
     if (!deleteTarget) return
     try {
-      const res = await apiFetch(`/api/v1/articles/${deleteTarget.id}`, { method: 'DELETE' })
-      if (res.status === 403) { setSnackbar({ message: 'Article verrouillé par un autre contributeur', type: 'error' }) }
-      else if (!res.ok) { setSnackbar({ message: 'Erreur lors de la suppression', type: 'error' }) }
-      else {
-        setArticles(prev => prev.filter(a => a.id !== deleteTarget.id))
-        setSnackbar({ message: 'Article supprimé', type: 'success' })
-        cancelEdit()
+      await deleteArticle(deleteTarget.id)
+      setArticles(prev => prev.filter(a => a.id !== deleteTarget.id))
+      setSnackbar({ message: 'Article supprimé', type: 'success' })
+      cancelEdit()
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 403) {
+        setSnackbar({ message: 'Article verrouillé par un autre contributeur', type: 'error' })
+      } else {
+        setSnackbar({ message: 'Erreur lors de la suppression', type: 'error' })
       }
     } finally { setDeleteTarget(null) }
   }
 
   async function doRollback(a: Article) {
-    const res = await apiFetch(`/api/v1/articles/${a.id}/rollback`, { method: 'POST' })
-    if (res.status === 404) { setSnackbar({ message: 'Aucune action à annuler', type: 'error' }) }
-    else if (!res.ok) { setSnackbar({ message: 'Erreur lors du rollback', type: 'error' }) }
-    else {
+    try {
+      await rollbackArticle(a.id)
       setSnackbar({ message: 'Dernière action annulée', type: 'success' })
       cancelEdit()
-      await fetchArticles(page)
+      await loadArticles(page)
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 404) {
+        setSnackbar({ message: 'Aucune action à annuler', type: 'error' })
+      } else {
+        setSnackbar({ message: 'Erreur lors du rollback', type: 'error' })
+      }
     }
   }
 
@@ -462,10 +456,10 @@ export default function ArticlesPage() {
 
       {pages > 1 && (
         <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center', justifyContent: 'center', marginTop: 'var(--space-4)' }}>
-          <button onClick={() => void fetchArticles(page - 1)} disabled={page <= 1}
+          <button onClick={() => void loadArticles(page - 1)} disabled={page <= 1}
             style={{ padding: '6px 12px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', background: 'none', cursor: page > 1 ? 'pointer' : 'not-allowed' }}>←</button>
           <span style={{ fontSize: 'var(--text-sm)' }}>Page {page} / {pages} ({total} articles)</span>
-          <button onClick={() => void fetchArticles(page + 1)} disabled={page >= pages}
+          <button onClick={() => void loadArticles(page + 1)} disabled={page >= pages}
             style={{ padding: '6px 12px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', background: 'none', cursor: page < pages ? 'pointer' : 'not-allowed' }}>→</button>
         </div>
       )}
