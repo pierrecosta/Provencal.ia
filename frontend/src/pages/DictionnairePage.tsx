@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { apiFetch } from '../services/api'
+import { useAuth } from '../context/AuthContext'
+import Snackbar from '../components/ui/Snackbar'
 import iconToggleLangue from '../assets/icons/icon-toggle-langue.svg'
+import iconUpload from '../assets/icons/icon-upload-image.svg'
 import iconRecherche from '../assets/icons/icon-recherche.svg'
 import iconDeplier from '../assets/icons/icon-deplier.svg'
 import iconReplier from '../assets/icons/icon-replier.svg'
@@ -40,9 +43,16 @@ interface ThemesMap {
 const SOURCES = ['TradEG', 'TradD', 'TradA', 'TradH', 'TradAv', 'TradP', 'TradX']
 const PER_PAGE_OPTIONS = [10, 20, 50, 100]
 
+interface SnackbarState {
+  message: string
+  type: 'success' | 'error'
+}
+
 export default function DictionnairePage() {
   const headingRef = useRef<HTMLHeadingElement>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const importFileRef = useRef<HTMLInputElement>(null)
+  const { isAuthenticated } = useAuth()
 
   const [direction, setDirection] = useState<Direction>('fr_to_oc')
   const [q, setQ] = useState('')
@@ -60,6 +70,11 @@ export default function DictionnairePage() {
   const [openAccordion, setOpenAccordion] = useState<Set<number>>(new Set())
 
   const [themesMap, setThemesMap] = useState<ThemesMap>({})
+
+  /* ── Import dictionnaire ── */
+  const [importFile, setImportFile] = useState<File | null>(null)
+  const [importing, setImporting] = useState(false)
+  const [snackbar, setSnackbar] = useState<SnackbarState | null>(null)
 
   useEffect(() => {
     headingRef.current?.focus()
@@ -128,9 +143,63 @@ export default function DictionnairePage() {
 
   const categories = theme && themesMap[theme] ? themesMap[theme] : []
 
+  async function launchImport() {
+    if (!importFile) return
+    setImporting(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', importFile)
+      const res = await apiFetch('/api/v1/dictionary/import', { method: 'POST', body: formData })
+      if (res.ok) {
+        const data = await res.json() as { imported: number; skipped: number }
+        setSnackbar({ message: `${data.imported} entrée${data.imported > 1 ? 's' : ''} importée${data.imported > 1 ? 's' : ''}`, type: 'success' })
+        setImportFile(null)
+        if (importFileRef.current) importFileRef.current.value = ''
+        // Recharger le dictionnaire
+        doSearch({ dir: direction, q, theme, categorie, graphie, source, page, perPage })
+      } else {
+        const err = await res.json().catch(() => ({ detail: 'Erreur lors de l\'import' })) as { detail: string }
+        setSnackbar({ message: err.detail ?? 'Erreur lors de l\'import', type: 'error' })
+      }
+    } catch {
+      setSnackbar({ message: 'Erreur réseau lors de l\'import', type: 'error' })
+    } finally {
+      setImporting(false)
+    }
+  }
+
   return (
     <div>
-      <h1 ref={headingRef} tabIndex={-1}>Dictionnaire</h1>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 'var(--space-2)', marginBottom: 'var(--space-2)' }}>
+        <h1 ref={headingRef} tabIndex={-1} style={{ margin: 0 }}>Dictionnaire</h1>
+        {isAuthenticated && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+            <label style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'var(--color-primary)', border: 'none', borderRadius: 'var(--radius-md)', padding: '6px 16px', color: 'white', cursor: 'pointer', fontWeight: 600, fontSize: 'var(--text-sm)' }}>
+              <img src={iconUpload} alt="" width={16} height={16} style={{ filter: 'brightness(0) invert(1)' }} />
+              Importer un fichier
+              <input
+                ref={importFileRef}
+                type="file"
+                accept=".csv,.xlsx"
+                style={{ display: 'none' }}
+                onChange={e => setImportFile(e.target.files?.[0] ?? null)}
+              />
+            </label>
+            {importFile && (
+              <>
+                <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text)', opacity: 0.75 }}>{importFile.name}</span>
+                <button
+                  onClick={() => void launchImport()}
+                  disabled={importing}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'var(--color-secondary)', border: 'none', borderRadius: 'var(--radius-md)', padding: '6px 16px', color: 'white', cursor: importing ? 'not-allowed' : 'pointer', fontWeight: 600, fontSize: 'var(--text-sm)', opacity: importing ? 0.7 : 1 }}
+                >
+                  {importing ? 'Import en cours…' : 'Lancer l\'import'}
+                </button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Sélecteur de direction */}
       <div style={{ display: 'flex', gap: 'var(--space-2)', marginBottom: 'var(--space-3)', flexWrap: 'wrap' }}>
@@ -308,6 +377,10 @@ export default function DictionnairePage() {
             {PER_PAGE_OPTIONS.map(n => <option key={n} value={n}>{n} / page</option>)}
           </select>
         </div>
+      )}
+      {/* Snackbar */}
+      {snackbar && (
+        <Snackbar message={snackbar.message} type={snackbar.type} onClose={() => setSnackbar(null)} />
       )}
     </div>
   )
