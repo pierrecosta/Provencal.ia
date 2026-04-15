@@ -8,6 +8,7 @@ import TraducteurPage from './pages/TraducteurPage'
 import AgendaPage from './pages/AgendaPage'
 import BibliothequePage from './pages/BibliothequePage'
 import AProposPage from './pages/AProposPage'
+import MentionsLegalesPage from './pages/MentionsLegalesPage'
 import ConnexionPage from './pages/ConnexionPage'
 import NotFoundPage from './pages/NotFoundPage'
 
@@ -24,6 +25,7 @@ function App() {
             <Route path="agenda" element={<AgendaPage />} />
             <Route path="bibliotheque" element={<BibliothequePage />} />
             <Route path="a-propos" element={<AProposPage />} />
+            <Route path="mentions-legales" element={<MentionsLegalesPage />} />
             <Route path="connexion" element={<ConnexionPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>

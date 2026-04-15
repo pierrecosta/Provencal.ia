@@ -1,0 +1,10 @@
+/* Footer desktop only */
+.footer-desktop {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .footer-desktop {
+    display: block;
+  }
+}

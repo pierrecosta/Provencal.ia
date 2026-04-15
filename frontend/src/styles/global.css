@@ -27,3 +27,10 @@ body {
     transition: none !important;
   }
 }
+
+/* Focus SPA — compensation navbar desktop fixe (§11.3) */
+@media (min-width: 768px) {
+  h1 {
+    scroll-margin-top: 64px;
+  }
+}
