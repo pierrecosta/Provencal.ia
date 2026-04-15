@@ -6,6 +6,8 @@ from app.core.database import get_db
 from app.core.security import verify_password, create_access_token
 from app.models.user import User
 from app.schemas.auth import LoginRequest, TokenResponse
+from app.api.blacklist import token_blacklist
+from app.api.deps import get_current_user, oauth2_scheme
 
 router = APIRouter(prefix="/auth", tags=["Authentification"])
 
@@ -26,3 +28,12 @@ async def login(body: LoginRequest, db: AsyncSession = Depends(get_db)) -> Token
 
     token = create_access_token({"sub": user.pseudo})
     return TokenResponse(access_token=token, token_type="bearer")
+
+
+@router.post("/logout", summary="Déconnexion contributeur")
+async def logout(
+    _current_user: User = Depends(get_current_user),
+    token: str = Depends(oauth2_scheme),
+) -> dict:
+    token_blacklist.add(token)
+    return {"message": "Déconnexion réussie"}
