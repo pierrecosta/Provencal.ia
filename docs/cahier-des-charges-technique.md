@@ -433,11 +433,27 @@ CREATE INDEX idx_edit_log_table_row
     ON edit_log (table_name, row_id, done_at DESC);
 ```
 
+#### Table `a_propos_content` — Blocs éditables de la page « À propos »
+
+```sql
+CREATE TABLE a_propos_content (
+    id          SERIAL PRIMARY KEY,
+    bloc        VARCHAR(20) NOT NULL UNIQUE CHECK (bloc IN ('demarche', 'sources')),
+    contenu     TEXT NOT NULL DEFAULT '',
+    locked_by   INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    locked_at   TIMESTAMP,
+    updated_by  INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    updated_at  TIMESTAMP DEFAULT now()
+);
+```
+
+> Les deux lignes (`demarche` et `sources`) sont insérées au déploiement initial. Il n'existe pas d'opération de création ou de suppression sur cette table.
+
 ### 5.3 Conventions transversales
 
 #### Verrouillage d'édition
 
-Les champs `locked_by` (FK → `users.id`) et `locked_at` (TIMESTAMP) sont présents sur **toutes les tables éditorielles** : `dict_entries`, `dict_translations`, `agenda_events`, `library_entries`, `articles`, `sayings`.
+Les champs `locked_by` (FK → `users.id`) et `locked_at` (TIMESTAMP) sont présents sur **toutes les tables éditorielles** : `dict_entries`, `dict_translations`, `agenda_events`, `library_entries`, `articles`, `sayings`, `a_propos_content`.
 
 **Logique de verrouillage :**
 - Verrou actif si `locked_at + 30min > now()`
@@ -507,6 +523,9 @@ Ces index permettent la recherche avec distance de Levenshtein (tolérance aux f
 |---------|-------|:----:|-------------|
 | GET | `/dictionary` | Non | Liste paginée + recherche FR→Prov. Params : `?q=<mot>&dir=fr_to_prov&theme=&categorie=&graphie=&source=&page=1&per_page=20`. Suggestions Levenshtein si mot non trouvé. |
 | GET | `/dictionary/search` | Non | Recherche Prov→FR (toutes graphies). Params : `?q=<mot>&dir=prov_to_fr` |
+| GET | `/dictionary/{id}` | Non | Détail complet d'une entrée : métadonnées + toutes les traductions |
+| PUT | `/dictionary/{id}` | Oui | Modifier une entrée (métadonnées + traductions). Vérifie le verrou sur `dict_entries`. Le corps contient les champs de `dict_entries` et un tableau `translations` remplaant l'intégralité des lignes `dict_translations` existantes. |
+| DELETE | `/dictionary/{id}` | Oui | Supprimer une entrée et ses traductions (`CASCADE`) |
 | POST | `/dictionary/import` | Oui | Import CSV/Excel — `multipart/form-data` (voir §7) |
 
 #### Dictons / Expressions / Proverbes
@@ -552,6 +571,15 @@ Ces index permettent la recherche avec distance de Levenshtein (tolérance aux f
 | Méthode | Route | Auth | Description |
 |---------|-------|:----:|-------------|
 | POST | `/translate` | Non | Traduction lexicale mot-à-mot. Body : `{ text: "..." }`. Retourne `{ translated: "...", unknown_words: [...] }` |
+
+#### Page « À propos »
+
+| Méthode | Route | Auth | Description |
+|---------|-------|:----:|-------------|
+| GET | `/a-propos` | Non | Retourne les deux blocs éditables (`demarche`, `sources`) et la liste des pseudos contributeurs actifs (depuis `users`). Format : `{ demarche: { contenu, locked_by, locked_at }, sources: { contenu, locked_by, locked_at }, contributors: ["pseudo", ...] }` |
+| PUT | `/a-propos/{bloc}` | Oui | Modifier le contenu d'un bloc (`demarche` ou `sources`). Vérifie le verrou. Body : `{ contenu: "..." }` |
+| POST | `/a-propos/{bloc}/lock` | Oui | Acquérir le verrou sur un bloc avant édition |
+| DELETE | `/a-propos/{bloc}/lock` | Oui | Libérer le verrou (annulation ou sauvegarde) |
 
 ---
 

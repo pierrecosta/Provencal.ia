@@ -59,7 +59,7 @@ Le visiteur ne peut ni créer, ni modifier, ni supprimer de contenu.
 
 - **Nombre maximum :** 10 contributeurs.
 - **Création de compte :** Sur invitation uniquement. Les identifiants (pseudo + mot de passe) sont créés directement en base de données par l'administrateur système. Il n'existe aucun formulaire d'inscription public.
-- **Droits :** Création, modification et suppression de contenu sur tous les modules éditoriaux (dictionnaire, bibliothèque, articles, agenda, dictons/expressions/proverbes).
+- **Droits :** Création, modification et suppression de contenu sur tous les modules éditoriaux (dictionnaire, bibliothèque, articles, agenda, dictons/expressions/proverbes) ainsi que modification du contenu éditorial de la page « À propos » (blocs Démarche et Sources).
 - **Publication :** Directe, sans workflow de relecture ni statut brouillon. Le contenu est publié immédiatement.
 - **Interface :** Intégrée au site public. Les boutons d'édition apparaissent directement sur les pages lorsque le contributeur est connecté. Il n'existe pas de section `/admin` séparée.
 
@@ -69,7 +69,6 @@ L'administrateur gère l'application en dehors de l'interface web :
 - Création et suppression de comptes contributeurs (directement en base de données)
 - Import du dictionnaire (fichier CSV/Excel)
 - Maintenance technique, sauvegardes, mises à jour
-- Rédaction du contenu de la page « À propos »
 
 Il n'existe aucune interface d'administration applicative.
 
@@ -164,6 +163,29 @@ Les autres graphies historiques (pré-mistralienne, régionale) sont présentes 
 - **Champs de traduction vides :** Acceptés, tant qu'au moins une des colonnes de traduction est renseignée.
 - **Doublons :** Un doublon (même mot français + thème + catégorie) arrête l'import.
 - **Droits :** Réservé aux contributeurs authentifiés.
+
+#### Modification d'une entrée
+
+La modification d'une entrée existante est accessible aux contributeurs authentifiés directement depuis la page `/dictionnaire`.
+
+**Données modifiables :**
+
+| Champ | Obligatoire | Contrainte | Description |
+|-------|:-----------:|------------|-------------|
+| Mot français | Oui | 200 caractères max | Entrée principale |
+| Synonyme français | Non | 200 caractères max | Variantes françaises |
+| Description | Non | Texte libre | Contexte, notes d'usage, étymologie |
+| Thème | Oui | Valeur parmi les 13 thèmes (§10.6) | Thème principal |
+| Catégorie | Oui | 100 caractères max | Sous-catégorie du thème |
+| Traductions provençales | — | 1 ligne par source (7 sources max) | Texte de traduction par source codifiée |
+
+**Règle de modification des traductions :** L'ensemble des traductions existantes est remplacé par les valeurs saisies dans le formulaire. Une source laissée vide supprime la traduction correspondante. Au moins une traduction doit rester renseignée.
+
+**Verrouillage :** Le verrou s'applique au niveau de l'entrée principale (mot français). Un seul contributeur peut modifier une entrée à la fois — ses traductions sont incluses dans le verrou.
+
+**Rollback :** Disponible. Annule la dernière modification sur l'entrée (métadonnées et traductions simultanément).
+
+**Droits :** Réservé aux contributeurs authentifiés.
 
 ---
 
@@ -311,11 +333,15 @@ Les autres graphies historiques (pré-mistralienne, régionale) sont présentes 
 
 **Structure (3 blocs) :**
 
-1. **La démarche** — Pourquoi ce site ? Quel problème cherche-t-on à résoudre ? Texte éditorial rédigé par l'administrateur.
-2. **Les contributeurs** — Liste des contributeurs actifs avec leur pseudo et, optionnellement, leur domaine de compétence. Pas de nom réel si l'auteur choisit l'anonymat.
-3. **Les sources** — Références des 7 sources lexicographiques du dictionnaire (voir §10.4) + liste des fonds documentaires utilisés pour la bibliothèque.
+1. **La démarche** — Pourquoi ce site ? Quel problème cherche-t-on à résoudre ? Texte éditorial libre, modifiable par les contributeurs.
+2. **Les contributeurs** — Liste générée automatiquement à partir des comptes actifs en base (pseudo de chaque utilisateur inscrit). Non éditable manuellement — le contenu reflète l'état de la table `users`.
+3. **Les sources** — Références des 7 sources lexicographiques du dictionnaire (voir §10.4) + liste des fonds documentaires utilisés pour la bibliothèque. Texte libre, modifiable par les contributeurs.
 
-**Mise à jour :** Contenu statique géré directement en base ou via fichier de configuration — pas d'interface d'édition dédiée.
+**Mise à jour :** Les blocs « Démarche » et « Sources » sont éditables en ligne par les contributeurs authentifiés, selon les règles du mode contributeur (§7). Le bloc « Contributeurs » est calculé dynamiquement — il ne peut pas être édité.
+
+**Verrouillage :** La page est traitée comme un élément unique verrouillable. Un seul contributeur peut être en mode édition à la fois (30 minutes max). Si un contributeur est en cours de modification, le bouton « Modifier » est remplacé par l'icône de verrou avec le tooltip *« En cours de modification »*.
+
+**Rollback :** Disponible. Annule la dernière modification sur les blocs « Démarche » et « Sources » indépendamment l'un de l'autre.
 
 ---
 
@@ -506,6 +532,8 @@ Avec une icône de cigale décorative — pas de spinner.
 
 Voir §3.2 pour le détail des règles fonctionnelles.
 
+**Mode contributeur :** Un bouton « Modifier » est affiché en bout de chaque ligne lorsque le contributeur est connecté. Il ouvre un formulaire d'édition inline présentant l'ensemble des champs de l'entrée (mot français, synonyme, thème, catégorie, description) ainsi que les 7 colonnes de traductions. Voir §3.2, sous-section « Modification d'une entrée ».
+
 ---
 
 ### 6.3 Traducteur lexical
@@ -589,6 +617,8 @@ Voir §3.6 pour le détail des règles fonctionnelles.
 
 Voir §3.7 pour le détail.
 
+**Mode contributeur :** Les boutons « Modifier » apparaissent sur les blocs « Démarche » et « Sources » lorsque le contributeur est connecté. Le bloc « Contributeurs » est en lecture seule — aucun bouton d'édition n'y est affiché.
+
 ---
 
 ### 6.9 Page 404
@@ -638,7 +668,7 @@ Le verrouillage empêche deux contributeurs de modifier le même contenu en mêm
 - Si un autre contributeur consulte cet élément, le bouton « Modifier » est remplacé par une icône de verrou (terracotta) avec le tooltip *« En cours de modification »*
 - Le verrou **expire automatiquement après 30 minutes** si non libéré (protection contre l'abandon de session)
 - Le verrou est levé automatiquement à la sauvegarde ou à l'annulation
-- Le verrouillage s'applique à **tous les modules éditoriaux** : dictionnaire, bibliothèque, articles, agenda, dictons/expressions/proverbes
+- Le verrouillage s'applique à **tous les modules éditoriaux** : dictionnaire, bibliothèque, articles, agenda, dictons/expressions/proverbes, et page « À propos » (blocs éditables)
 
 ### 7.4 Rollback
 

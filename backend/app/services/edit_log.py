@@ -44,12 +44,14 @@ def _get_model_class(table_name: str):
     from app.models.agenda_event import AgendaEvent
     from app.models.article import Article
     from app.models.library_entry import LibraryEntry
+    from app.models.a_propos import AProposContent
 
     mapping = {
         "sayings": Saying,
         "agenda_events": AgendaEvent,
         "articles": Article,
         "library_entries": LibraryEntry,
+        "a_propos_content": AProposContent,
     }
     return mapping.get(table_name)
 

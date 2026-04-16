@@ -200,3 +200,17 @@ export interface TranslateResult {
   translated: string
   unknown_words: string[]
 }
+
+// ── À propos ──────────────────────────────────────────────────────────────────
+export interface AProposBlocOut {
+  bloc: string
+  contenu: string
+  locked_by: number | null
+  locked_at: string | null
+}
+
+export interface AProposOut {
+  demarche: AProposBlocOut
+  sources: AProposBlocOut
+  contributors: string[]
+}
