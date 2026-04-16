@@ -64,4 +64,119 @@ EvenementAgenda(
                 "L'édition 2026 met à l'honneur le centenaire de la mort du poète Frédéric Mistral "
                 "(1914–2026) avec des lectures publiques du Poème du Rhône en grafie mistralenco.",
     lien_externe=""
+),
+EvenementAgenda(
+    titre="Salon de l'artisanat provençal — Aix-en-Provence",
+    date_debut="2026-07-04",
+    date_fin="2026-07-06",
+    lieu="Aix-en-Provence (13)",
+    description="Trois jours de marché d'artisanat d'art rassemblant potiers, santoniers, tisserands, "
+                "savonniers et fabricants de bijoux provençaux sur le cours Mirabeau. Ateliers ouverts "
+                "au public, démonstrations de savoir-faire traditionnels et animations pour les enfants. "
+                "Vente directe de productions locales labellisées Artisanat de Provence.",
+    lien_externe=""
+),
+EvenementAgenda(
+    titre="Rencontres internationales de la Santon — Marseille",
+    date_debut="2026-11-28",
+    date_fin="2026-12-08",
+    lieu="Marseille (13)",
+    description="La plus grande foire aux santons du monde investit chaque année la Canebière depuis 1803. "
+                "Plus de 80 santonniers des Bouches-du-Rhône et du Var exposent leurs créations en argile. "
+                "Programme d'animations : concours du plus beau santon, ateliers de modelage pour enfants, "
+                "conférence sur l'histoire des crèches provençales et concert de Noël en langue d'oc.",
+    lien_externe=""
+),
+EvenementAgenda(
+    titre="Festival de Musique Provençale — lou Cansoun de Prouvènço",
+    date_debut="2026-06-20",
+    date_fin="2026-06-22",
+    lieu="Salon-de-Provence (13)",
+    description="Festival entièrement consacré à la chanson en langue d'oc (graphie mistralienne), "
+                "rassemblant groupes de folk, chorales félibréennes et musiciens contemporains "
+                "qui réinterprètent le répertoire traditionnel. Trois soirs de concerts gratuits "
+                "dans la cour du château de l'Empéri, suivi d'un concours d'interprétation "
+                "ouvert aux jeunes de moins de 25 ans.",
+    lien_externe=""
+),
+EvenementAgenda(
+    titre="Journées du Patrimoine des Villages en Provence — Alpilles",
+    date_debut="2026-09-19",
+    date_fin="2026-09-20",
+    lieu="Saint-Rémy-de-Provence (13)",
+    description="Ouverture exceptionnelle des mas, hôtels particuliers, chapelles et domaines agricoles "
+                "habituellement fermés au public. Visites guidées en français et en provençal, "
+                "lectures de textes de Mistral sur les sites historiques des Alpilles, "
+                "expositions temporaires sur l'architecture vernaculaire et les techniques "
+                "agricoles traditionnelles de la région.",
+    lien_externe=""
+),
+EvenementAgenda(
+    titre="Fête du Riz de Camargue — Arles",
+    date_debut="2026-09-12",
+    date_fin="2026-09-13",
+    lieu="Arles (13)",
+    description="Célébration de la récolte du riz camarguais à IGP (Indication Géographique Protégée), "
+                "unique riz cultivé en France. Visite des rizières en bateau-plat, marché de produits "
+                "locaux, concours de recettes traditionnelles à base de riz et de gardian de taureau, "
+                "et animations musicales avec des groupes de musique camarguaise.",
+    lien_externe=""
+),
+EvenementAgenda(
+    titre="Massalia Antiqua — Reconstitution historique à Marseille",
+    date_debut="2026-08-08",
+    date_fin="2026-08-09",
+    lieu="Marseille (13)",
+    description="Reconstitution de la vie quotidienne à Massalia (l'antique Marseille grecque) "
+                "au Jardin des Vestiges, site archéologique du Vieux-Port. Soldats grecs et romains, "
+                "marchands phocéens, artisans potiers et lingères en costume reconstituent les "
+                "activités du port antique. Visites guidées de l'enceinte grecque et du musée "
+                "d'histoire de Marseille.",
+    lien_externe="https://www.musee-histoire-marseille.fr"
+),
+EvenementAgenda(
+    titre="Journées de l'Écriture Provençale — Uzès",
+    date_debut="2026-10-24",
+    date_fin="2026-10-25",
+    lieu="Uzès (30)",
+    description="Atelier d'initiation à la graphie mistralienne et à la graphie classique de l'occitan, "
+                "animé par des chercheurs du CNRS et des membres du Félibrige. Conférences sur "
+                "l'histoire de l'écriture occitane des troubadours à nos jours, lectures publiques "
+                "de textes fondateurs et séances de calligraphie. Ouvert à tous niveaux.",
+    lien_externe=""
+),
+EvenementAgenda(
+    titre="La Festo de la Calendau — Aubagne",
+    date_debut="2026-12-19",
+    date_fin="2026-12-21",
+    lieu="Aubagne (13)",
+    description="Fête traditionnelle provençale inspirée de Calendau, poème épique de Frédéric Mistral. "
+                "Marché de Noël provençal avec artisans locaux, concours de crèches géantes, pastorale "
+                "chantée en provençal dans l'église Saint-Sauveur, gros souper des treize desserts "
+                "servi en commun sur la place de l'Hôtel de Ville. Animations gratuites.",
+    lien_externe=""
+),
+EvenementAgenda(
+    titre="Rencontres des Troubadours — Tarascon",
+    date_debut="2026-05-09",
+    date_fin="2026-05-10",
+    lieu="Tarascon (13)",
+    description="Week-end de poésie et de musique médiévale consacré aux troubadours du Midi. "
+                "Lectures de cansos et de sirventes en oc ancien et en provençal moderne, "
+                "concert de musique médiévale dans la cour du Château du roi René, "
+                "conférence sur les cours d'amour et le rôle des femmes-troubadours (les trobairitz). "
+                "Entrée libre.",
+    lien_externe=""
+),
+EvenementAgenda(
+    titre="Festin de Lou Catalan — Perpignan",
+    date_debut="2026-06-13",
+    date_fin="2026-06-15",
+    lieu="Perpignan (66)",
+    description="Festival des cultures occitano-catalanes célébrant les langues et traditions "
+                "communes aux deux côtés des Pyrénées. Concerts bilingues occitan-catalan, "
+                "conférences sur les liens historiques entre Catalogne et Provence, "
+                "gastronomie régionale et projections de films en langue d'oc. "
+                "Une occasion unique d'explorer l'espace culturel occitano-roman dans toute sa diversité.",
+    lien_externe=""
 )

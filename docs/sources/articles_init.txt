@@ -51,4 +51,115 @@ Article(
     date_publication="2026-01-10",
     auteur="Équipe Provencal.ia",
     categorie="Langue & Culture"
+),
+Article(
+    titre="Frédéric Mistral et le prix Nobel de 1904 : une consécration pour la langue d'oc",
+    description="En 1904, Frédéric Mistral reçoit le prix Nobel de littérature, partageant la distinction "
+                "avec l'Espagnol Echegaray. Retour sur cette reconnaissance internationale unique "
+                "pour un écrivain de langue régionale, et sur l'impact que cela eut pour le provençal.",
+    image_url="/static/articles/mistral-nobel-1904.jpg",
+    source_url="https://www.nobelprize.org",
+    date_publication="2026-03-20",
+    auteur="Équipe Provencal.ia",
+    categorie="Personnalités"
+),
+Article(
+    titre="Lou Tresor dóu Félibrige : l'encyclopédie provençale de Mistral",
+    description="Publié en 1878 après vingt ans de travail, le Tresor dóu Félibrige de Frédéric Mistral "
+                "est bien plus qu'un simple dictionnaire : c'est un monument encyclopédique qui cartographie "
+                "le lexique, les traditions et la mémoire de toute la langue d'oc.",
+    image_url="/static/articles/tresor-felibrige-mistral.jpg",
+    source_url="",
+    date_publication="2026-02-05",
+    auteur="Équipe Provencal.ia",
+    categorie="Littérature"
+),
+Article(
+    titre="La Nacioun Gardiano : gardians de Camargue et culture provençale",
+    description="Fondée par le marquis Folco de Baroncelli en 1512, la Nacioun Gardiano perpétue "
+                "les traditions des gardians camarguais. Entre élevage des taureaux et des chevaux, "
+                "costume traditionnel et langue provençale, ce monde à part fascine autant qu'il résiste.",
+    image_url="/static/articles/gardians-camargue-nacioun.jpg",
+    source_url="",
+    date_publication="2026-04-05",
+    auteur="Équipe Provencal.ia",
+    categorie="Traditions & Fêtes"
+),
+Article(
+    titre="Les santons de Provence : art populaire et mémoire des villages",
+    description="Nés à Marseille à la fin du XVIIIe siècle après l'interdiction des crèches dans les "
+                "églises révolutionnaires, les santons sont devenus un art populaire majeur de Provence. "
+                "Portrait des santonniers d'hier et d'aujourd'hui, entre argile et tradition.",
+    image_url="/static/articles/santons-provence-art.jpg",
+    source_url="",
+    date_publication="2026-01-28",
+    auteur="Équipe Provencal.ia",
+    categorie="Artisanat"
+),
+Article(
+    titre="La bouillabaisse : histoire d'un plat populaire devenu emblème de Marseille",
+    description="De la soupe de pêcheurs marseillais du XVIIIe siècle aux restaurants étoilés du Vieux-Port, "
+                "la bouillabaisse a suivi un chemin singulier. Plongée dans l'histoire d'un plat dont "
+                "l'authenticité est aujourd'hui protégée par une charte des restaurateurs locaux.",
+    image_url="/static/articles/bouillabaisse-marseille-histoire.jpg",
+    source_url="",
+    date_publication="2026-03-02",
+    auteur="Équipe Provencal.ia",
+    categorie="Gastronomie"
+),
+Article(
+    titre="L'Arlésiennes de Bizet : quand la musique consacre la Provence sur la scène mondiale",
+    description="La suite orchestrale tirée de la musique de scène de Bizet pour le drame "
+                "d'Alphonse Daudet (1872) a popularisé la Provence dans les salles de concert du monde. "
+                "Ses mélodies s'inspirent de chants provençaux authentiques collectés par Mistral.",
+    image_url="/static/articles/arlesienne-bizet-provence.jpg",
+    source_url="",
+    date_publication="2026-02-14",
+    auteur="Équipe Provencal.ia",
+    categorie="Musique"
+),
+Article(
+    titre="Les mas provençaux : architecture vernaculaire et vie rurale",
+    description="Le mas, ferme provençale orientée plein sud pour capter le soleil et protégée au nord "
+                "du mistral par de hauts cyprès, est l'unité de base du paysage agraire de Provence. "
+                "Entre pierre blonde, tuiles romanes et volets bleus, il incarne un art du bâti millénaire.",
+    image_url="/static/articles/mas-provencal-architecture.jpg",
+    source_url="",
+    date_publication="2026-04-10",
+    auteur="Équipe Provencal.ia",
+    categorie="Patrimoine bâti"
+),
+Article(
+    titre="Aubagnaises, Arlésiennes, Mireilles : les costumes provençaux et leur signification",
+    description="Chaque ville de Provence possède son costume distinctif. L'arlésienne avec sa coiffe "
+                "à l'ange, la mireille avec son ruban, l'aubagnaise avec sa cornette : ces habits de fête "
+                "transmettent une identité locale forte, portée encore aujourd'hui lors des fêtes votives.",
+    image_url="/static/articles/costumes-provencaux-traditions.jpg",
+    source_url="",
+    date_publication="2026-03-28",
+    auteur="Équipe Provencal.ia",
+    categorie="Traditions & Fêtes"
+),
+Article(
+    titre="La via Domitia : premiers témoins de Rome en Provence",
+    description="Tracée vers 120 av. J.-C. par le consul Domitius Ahenobarbus, la via Domitia est la "
+                "première route romaine construite en Gaule. De Beaucaire à Perpignan, elle traverse "
+                "la Provence en laissant derrière elle colonnes milliaires et vestiges archéologiques.",
+    image_url="/static/articles/via-domitia-provence-romaine.jpg",
+    source_url="https://fr.wikipedia.org/wiki/Via_Domitia",
+    date_publication="2026-01-20",
+    auteur="Équipe Provencal.ia",
+    categorie="Histoire & Mémoire"
+),
+Article(
+    titre="Le Museon Arlaten et la mémoire du monde provençal",
+    description="Fondé par Frédéric Mistral avec l'argent de son prix Nobel, le Museon Arlaten d'Arles "
+                "rassemble l'une des collections ethnographiques les plus riches sur la Provence. Après "
+                "une longue fermeture pour rénovation, il a rouvert ses portes avec un parcours modernisé "
+                "qui interroge l'identité provençale.",
+    image_url="/static/articles/museon-arlaten-arles-reouverture.jpg",
+    source_url="https://www.museonarlaten.fr",
+    date_publication="2026-04-15",
+    auteur="Équipe Provencal.ia",
+    categorie="Patrimoine bâti"
 )

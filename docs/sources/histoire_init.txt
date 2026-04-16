@@ -85,4 +85,172 @@ Histoire(
         "démolies et ses habitants taxés pour les frais de démolition. Les ruines subsistantes en font "
         "aujourd'hui l'un des sites touristiques les plus visités de France.",
     source_url="https://fr.wikipedia.org/wiki/Les_Baux-de-Provence"
+),
+Histoire(
+    titre="La Vouivre des marais de Camargue",
+    typologie="Légende",
+    periode="Indéterminé / Mythologique",
+    description_courte="Dans les marais impénétrables de Camargue, une créature ailée aux yeux de rubis "
+                       "gardait les trésors engloutis sous les eaux noires, terreur des bergers et des pêcheurs.",
+    description_longue="La *Vouivre camarguaise* est une variante locale du grand serpent ailé que l'on "
+        "retrouve dans tout le Midi de la France. En Camargue, on la décrivait comme un **grand lézard "
+        "ailé** long de plusieurs toises, dont les yeux — deux escarboucles rougeoyantes visibles la "
+        "nuit — signalaient l'approche à quiconque osait traverser les sagnes (les roselières) "
+        "après le coucher du soleil. Selon les anciens, tout homme qui parvenait à lui arracher ses "
+        "yeux devenait infiniment riche, mais nul n'y réussit jamais. Les étangs et les manades "
+        "(troupeaux) disparus sans explication étaient attribués à son passage. Cette légende reflète "
+        "la crainte ancestrale des zones humides, à la fois nourricières et dangereuses, que les "
+        "Camarguais ont habitées depuis l'Antiquité.",
+    source_url=""
+),
+Histoire(
+    titre="La Tête d'Or et la ville d'Avignon",
+    typologie="Légende",
+    periode="Époque Moderne (1500–1800)",
+    description_courte="Une tête d'or enfouie sous les fondations du Palais des Papes d'Avignon "
+                       "serait la source cachée de la prospérité de la ville — et pointer vers sa ruine si jamais elle était déterrée.",
+    description_longue="La légende de la *Tête d'Or d'Avignon* est l'une des plus tenaces du Comtat "
+        "Venaissin. Elle raconte qu'au moment de la construction du **Palais des Papes** au XIVe siècle, "
+        "les maçons auraient scellé dans les fondations une tête de taureau en or massif, offrande "
+        "propitiatoire destinée à assurer la solidité de l'édifice et la prospérité du siège pontifical. "
+        "Selon certaines versions, cette tête fut fondue à partir des bijoux et couronnes offerts par "
+        "les cardinaux lors d'un conclave. Une prophétie stipulait que le jour où la tête serait "
+        "retrouvée et retirée, Avignon périrait dans les flammes. Des excavations menées aux XVIIIe "
+        "et XIXe siècles n'ont jamais rien trouvé, ce qui n'a fait que renforcer le mythe.",
+    source_url="https://fr.wikipedia.org/wiki/Palais_des_Papes"
+),
+Histoire(
+    titre="Les Maures sarasins et la Provence du IXe siècle",
+    typologie="Histoire",
+    periode="Moyen Âge (500–1500)",
+    description_courte="Pendant plus d'un siècle, des groupes de guerriers sarrasins occupèrent le site "
+                       "du Fraxinetum (La Garde-Freinet) dans le massif des Maures, razziant la région jusqu'aux Alpes.",
+    description_longue="Au IXe siècle, des guerriers d'origine andalouse débarquèrent sur la côte "
+        "des Maures et fondèrent une base fortifiée appelée **Fraxinetum** (l'actuelle La Garde-Freinet, "
+        "dans le Var). De ce point stratégique, ils lancèrent des raids sur toute la Provence et "
+        "jusqu'en Suisse et en Italie du Nord, capturant des esclaves et racketant les monastères. "
+        "Leur implantation dura près d'un siècle (880–973). On leur attribue l'introduction du "
+        "bouchon de liège en Provence, issus de leurs techniques de travail du chêne-liège. "
+        "C'est le comte Guillaume de Provence qui les défit finalement à la bataille de Tourtour "
+        "en 973, libérant la région. Le massif des *Maures* tire son nom, selon certains étymologistes, "
+        "de leur présence — bien que d'autres le rattachent au mot provençal *mauro* (sombre, forestier).",
+    source_url="https://fr.wikipedia.org/wiki/Fraxinetum"
+),
+Histoire(
+    titre="La Fée Estérelle et le massif de l'Estérel",
+    typologie="Légende",
+    periode="Indéterminé / Mythologique",
+    description_courte="Les falaises rouges de l'Estérel, entre Cannes et Saint-Raphaël, doivent leur nom "
+                       "à une fée bienfaisante qui guidait les voyageurs perdus dans les gorges et protégeait les pêcheurs.",
+    description_longue="Selon la tradition orale de la côte varoise, *Estérelle* était une **fée bonne** "
+        "qui habitait les rochers de porphyre rouge dominant la mer entre Cannes et Fréjus. "
+        "Vêtue d'une robe couleur de feu à l'image des falaises de rhyolite, elle apparaissait "
+        "aux voyageurs égarés dans l'épaisse forêt de chênes-lièges et les guidait jusqu'au "
+        "chemin. Elle protégeait également les bateaux de pêche contre les tempêtes soudaines "
+        "du golfe de la Napoule. Les marins lui offraient des couronnes de bruyère rose "
+        "avant d'appareiller. Certains disent qu'on peut encore l'apercevoir, les soirs d'été, "
+        "sous la forme d'une lueur rosée sur les crêtes de l'Estérel.",
+    source_url=""
+),
+Histoire(
+    titre="Saint Trophime et la christianisation d'Arles",
+    typologie="Histoire",
+    periode="Antiquité (avant 500 ap. J.-C.)",
+    description_courte="Selon la tradition provençale, saint Trophime aurait évangélisé Arles au Ier siècle "
+                       "sur ordre direct de saint Paul, faisant de la ville l'un des premiers foyers chrétiens de Gaule.",
+    description_longue="La tradition chrétienne provençale place l'évangélisation d'Arles au Ier siècle "
+        "de notre ère. Saint **Trophime**, envoyé depuis Rome par saint Paul selon le récit hagiographique "
+        "local, aurait fondé le premier évêché gaulois dans la cité romaine d'Arelate. La cathédrale "
+        "Saint-Trophime, chef-d'œuvre du roman provençal achevé au XIIe siècle, perpétue son souvenir "
+        "avec un portail sculpté classé parmi les plus beaux d'Europe. La tradition des Saintes-Maries "
+        "(Marie-Jacobé, Marie-Salomé, Marthe, Marie-Madeleine) débarquant aux Saintes-Maries-de-la-Mer "
+        "s'intègre dans ce récit d'une Provence évangélisée directement depuis la Terre Sainte. "
+        "Si la critique historique nuance ces récits, ils ont profondément façonné l'identité religieuse "
+        "et culturelle de la Provence.",
+    source_url="https://fr.wikipedia.org/wiki/Trophime_d%27Arles"
+),
+Histoire(
+    titre="L'Homme au masque de fer et le château d'If",
+    typologie="Histoire",
+    periode="Époque Moderne (1500–1800)",
+    description_courte="Le mystérieux prisonnier au masque de velours noir incarcéré à l'île Sainte-Marguerite "
+                       "puis à la Bastille sous Louis XIV reste l'une des énigmes les plus fascinantes de l'histoire de France.",
+    description_longue="En 1687, un prisonnier secret arriva au fort royal de l'île Sainte-Marguerite, "
+        "au large de Cannes, sous la garde du gouverneur Bénigne de Saint-Mars. Son visage était "
+        "constamment dissimulé par un masque — de velours noir selon Voltaire, d'acier dans l'imaginaire "
+        "populaire. Transféré à la Bastille en 1698, il mourut en 1703 sans que son identité ait jamais "
+        "été officiellement révélée. Les théories abondent : **frère jumeau de Louis XIV**, diplomate "
+        "compromettant, général disgracié... Alexandre Dumas s'empara du mythe pour son roman "
+        "*Le Vicomte de Bragelonne* (1847), faisant du masque un personnage central de l'imaginaire "
+        "romantique. Les archives de l'île Sainte-Marguerite, consultées par les historiens, "
+        "n'ont toujours pas livré leur secret.",
+    source_url="https://fr.wikipedia.org/wiki/Masque_de_fer"
+),
+Histoire(
+    titre="Les Pénitents de Provence et leurs confréries",
+    typologie="Histoire",
+    periode="Époque Moderne (1500–1800)",
+    description_courte="Vêtus de cagoules colorées, les confréries de Pénitents ont marqué la vie religieuse "
+                       "provençale du XVIe au XIXe siècle. Certaines subsistent encore aujourd'hui, gardiennes d'un patrimoine unique.",
+    description_longue="Les **confréries de Pénitents** proliférèrent en Provence à partir du XVIe siècle "
+        "en réaction à la Réforme protestante et aux guerres de Religion. Chaque confrérie se distinguait "
+        "par la couleur de sa cagoule : les *Pénitents noirs* (enterrement des pauvres et des suppliciés), "
+        "les *Pénitents blancs* (accompagnement des condamnés à mort), les *Pénitents gris* ou *bleus* "
+        "(œuvres charitables variées). À Avignon, Arles, Aix, Marseille et dans de nombreux villages, "
+        "elles organisaient processions, enterrements gratuits et distributions d'aumônes. "
+        "Leur influence déclina sous la Révolution et le XIXe siècle, mais plusieurs confréries "
+        "perdurent, notamment à Villeneuve-lès-Avignon et à Nice, gardant vivaces leurs traditions "
+        "de vêtements, chants et rituels provençaux.",
+    source_url="https://fr.wikipedia.org/wiki/P%C3%A9nitents_(Provence)"
+),
+Histoire(
+    titre="Le Pont du Gard et l'aqueduc romain de Nîmes",
+    typologie="Histoire",
+    periode="Antiquité (avant 500 ap. J.-C.)",
+    description_courte="Chef-d'œuvre de l'ingénierie romaine construit au Ier siècle, le Pont du Gard "
+                       "acheminait l'eau de la source d'Uzès jusqu'à Nîmes sur plus de 50 kilomètres.",
+    description_longue="Construit vers 50 ap. J.-C. sous l'Empire romain, le **Pont du Gard** est le "
+        "tronçon le mieux conservé de l'aqueduc qui alimentait Nemausus (Nîmes) en eau potable depuis "
+        "la source d'Eure à Uzès. L'ouvrage s'élève à 48 m de hauteur sur trois niveaux d'arcades "
+        "en calcaire local, sans ciment — uniquement par la force de la taille des pierres et "
+        "la maîtrise du calcul des voûtes. Il transportait 20 000 m³ d'eau par jour sur une pente "
+        "totale de 17 mètres sur 50 km de conduite. Classé au patrimoine mondial de l'UNESCO en 1985, "
+        "il reste l'un des monuments romains les mieux conservés au monde et un témoignage essentiel "
+        "de la romanisation de la Provence et du Languedoc.",
+    source_url="https://fr.wikipedia.org/wiki/Pont_du_Gard"
+),
+Histoire(
+    titre="Le Mas des Abeilles : l'apiculture traditionnelle en Haute-Provence",
+    typologie="Histoire",
+    periode="Époque Contemporaine (1800–aujourd'hui)",
+    description_courte="La lavande et le thym des plateaux de Haute-Provence ont fait de la région l'un "
+                       "des grands terroirs du miel en France, perpétuant des traditions apicoles documentées depuis le Moyen Âge.",
+    description_longue="Sur les plateaux de Valensole et du Luberon, l'apiculture est pratiquée depuis "
+        "au moins le XVe siècle, comme en témoignent les anciens *capitulaires* (règlements) des "
+        "communautés rurales fixant les droits sur les ruches et la transhumance des abeilles. "
+        "La floraison de la **lavande vraie** (*Lavandula angustifolia*) entre juin et juillet "
+        "attire chaque été des milliers de ruches transportées depuis toute la Provence. "
+        "Le miel de lavande de Haute-Provence, à la saveur délicate et à la cristallisation "
+        "fine, bénéficie depuis 2013 d'une **IGP** (Indication Géographique Protégée). "
+        "Les anciennes *bastides apicoles* — bâtisses de pierre percées de niches pour loger "
+        "les ruches en paille tressée — subsistent dans plusieurs villages du Verdon, "
+        "témoins muets d'une économie rurale ancestrale.",
+    source_url=""
+),
+Histoire(
+    titre="La Comtesse de Die et les trobairitz de Provence",
+    typologie="Histoire",
+    periode="Moyen Âge (500–1500)",
+    description_courte="La Comtesse de Die, poétesse provençale du XIIe siècle, est l'une des rares femmes "
+                       "troubadours dont des chansons intégrales sont parvenues jusqu'à nous, avec leur mélodie notée.",
+    description_longue="Comtessa de Dia — son vrai nom reste incertain, peut-être **Beatriz** — composa "
+        "au XIIe siècle dans la région de Die (Drôme provençale). Elle est la seule *trobairitz* "
+        "(femme troubadour) dont on possède non seulement les paroles mais aussi la **mélodie** "
+        "d'une chanson complète : *A chantar m'er de so qu'eu no volria*, une canso d'amour "
+        "d'une intensité remarquable. Dans un monde littéraire dominé par les hommes, "
+        "elle s'adresse à son amant avec la même liberté et la même technique que ses homologues masculins, "
+        "revendiquant ses émotions avec une franchise qui fit d'elle un symbole de la "
+        "poésie lyrique occitane. Ses œuvres ont traversé les siècles dans des chansonniers "
+        "conservés à Milan et à Rome, témoignant de la vitalité culturelle des cours provençales.",
+    source_url="https://fr.wikipedia.org/wiki/Comtesse_de_Die"
 )
