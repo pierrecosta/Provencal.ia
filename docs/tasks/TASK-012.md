@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Backend
 **Priorité :** P0 (bloquant)
 **Dépendances :** TASK-011
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -81,7 +81,7 @@ C'est cette tâche elle-même.
 
 ## Critères de "Done"
 
-- [ ] `test_sayings.py` contient au moins 20 tests
-- [ ] Couverture : cas nominaux + erreurs auth + erreurs validation + verrouillage + edit_log
-- [ ] Tous les tests passent
-- [ ] Aucune régression sur les tests existants (`python -m pytest tests/ -v`)
+- [x] `test_sayings.py` contient au moins 20 tests
+- [x] Couverture : cas nominaux + erreurs auth + erreurs validation + verrouillage + edit_log
+- [x] Tous les tests passent
+- [x] Aucune régression sur les tests existants (`python -m pytest tests/ -v`)

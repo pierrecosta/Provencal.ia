@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Frontend
 **Priorité :** P1 (important)
 **Dépendances :** TASK-015, TASK-016
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -122,12 +122,12 @@ Ajouter les fonctionnalités CRUD contributeur sur la page Mémoire vivante : bo
 
 ## Critères de "Done"
 
-- [ ] Boutons contributeur visibles uniquement si authentifié
-- [ ] Création d'un saying via formulaire inline
-- [ ] Modification inline avec bascule état normal / édition
-- [ ] Suppression avec confirmation modale
-- [ ] Snackbar succès et erreur conformes à la charte
-- [ ] Icône verrou si verrouillé par un autre contributeur
-- [ ] Validation des champs obligatoires côté client
-- [ ] Responsive (desktop + mobile)
-- [ ] `npm run build` sans erreur TypeScript
+- [x] Boutons contributeur visibles uniquement si authentifié
+- [x] Création d'un saying via formulaire inline
+- [x] Modification inline avec bascule état normal / édition
+- [x] Suppression avec confirmation modale
+- [x] Snackbar succès et erreur conformes à la charte
+- [x] Icône verrou si verrouillé par un autre contributeur
+- [x] Validation des champs obligatoires côté client
+- [x] Responsive (desktop + mobile)
+- [x] `npm run build` sans erreur TypeScript

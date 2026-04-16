@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Backend
 **Priorité :** P0 (bloquant)
 **Dépendances :** TASK-010
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -86,10 +86,10 @@ Voir TASK-012.
 
 ## Critères de "Done"
 
-- [ ] 5 endpoints fonctionnels sous `/api/v1/sayings`
-- [ ] Schémas Pydantic validés (création, modification, réponse)
-- [ ] Terme du jour déterministe et change chaque jour
-- [ ] Pagination fonctionnelle avec filtres type/localité
-- [ ] Verrouillage et edit_log intégrés sur PUT et DELETE
-- [ ] Routeur enregistré dans `main.py`
-- [ ] Visible dans Swagger UI
+- [x] 5 endpoints fonctionnels sous `/api/v1/sayings`
+- [x] Schémas Pydantic validés (création, modification, réponse)
+- [x] Terme du jour déterministe et change chaque jour
+- [x] Pagination fonctionnelle avec filtres type/localité
+- [x] Verrouillage et edit_log intégrés sur PUT et DELETE
+- [x] Routeur enregistré dans `main.py`
+- [x] Visible dans Swagger UI

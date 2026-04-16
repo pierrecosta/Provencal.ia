@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Frontend
 **Priorité :** P1 (important)
 **Dépendances :** TASK-041, TASK-043
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -127,13 +127,13 @@ C'est cette tâche elle-même. Objectif : **≥ 30 tests frontend** couvrant les
 
 ## Critères de "Done"
 
-- [ ] Infrastructure Vitest + React Testing Library configurée
-- [ ] Scripts `test` et `test:watch` dans `package.json`
-- [ ] ≥ 30 tests écrits et passants
-- [ ] Tests composants UI : ConfirmModal, Snackbar, Breadcrumb
-- [ ] Smoke tests pages : HomePage, Dictionnaire, Connexion, Articles, Agenda
-- [ ] Tests AuthContext : login, logout, 401
-- [ ] Les mocks ciblent les services typés de TASK-043 (pas de mock `fetch` global)
-- [ ] `npm run build` sans régression
-- [ ] `npm run test` → 0 échec
-- [ ] Couverture ≥ 40% sur les fichiers critiques (hooks, context, composants UI)
+- [x] Infrastructure Vitest + React Testing Library configurée
+- [x] Scripts `test` et `test:watch` dans `package.json`
+- [x] ≥ 30 tests écrits et passants
+- [x] Tests composants UI : ConfirmModal, Snackbar, Breadcrumb
+- [x] Smoke tests pages : HomePage, Dictionnaire, Connexion, Articles, Agenda
+- [x] Tests AuthContext : login, logout, 401
+- [x] Les mocks ciblent les services typés de TASK-043 (pas de mock `fetch` global)
+- [x] `npm run build` sans régression
+- [x] `npm run test` → 0 échec
+- [x] Couverture ≥ 40% sur les fichiers critiques (hooks, context, composants UI)

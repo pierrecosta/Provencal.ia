@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Frontend
 **Priorité :** P1 (important)
 **Dépendances :** TASK-014, TASK-032
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -73,9 +73,9 @@ Implémenter la page Traducteur lexical côté frontend : zone de saisie à gauc
 
 ## Critères de "Done"
 
-- [ ] La traduction se déclenche automatiquement avec debounce 500ms
-- [ ] Les mots inconnus sont surlignés en jaune pâle
-- [ ] La ponctuation est conservée dans le résultat
-- [ ] La mention permanente est affichée
-- [ ] Layout 50/50 en desktop, empilé en mobile
-- [ ] Route ajoutée dans le routeur
+- [x] La traduction se déclenche automatiquement avec debounce 500ms
+- [x] Les mots inconnus sont surlignés en jaune pâle
+- [x] La ponctuation est conservée dans le résultat
+- [x] La mention permanente est affichée
+- [x] Layout 50/50 en desktop, empilé en mobile
+- [x] Route ajoutée dans le routeur

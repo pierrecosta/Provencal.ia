@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Backend
 **Priorité :** P1 (important)
 **Dépendances :** TASK-021
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -44,7 +44,7 @@ Importer les 5 événements culturels de test depuis `docs/sources/agenda_init.t
 
 ## Critères de "Done"
 
-- [ ] Script `seed_events.py` créé et fonctionnel
-- [ ] Les 5 événements sont importés sans doublon
-- [ ] Le résumé d'import est affiché
-- [ ] Les données sont visibles via l'API
+- [x] Script `seed_events.py` créé et fonctionnel
+- [x] Les 5 événements sont importés sans doublon
+- [x] Le résumé d'import est affiché
+- [x] Les données sont visibles via l'API

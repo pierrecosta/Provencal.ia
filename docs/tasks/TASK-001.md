@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Backend
 **Priorité :** P0 (bloquant)
 **Dépendances :** Aucune
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -41,7 +41,7 @@ Mettre en place la couche de connexion asynchrone à PostgreSQL via SQLAlchemy a
 
 ## Critères de "Done"
 
-- [ ] `backend/app/core/database.py` existe avec `engine`, `async_session_maker`, `Base`, `get_db()`
-- [ ] Les imports depuis `app.core.database` fonctionnent sans erreur
-- [ ] Le fichier `backend/app/core/__init__.py` n'a pas besoin de modification
-- [ ] Aucune régression sur `test_health.py`
+- [x] `backend/app/core/database.py` existe avec `engine`, `async_session_maker`, `Base`, `get_db()`
+- [x] Les imports depuis `app.core.database` fonctionnent sans erreur
+- [x] Le fichier `backend/app/core/__init__.py` n'a pas besoin de modification
+- [x] Aucune régression sur `test_health.py`

@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Backend
 **Priorité :** P1 (important)
 **Dépendances :** TASK-010
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -67,8 +67,8 @@ Implémenter le mécanisme de rollback permettant d'annuler la dernière action 
 
 ## Critères de "Done"
 
-- [ ] Le service `rollback_last_action` gère les 3 types d'action (INSERT, UPDATE, DELETE)
-- [ ] L'entrée `edit_log` est supprimée après rollback (usage unique)
-- [ ] Les endpoints rollback sont ajoutés aux 4 routeurs de modules
-- [ ] Le rollback est protégé par authentification
-- [ ] Les tests passent
+- [x] Le service `rollback_last_action` gère les 3 types d'action (INSERT, UPDATE, DELETE)
+- [x] L'entrée `edit_log` est supprimée après rollback (usage unique)
+- [x] Les endpoints rollback sont ajoutés aux 4 routeurs de modules
+- [x] Le rollback est protégé par authentification
+- [x] Les tests passent

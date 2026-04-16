@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Backend
 **Priorité :** P1 (important)
 **Dépendances :** TASK-011
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -48,7 +48,7 @@ Importer les 30 entrées de test du fichier `docs/sources/sayings_init.txt` en b
 
 ## Critères de "Done"
 
-- [ ] Script exécutable depuis `backend/`
-- [ ] 30 entrées importées correctement (types, localités, traductions cohérents)
-- [ ] Pas d'erreur en cas de réexécution (gestion doublons)
-- [ ] Les données sont visibles via l'API (`GET /sayings`)
+- [x] Script exécutable depuis `backend/`
+- [x] 30 entrées importées correctement (types, localités, traductions cohérents)
+- [x] Pas d'erreur en cas de réexécution (gestion doublons)
+- [x] Les données sont visibles via l'API (`GET /sayings`)

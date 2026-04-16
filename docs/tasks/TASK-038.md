@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Frontend
 **Priorité :** P1 (important)
 **Dépendances :** TASK-017, TASK-031, TASK-030
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -56,9 +56,9 @@ Ajouter la fonctionnalité d'import de fichier dictionnaire (CSV/XLSX) sur la pa
 
 ## Critères de "Done"
 
-- [ ] Bouton d'import visible uniquement si authentifié
-- [ ] Sélection de fichier CSV ou XLSX
-- [ ] Import avec spinner de progression
-- [ ] Succès : snackbar verte avec nombre d'entrées importées
-- [ ] Erreur : message détaillé avec numéro de ligne
-- [ ] Le dictionnaire se recharge après l'import
+- [x] Bouton d'import visible uniquement si authentifié
+- [x] Sélection de fichier CSV ou XLSX
+- [x] Import avec spinner de progression
+- [x] Succès : snackbar verte avec nombre d'entrées importées
+- [x] Erreur : message détaillé avec numéro de ligne
+- [x] Le dictionnaire se recharge après l'import

@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Backend
 **Priorité :** P0 (bloquant)
 **Dépendances :** TASK-004
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -53,9 +53,9 @@ Note : pour tester, créer un endpoint temporaire de test ou utiliser un endpoin
 
 ## Critères de "Done"
 
-- [ ] `get_current_user` existe dans `backend/app/api/deps.py`
-- [ ] Retourne un objet `User` pour un token valide
-- [ ] Lève `HTTPException(401)` pour token absent, invalide, expiré ou user supprimé
-- [ ] Intégré avec Swagger UI (bouton Authorize fonctionnel via `OAuth2PasswordBearer`)
-- [ ] Tests passent
-- [ ] Aucune régression sur les tests existants
+- [x] `get_current_user` existe dans `backend/app/api/deps.py`
+- [x] Retourne un objet `User` pour un token valide
+- [x] Lève `HTTPException(401)` pour token absent, invalide, expiré ou user supprimé
+- [x] Intégré avec Swagger UI (bouton Authorize fonctionnel via `OAuth2PasswordBearer`)
+- [x] Tests passent
+- [x] Aucune régression sur les tests existants

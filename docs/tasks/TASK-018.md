@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Frontend
 **Priorité :** P1 (important)
 **Dépendances :** TASK-014
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -67,10 +67,10 @@ Créer les composants UI transversaux nécessaires aux pages de détail et au la
 
 ## Critères de "Done"
 
-- [ ] Composant `Breadcrumb` créé et accessible (`aria-label`)
-- [ ] Composant `BackButton` créé avec zone tactile ≥ 44×44px
-- [ ] Footer desktop affiché avec crédits lexicographiques
-- [ ] Footer invisible en mobile
-- [ ] Icône `icon-retour.svg` copiée dans les assets
-- [ ] Layout.tsx intègre le footer
-- [ ] Aucune régression sur les pages existantes
+- [x] Composant `Breadcrumb` créé et accessible (`aria-label`)
+- [x] Composant `BackButton` créé avec zone tactile ≥ 44×44px
+- [x] Footer desktop affiché avec crédits lexicographiques
+- [x] Footer invisible en mobile
+- [x] Icône `icon-retour.svg` copiée dans les assets
+- [x] Layout.tsx intègre le footer
+- [x] Aucune régression sur les pages existantes

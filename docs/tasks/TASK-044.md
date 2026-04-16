@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Backend
 **Priorité :** P0 (bloquant avant prod)
 **Dépendances :** TASK-039
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -134,13 +134,13 @@ token_blacklist: set[str] = set()
 
 ## Critères de "Done"
 
-- [ ] Table `token_blacklist` créée via migration Alembic
-- [ ] Service `blacklist.py` avec `revoke_token`, `is_token_revoked`, `cleanup_expired_tokens`
-- [ ] Endpoint logout utilise la table PostgreSQL
-- [ ] `get_current_user` vérifie la blacklist en BDD
-- [ ] Ancien `blacklist.py` (set mémoire) supprimé — aucun `set()` en mémoire pour la blacklist dans le codebase
-- [ ] Token révoqué reste rejeté après redémarrage du serveur (`docker-compose restart backend`)
-- [ ] Tests passent (anciens + nouveaux)
-- [ ] Aucune régression sur les 116 tests existants
-- [ ] Migration appliquée automatiquement par `entrypoint.sh`
-- [ ] `docker-compose down -v && docker-compose up --build` → migration propre sur base vierge
+- [x] Table `token_blacklist` créée via migration Alembic
+- [x] Service `blacklist.py` avec `revoke_token`, `is_token_revoked`, `cleanup_expired_tokens`
+- [x] Endpoint logout utilise la table PostgreSQL
+- [x] `get_current_user` vérifie la blacklist en BDD
+- [x] Ancien `blacklist.py` (set mémoire) supprimé — aucun `set()` en mémoire pour la blacklist dans le codebase
+- [x] Token révoqué reste rejeté après redémarrage du serveur (`docker-compose restart backend`)
+- [x] Tests passent (anciens + nouveaux)
+- [x] Aucune régression sur les 116 tests existants
+- [x] Migration appliquée automatiquement par `entrypoint.sh`
+- [x] `docker-compose down -v && docker-compose up --build` → migration propre sur base vierge

@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Frontend
 **Priorité :** P1 (important)
 **Dépendances :** TASK-039
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -139,11 +139,11 @@ Chaque fichier exporte des fonctions typées qui encapsulent les appels à `apiF
 
 ## Critères de "Done"
 
-- [ ] 7 fichiers de services API créés + 1 fichier types
-- [ ] Toutes les pages utilisent les services au lieu d'appels `apiFetch` directs
-- [ ] Plus aucune URL d'API hardcodée dans les pages ni les composants
-- [ ] Plus aucun appel `apiFetch` direct dans les pages (— uniquement dans les fichiers `services/*Service.ts`)
-- [ ] Interfaces TypeScript pour tous les objets API (zéro `any`)
-- [ ] `npm run build` sans erreur TypeScript (mode strict)
-- [ ] Comportement fonctionnel identique (vérification manuelle navigation complète)
-- [ ] Tests services passent (si infra test disponible)
+- [x] 7 fichiers de services API créés + 1 fichier types
+- [x] Toutes les pages utilisent les services au lieu d'appels `apiFetch` directs
+- [x] Plus aucune URL d'API hardcodée dans les pages ni les composants
+- [x] Plus aucun appel `apiFetch` direct dans les pages (— uniquement dans les fichiers `services/*Service.ts`)
+- [x] Interfaces TypeScript pour tous les objets API (zéro `any`)
+- [x] `npm run build` sans erreur TypeScript (mode strict)
+- [x] Comportement fonctionnel identique (vérification manuelle navigation complète)
+- [x] Tests services passent (si infra test disponible)

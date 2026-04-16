@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Backend
 **Priorité :** P1 (important)
 **Dépendances :** TASK-010
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -93,11 +93,11 @@ Implémenter les 4 endpoints CRUD du module Agenda culturel : liste des événem
 
 ## Critères de "Done"
 
-- [ ] Les 4 endpoints fonctionnent (GET, POST, PUT, DELETE)
-- [ ] Le filtre `?archive=true` retourne uniquement les événements passés
-- [ ] Les filtres par lieu, année, mois fonctionnent
-- [ ] La validation `date_fin >= date_debut` est appliquée
-- [ ] Le verrouillage est vérifié sur PUT
-- [ ] Les actions sont journalisées dans `edit_log`
-- [ ] Le routeur est enregistré dans `main.py`
-- [ ] Les tests passent
+- [x] Les 4 endpoints fonctionnent (GET, POST, PUT, DELETE)
+- [x] Le filtre `?archive=true` retourne uniquement les événements passés
+- [x] Les filtres par lieu, année, mois fonctionnent
+- [x] La validation `date_fin >= date_debut` est appliquée
+- [x] Le verrouillage est vérifié sur PUT
+- [x] Les actions sont journalisées dans `edit_log`
+- [x] Le routeur est enregistré dans `main.py`
+- [x] Les tests passent

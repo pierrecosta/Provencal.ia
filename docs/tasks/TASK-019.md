@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Frontend
 **Priorité :** P2 (normal)
 **Dépendances :** TASK-018
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -74,9 +74,9 @@ Implémenter les 3 pages statiques du portail : « À propos » (présentation d
 
 ## Critères de "Done"
 
-- [ ] Page « À propos » accessible sur `/a-propos` avec les 3 blocs
-- [ ] Page « Mentions légales » accessible sur `/mentions-legales`
-- [ ] Page 404 avec message et 4 liens vers les modules
-- [ ] Routes ajoutées dans le routeur
-- [ ] Colonne de texte centrée 720px sur les pages statiques
-- [ ] Aucune régression sur les pages existantes
+- [x] Page « À propos » accessible sur `/a-propos` avec les 3 blocs
+- [x] Page « Mentions légales » accessible sur `/mentions-legales`
+- [x] Page 404 avec message et 4 liens vers les modules
+- [x] Routes ajoutées dans le routeur
+- [x] Colonne de texte centrée 720px sur les pages statiques
+- [x] Aucune régression sur les pages existantes

@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Frontend
 **Priorité :** P1 (important)
 **Dépendances :** TASK-014, TASK-018, TASK-027
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -89,10 +89,10 @@ Implémenter la page Bibliothèque côté frontend : liste sobre des histoires e
 
 ## Critères de "Done"
 
-- [ ] Liste sobre avec titre + description courte + période (pas d'images)
-- [ ] Infinite scroll fonctionnel avec message de fin + icône olivier
-- [ ] Filtres type, période, lieu fonctionnent
-- [ ] Page de lecture avec Markdown rendu et colonne 720px
-- [ ] Toggle FR/Provençal affiché seulement si traduction disponible
-- [ ] Routes ajoutées dans le routeur
-- [ ] Fil d'ariane et bouton Retour présents
+- [x] Liste sobre avec titre + description courte + période (pas d'images)
+- [x] Infinite scroll fonctionnel avec message de fin + icône olivier
+- [x] Filtres type, période, lieu fonctionnent
+- [x] Page de lecture avec Markdown rendu et colonne 720px
+- [x] Toggle FR/Provençal affiché seulement si traduction disponible
+- [x] Routes ajoutées dans le routeur
+- [x] Fil d'ariane et bouton Retour présents

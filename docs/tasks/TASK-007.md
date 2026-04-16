@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Backend
 **Priorité :** P1 (important)
 **Dépendances :** TASK-003
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -53,8 +53,8 @@ Créer un script Python autonome permettant de créer un utilisateur contributeu
 
 ## Critères de "Done"
 
-- [ ] `backend/scripts/seed_user.py` existe et est exécutable
-- [ ] Crée un user avec mot de passe hashé bcrypt
-- [ ] Refuse les doublons de pseudo
-- [ ] Refuse si 10 users déjà en base
-- [ ] Le user créé peut se connecter via `POST /api/v1/auth/login`
+- [x] `backend/scripts/seed_user.py` existe et est exécutable
+- [x] Crée un user avec mot de passe hashé bcrypt
+- [x] Refuse les doublons de pseudo
+- [x] Refuse si 10 users déjà en base
+- [x] Le user créé peut se connecter via `POST /api/v1/auth/login`

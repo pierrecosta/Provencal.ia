@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Backend
 **Priorité :** P1 (important)
 **Dépendances :** TASK-005
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -65,10 +65,10 @@ Implémenter le mécanisme d'upload de fichiers image (modules Bibliothèque et 
 
 ## Critères de "Done"
 
-- [ ] L'endpoint `POST /upload/image` accepte et sauvegarde les images
-- [ ] Le type MIME est validé côté serveur
-- [ ] La taille est limitée à 2 Mo
-- [ ] Le nom de fichier est un UUID (pas le nom original)
-- [ ] FastAPI sert les fichiers statiques sur `/static/`
-- [ ] Le répertoire `backend/static/images/` est créé
-- [ ] Les tests passent
+- [x] L'endpoint `POST /upload/image` accepte et sauvegarde les images
+- [x] Le type MIME est validé côté serveur
+- [x] La taille est limitée à 2 Mo
+- [x] Le nom de fichier est un UUID (pas le nom original)
+- [x] FastAPI sert les fichiers statiques sur `/static/`
+- [x] Le répertoire `backend/static/images/` est créé
+- [x] Les tests passent

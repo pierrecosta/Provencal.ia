@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Frontend
 **Priorité :** P1 (important)
 **Dépendances :** TASK-017, TASK-023, TASK-034
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -67,10 +67,10 @@ Ajouter les boutons d'action contributeur (Ajouter, Modifier, Valider, Supprimer
 
 ## Critères de "Done"
 
-- [ ] Boutons contributeur visibles uniquement si authentifié
-- [ ] Création d'un événement via formulaire
-- [ ] Modification inline avec validation
-- [ ] Suppression avec confirmation modale
-- [ ] Rollback fonctionnel
-- [ ] Verrouillage affiché si élément verrouillé par un autre
-- [ ] Snackbar succès/erreur
+- [x] Boutons contributeur visibles uniquement si authentifié
+- [x] Création d'un événement via formulaire
+- [x] Modification inline avec validation
+- [x] Suppression avec confirmation modale
+- [x] Rollback fonctionnel
+- [x] Verrouillage affiché si élément verrouillé par un autre
+- [x] Snackbar succès/erreur

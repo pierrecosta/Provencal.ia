@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Frontend
 **Priorité :** P1 (important)
 **Dépendances :** Aucune
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -67,10 +67,10 @@ Initialiser le projet frontend React 18 + TypeScript avec Vite dans le répertoi
 
 ## Critères de "Done"
 
-- [ ] `frontend/` contient un projet React 18 + TypeScript fonctionnel
-- [ ] Variables CSS du cahier technique intégrées (palette, typo, spacing)
-- [ ] Styles globaux appliqués (font-size base 18px, Inter, fond coquille d'œuf)
-- [ ] `npm run dev` affiche une page
-- [ ] `npm run build` compile sans erreur
-- [ ] `frontend/Dockerfile` existe et build sans erreur
-- [ ] `vite.config.ts` configuré pour écouter sur `0.0.0.0:5173`
+- [x] `frontend/` contient un projet React 18 + TypeScript fonctionnel
+- [x] Variables CSS du cahier technique intégrées (palette, typo, spacing)
+- [x] Styles globaux appliqués (font-size base 18px, Inter, fond coquille d'œuf)
+- [x] `npm run dev` affiche une page
+- [x] `npm run build` compile sans erreur
+- [x] `frontend/Dockerfile` existe et build sans erreur
+- [x] `vite.config.ts` configuré pour écouter sur `0.0.0.0:5173`

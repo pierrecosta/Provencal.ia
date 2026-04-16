@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Backend
 **Priorité :** P1 (important)
 **Dépendances :** TASK-029
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -68,9 +68,9 @@ Implémenter l'endpoint `POST /translate` qui effectue une traduction lexicale m
 
 ## Critères de "Done"
 
-- [ ] L'endpoint traduit chaque mot individuellement
-- [ ] La ponctuation est conservée
-- [ ] Les mots inconnus sont conservés dans le texte et listés dans `unknown_words`
-- [ ] La recherche est insensible à la casse
-- [ ] Les mots sont chargés en batch (pas une requête par mot)
-- [ ] Les tests passent
+- [x] L'endpoint traduit chaque mot individuellement
+- [x] La ponctuation est conservée
+- [x] Les mots inconnus sont conservés dans le texte et listés dans `unknown_words`
+- [x] La recherche est insensible à la casse
+- [x] Les mots sont chargés en batch (pas une requête par mot)
+- [x] Les tests passent

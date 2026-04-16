@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Backend
 **Priorité :** P0 (bloquant)
 **Dépendances :** TASK-005
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -66,8 +66,8 @@ Créer les services partagés qui seront utilisés par **tous** les modules CRUD
 
 ## Critères de "Done"
 
-- [ ] `locking.py` avec `acquire_lock`, `release_lock`, `is_locked` fonctionnels
-- [ ] `edit_log.py` avec `log_action`, `get_last_log` fonctionnels
-- [ ] `pagination.py` avec `PaginationParams`, `PaginatedResponse`, `paginate` fonctionnels
-- [ ] Tests passent
-- [ ] Aucune régression sur les tests existants
+- [x] `locking.py` avec `acquire_lock`, `release_lock`, `is_locked` fonctionnels
+- [x] `edit_log.py` avec `log_action`, `get_last_log` fonctionnels
+- [x] `pagination.py` avec `PaginationParams`, `PaginatedResponse`, `paginate` fonctionnels
+- [x] Tests passent
+- [x] Aucune régression sur les tests existants

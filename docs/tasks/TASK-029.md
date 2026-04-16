@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Backend
 **Priorité :** P0 (bloquant)
 **Dépendances :** TASK-010
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -92,11 +92,11 @@ Implémenter les endpoints de consultation du dictionnaire : liste paginée FR�
 
 ## Critères de "Done"
 
-- [ ] `GET /dictionary` retourne la liste paginée avec traductions groupées
-- [ ] La recherche FR→Prov fonctionne avec correspondance exacte et suggestions
-- [ ] `GET /dictionary/search` retourne les résultats Prov→FR
-- [ ] Les filtres thème/catégorie/graphie/source fonctionnent
-- [ ] Les filtres sont désactivés quand `q` est renseigné
-- [ ] `GET /dictionary/themes` retourne les thèmes avec catégories
-- [ ] Les relations SQLAlchemy sont en place
-- [ ] Les tests passent
+- [x] `GET /dictionary` retourne la liste paginée avec traductions groupées
+- [x] La recherche FR→Prov fonctionne avec correspondance exacte et suggestions
+- [x] `GET /dictionary/search` retourne les résultats Prov→FR
+- [x] Les filtres thème/catégorie/graphie/source fonctionnent
+- [x] Les filtres sont désactivés quand `q` est renseigné
+- [x] `GET /dictionary/themes` retourne les thèmes avec catégories
+- [x] Les relations SQLAlchemy sont en place
+- [x] Les tests passent

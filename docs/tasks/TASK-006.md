@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Backend
 **Priorité :** P0 (bloquant)
 **Dépendances :** TASK-005
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -49,9 +49,9 @@ Implémenter l'endpoint `POST /api/v1/auth/logout` qui invalide le token JWT cou
 
 ## Critères de "Done"
 
-- [ ] `POST /api/v1/auth/logout` fonctionne et invalide le token
-- [ ] Un token blacklisté est refusé par `get_current_user`
-- [ ] La blacklist est en mémoire (pas de table BDD)
-- [ ] Endpoint visible dans Swagger UI avec cadenas (auth requise)
-- [ ] Tests passent
-- [ ] Aucune régression sur les tests existants
+- [x] `POST /api/v1/auth/logout` fonctionne et invalide le token
+- [x] Un token blacklisté est refusé par `get_current_user`
+- [x] La blacklist est en mémoire (pas de table BDD)
+- [x] Endpoint visible dans Swagger UI avec cadenas (auth requise)
+- [x] Tests passent
+- [x] Aucune régression sur les tests existants

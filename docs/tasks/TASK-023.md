@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Frontend
 **Priorité :** P1 (important)
 **Dépendances :** TASK-014, TASK-018, TASK-021
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -95,12 +95,12 @@ Implémenter la page Agenda côté frontend : les 3 prochains événements en ca
 
 ## Critères de "Done"
 
-- [ ] Les 3 prochains événements sont en cartes larges
-- [ ] Le reste est en liste compacte chronologique
-- [ ] L'état vide affiche l'événement fictif
-- [ ] Les filtres par lieu et date fonctionnent
-- [ ] La vue archives est accessible
-- [ ] La page de détail a une bande terracotta avec titre/dates/lieu
-- [ ] Le lien externe ouvre un nouvel onglet
-- [ ] Fil d'ariane et bouton Retour sont présents
-- [ ] Routes ajoutées dans le routeur
+- [x] Les 3 prochains événements sont en cartes larges
+- [x] Le reste est en liste compacte chronologique
+- [x] L'état vide affiche l'événement fictif
+- [x] Les filtres par lieu et date fonctionnent
+- [x] La vue archives est accessible
+- [x] La page de détail a une bande terracotta avec titre/dates/lieu
+- [x] Le lien externe ouvre un nouvel onglet
+- [x] Fil d'ariane et bouton Retour sont présents
+- [x] Routes ajoutées dans le routeur

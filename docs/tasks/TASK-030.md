@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Backend
 **Priorité :** P0 (bloquant)
 **Dépendances :** TASK-029
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -95,11 +95,11 @@ Implémenter l'endpoint `POST /dictionary/import` qui permet l'import du diction
 
 ## Critères de "Done"
 
-- [ ] L'endpoint accepte CSV (`;`) et XLSX
-- [ ] La détection d'encodage fonctionne
-- [ ] 13 colonnes exactement vérifiées par ligne
-- [ ] Les doublons sont détectés (mot_fr + thème + catégorie)
-- [ ] Les traductions sont créées avec les bonnes sources et graphies
-- [ ] Le rollback est complet en cas d'erreur
-- [ ] Le script de seed importe les 6 049 entrées de `src_dict.csv`
-- [ ] Les tests passent
+- [x] L'endpoint accepte CSV (`;`) et XLSX
+- [x] La détection d'encodage fonctionne
+- [x] 13 colonnes exactement vérifiées par ligne
+- [x] Les doublons sont détectés (mot_fr + thème + catégorie)
+- [x] Les traductions sont créées avec les bonnes sources et graphies
+- [x] Le rollback est complet en cas d'erreur
+- [x] Le script de seed importe les 6 049 entrées de `src_dict.csv`
+- [x] Les tests passent

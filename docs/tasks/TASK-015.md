@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Frontend
 **Priorité :** P0 (bloquant)
 **Dépendances :** TASK-014
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -70,10 +70,10 @@ Implémenter la page de connexion et le système de gestion d'authentification c
 
 ## Critères de "Done"
 
-- [ ] Page de connexion conforme au cahier (centré, carte 400px, labels, pas de lien mdp oublié)
-- [ ] Client API avec injection automatique du token
-- [ ] Contexte auth fonctionnel (login, logout, isAuthenticated)
-- [ ] Redirection sur 401
-- [ ] Navigation met à jour l'état connecté/déconnecté
-- [ ] Message d'erreur générique (pas de distinction pseudo/mdp)
-- [ ] `npm run build` sans erreur TypeScript
+- [x] Page de connexion conforme au cahier (centré, carte 400px, labels, pas de lien mdp oublié)
+- [x] Client API avec injection automatique du token
+- [x] Contexte auth fonctionnel (login, logout, isAuthenticated)
+- [x] Redirection sur 401
+- [x] Navigation met à jour l'état connecté/déconnecté
+- [x] Message d'erreur générique (pas de distinction pseudo/mdp)
+- [x] `npm run build` sans erreur TypeScript

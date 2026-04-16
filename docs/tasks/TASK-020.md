@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Frontend
 **Priorité :** P2 (normal)
 **Dépendances :** TASK-015
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -61,9 +61,9 @@ Implémenter deux comportements transversaux du frontend : (1) l'avertissement p
 
 ## Critères de "Done"
 
-- [ ] Bannière d'avertissement visible 5 min avant expiration si formulaire ouvert
-- [ ] Compte à rebours affiché (5 min, 3 min, 1 min)
-- [ ] La bannière disparaît si aucun formulaire d'édition n'est ouvert
-- [ ] Le focus se replace sur `<h1>` après chaque changement de route
-- [ ] `scroll-margin-top: 64px` appliqué sur les `<h1>` en desktop
-- [ ] Aucune régression sur les pages existantes
+- [x] Bannière d'avertissement visible 5 min avant expiration si formulaire ouvert
+- [x] Compte à rebours affiché (5 min, 3 min, 1 min)
+- [x] La bannière disparaît si aucun formulaire d'édition n'est ouvert
+- [x] Le focus se replace sur `<h1>` après chaque changement de route
+- [x] `scroll-margin-top: 64px` appliqué sur les `<h1>` en desktop
+- [x] Aucune régression sur les pages existantes

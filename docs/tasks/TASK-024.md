@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Backend
 **Priorité :** P1 (important)
 **Dépendances :** TASK-010
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -97,9 +97,9 @@ Implémenter les 4 endpoints CRUD du module Articles culturels et le script de s
 
 ## Critères de "Done"
 
-- [ ] Les 4 endpoints fonctionnent
-- [ ] Le tri par `date_publication DESC` est appliqué
-- [ ] Le filtre par catégorie valide parmi les 20 valeurs
-- [ ] Le verrouillage et le logging fonctionnent
-- [ ] Le script de seed importe les 4 articles
-- [ ] Les tests passent
+- [x] Les 4 endpoints fonctionnent
+- [x] Le tri par `date_publication DESC` est appliqué
+- [x] Le filtre par catégorie valide parmi les 20 valeurs
+- [x] Le verrouillage et le logging fonctionnent
+- [x] Le script de seed importe les 4 articles
+- [x] Les tests passent

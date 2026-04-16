@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Frontend
 **Priorité :** P0 (bloquant)
 **Dépendances :** TASK-014, TASK-011
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -84,10 +84,10 @@ Implémenter la page d'accueil du portail, exclusivement dédiée à la Mémoire
 
 ## Critères de "Done"
 
-- [ ] Terme du jour affiché avec la charte (bordure terracotta, 36px, serif)
-- [ ] Liste des sayings avec infinite scroll fonctionnel
-- [ ] Filtres type et localité opérationnels
-- [ ] Message fin de liste avec icône cigale
-- [ ] Responsive (desktop ≥768px, mobile <768px)
-- [ ] Pas de doublon de données au scroll
-- [ ] `npm run build` sans erreur TypeScript
+- [x] Terme du jour affiché avec la charte (bordure terracotta, 36px, serif)
+- [x] Liste des sayings avec infinite scroll fonctionnel
+- [x] Filtres type et localité opérationnels
+- [x] Message fin de liste avec icône cigale
+- [x] Responsive (desktop ≥768px, mobile <768px)
+- [x] Pas de doublon de données au scroll
+- [x] `npm run build` sans erreur TypeScript

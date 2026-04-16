@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Frontend
 **Priorité :** P1 (important)
 **Dépendances :** TASK-017, TASK-028, TASK-026, TASK-034
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -64,10 +64,10 @@ Ajouter les boutons d'action contributeur sur la page Bibliothèque, avec suppor
 
 ## Critères de "Done"
 
-- [ ] Éditeur Markdown avec prévisualisation temps réel (desktop 50/50)
-- [ ] Mobile : onglets Éditeur / Prévisualisation
-- [ ] Autocomplétion des périodes
-- [ ] Upload d'image avec compression
-- [ ] Lien traduction bidirectionnel via select
-- [ ] Rollback fonctionnel
-- [ ] Snackbar succès/erreur
+- [x] Éditeur Markdown avec prévisualisation temps réel (desktop 50/50)
+- [x] Mobile : onglets Éditeur / Prévisualisation
+- [x] Autocomplétion des périodes
+- [x] Upload d'image avec compression
+- [x] Lien traduction bidirectionnel via select
+- [x] Rollback fonctionnel
+- [x] Snackbar succès/erreur

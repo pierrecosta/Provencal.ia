@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Backend
 **Priorité :** P1 (important)
 **Dépendances :** TASK-039
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -115,12 +115,12 @@ Seuls `services/locking.py` (59 lignes) et `services/edit_log.py` (105 lignes) s
 
 ## Critères de "Done"
 
-- [ ] 6 fichiers services créés avec la logique métier extraite
-- [ ] `services/__init__.py` importe les nouveaux modules
-- [ ] Fichiers routes allégés (< 80 lignes chacun, hors imports)
-- [ ] Nouveaux tests unitaires des services passent
-- [ ] 116 tests existants passent sans modification
-- [ ] Aucun changement d'API (endpoints, codes retour, formats)
-- [ ] Schéma OpenAPI (`/openapi.json`) identique avant/après refactoring
-- [ ] `docker-compose up --build` → stack fonctionnelle
-- [ ] CRUD complet fonctionnel via Swagger sur au moins 1 module
+- [x] 6 fichiers services créés avec la logique métier extraite
+- [x] `services/__init__.py` importe les nouveaux modules
+- [x] Fichiers routes allégés (< 80 lignes chacun, hors imports)
+- [x] Nouveaux tests unitaires des services passent
+- [x] 116 tests existants passent sans modification
+- [x] Aucun changement d'API (endpoints, codes retour, formats)
+- [x] Schéma OpenAPI (`/openapi.json`) identique avant/après refactoring
+- [x] `docker-compose up --build` → stack fonctionnelle
+- [x] CRUD complet fonctionnel via Swagger sur au moins 1 module

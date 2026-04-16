@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Frontend
 **Priorité :** P1 (important)
 **Dépendances :** TASK-043
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -121,12 +121,12 @@ Après extraction, chaque page ne doit contenir que :
 
 ## Critères de "Done"
 
-- [ ] 5 hooks custom créés et fonctionnels
-- [ ] Sous-composants extraits par domaine (≥ 14 composants)
-- [ ] Pages allégées (< 150 lignes chacune)
-- [ ] Rendu visuel strictement identique à l'existant
-- [ ] Navigation et CRUD fonctionnels
-- [ ] Les hooks utilisent les services typés de TASK-043 (aucun appel `apiFetch` direct dans les hooks ou pages)
-- [ ] Attributs d'accessibilité (`aria-*`, rôles, focus) préservés dans les sous-composants extraits
-- [ ] `npm run build` sans erreur TypeScript
-- [ ] Console navigateur sans erreur ni warning
+- [x] 5 hooks custom créés et fonctionnels
+- [x] Sous-composants extraits par domaine (≥ 14 composants)
+- [x] Pages allégées (< 150 lignes chacune)
+- [x] Rendu visuel strictement identique à l'existant
+- [x] Navigation et CRUD fonctionnels
+- [x] Les hooks utilisent les services typés de TASK-043 (aucun appel `apiFetch` direct dans les hooks ou pages)
+- [x] Attributs d'accessibilité (`aria-*`, rôles, focus) préservés dans les sous-composants extraits
+- [x] `npm run build` sans erreur TypeScript
+- [x] Console navigateur sans erreur ni warning

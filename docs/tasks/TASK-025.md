@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Frontend
 **Priorité :** P1 (important)
 **Dépendances :** TASK-014, TASK-018, TASK-024
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -83,11 +83,11 @@ Implémenter la page Articles côté frontend : liste journal triée par date d�
 
 ## Critères de "Done"
 
-- [ ] Page `/articles` affiche la liste journal triée par date
-- [ ] Filtres par catégorie et date fonctionnent
-- [ ] Page détail affiche image hero, chapeau, corps Markdown, bloc auteur/date/catégorie
-- [ ] Le Markdown est rendu correctement
-- [ ] Le lien source s'ouvre dans un nouvel onglet
-- [ ] Fil d'ariane et bouton Retour sont présents
-- [ ] Placeholder logo si pas d'image
-- [ ] Routes ajoutées dans le routeur
+- [x] Page `/articles` affiche la liste journal triée par date
+- [x] Filtres par catégorie et date fonctionnent
+- [x] Page détail affiche image hero, chapeau, corps Markdown, bloc auteur/date/catégorie
+- [x] Le Markdown est rendu correctement
+- [x] Le lien source s'ouvre dans un nouvel onglet
+- [x] Fil d'ariane et bouton Retour sont présents
+- [x] Placeholder logo si pas d'image
+- [x] Routes ajoutées dans le routeur

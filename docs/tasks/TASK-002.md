@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Backend
 **Priorité :** P0 (bloquant)
 **Dépendances :** TASK-001
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -50,8 +50,8 @@ Déclarer les 8 modèles SQLAlchemy ORM correspondant au schéma relationnel dé
 
 ## Critères de "Done"
 
-- [ ] 8 fichiers de modèles dans `backend/app/models/`
-- [ ] `__init__.py` importe tous les modèles
-- [ ] Les types de colonnes, FK, CHECK constraints et index trigram correspondent au schéma SQL de référence
-- [ ] `test_models.py` passe
-- [ ] Aucune régression sur `test_health.py`
+- [x] 8 fichiers de modèles dans `backend/app/models/`
+- [x] `__init__.py` importe tous les modèles
+- [x] Les types de colonnes, FK, CHECK constraints et index trigram correspondent au schéma SQL de référence
+- [x] `test_models.py` passe
+- [x] Aucune régression sur `test_health.py`

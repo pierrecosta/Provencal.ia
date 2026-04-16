@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Frontend
 **Priorité :** P1 (important)
 **Dépendances :** TASK-017, TASK-025, TASK-026, TASK-034
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -68,9 +68,9 @@ Ajouter les boutons d'action contributeur sur la page Articles, avec support de 
 
 ## Critères de "Done"
 
-- [ ] Formulaire d'article avec tous les champs
-- [ ] Upload d'image avec compression client (≤ 2 Mo)
-- [ ] Upload prioritaire sur URL (champ URL grisé si fichier sélectionné)
-- [ ] Catégorie sélectionnable parmi les 20 valeurs
-- [ ] Rollback fonctionnel
-- [ ] Snackbar succès/erreur
+- [x] Formulaire d'article avec tous les champs
+- [x] Upload d'image avec compression client (≤ 2 Mo)
+- [x] Upload prioritaire sur URL (champ URL grisé si fichier sélectionné)
+- [x] Catégorie sélectionnable parmi les 20 valeurs
+- [x] Rollback fonctionnel
+- [x] Snackbar succès/erreur

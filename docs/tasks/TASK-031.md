@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Frontend
 **Priorité :** P0 (bloquant)
 **Dépendances :** TASK-014, TASK-029
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -99,13 +99,13 @@ Implémenter la page Dictionnaire côté frontend : sélecteur de direction FR�
 
 ## Critères de "Done"
 
-- [ ] Sélecteur de direction FR↔Provençal fonctionnel
-- [ ] Recherche avec debounce et résultats en temps réel
-- [ ] Filtres en cascade thème → catégorie
-- [ ] Les filtres se grisent quand la recherche textuelle est active
-- [ ] Accordéon pour les traductions multiples par source
-- [ ] Suggestions de mots proches quand aucun résultat exact
-- [ ] Pagination 10/20/50/100 fonctionnelle
-- [ ] Termes provençaux en police serif
-- [ ] États vides conformes (« Mot non traduit », « Pas de mot trouvé »)
-- [ ] Route ajoutée dans le routeur
+- [x] Sélecteur de direction FR↔Provençal fonctionnel
+- [x] Recherche avec debounce et résultats en temps réel
+- [x] Filtres en cascade thème → catégorie
+- [x] Les filtres se grisent quand la recherche textuelle est active
+- [x] Accordéon pour les traductions multiples par source
+- [x] Suggestions de mots proches quand aucun résultat exact
+- [x] Pagination 10/20/50/100 fonctionnelle
+- [x] Termes provençaux en police serif
+- [x] États vides conformes (« Mot non traduit », « Pas de mot trouvé »)
+- [x] Route ajoutée dans le routeur

@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Frontend
 **Priorité :** P0 (bloquant)
 **Dépendances :** TASK-008
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -85,11 +85,11 @@ Créer le layout principal de l'application avec la barre de navigation à 7 ent
 
 ## Critères de "Done"
 
-- [ ] Navigation desktop 7 entrées + logo + sous-menu Langue
-- [ ] Navigation mobile 7 entrées + bottom sheet Langue
-- [ ] Icônes SVG intégrées
-- [ ] Routing React Router fonctionnel (toutes les routes)
-- [ ] Page 404
-- [ ] Accessibilité ARIA complète (aria-current, aria-label, focus SPA, clavier)
-- [ ] Responsive : breakpoint 768px
-- [ ] `npm run build` sans erreur TypeScript
+- [x] Navigation desktop 7 entrées + logo + sous-menu Langue
+- [x] Navigation mobile 7 entrées + bottom sheet Langue
+- [x] Icônes SVG intégrées
+- [x] Routing React Router fonctionnel (toutes les routes)
+- [x] Page 404
+- [x] Accessibilité ARIA complète (aria-current, aria-label, focus SPA, clavier)
+- [x] Responsive : breakpoint 768px
+- [x] `npm run build` sans erreur TypeScript

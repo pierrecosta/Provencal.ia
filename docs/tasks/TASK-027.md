@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Backend
 **Priorité :** P1 (important)
 **Dépendances :** TASK-010, TASK-026
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -103,8 +103,8 @@ Implémenter les 5 endpoints CRUD du module Bibliothèque (Histoires et Légende
 
 ## Critères de "Done"
 
-- [ ] Les 5 endpoints + endpoint périodes fonctionnent
-- [ ] Le lien bidirectionnel traduction_id est géré (création + suppression)
-- [ ] Les filtres type, période, lieu fonctionnent
-- [ ] Le script de seed importe les 5 entrées
-- [ ] Les tests passent
+- [x] Les 5 endpoints + endpoint périodes fonctionnent
+- [x] Le lien bidirectionnel traduction_id est géré (création + suppression)
+- [x] Les filtres type, période, lieu fonctionnent
+- [x] Le script de seed importe les 5 entrées
+- [x] Les tests passent

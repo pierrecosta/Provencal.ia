@@ -4,7 +4,7 @@
 **Rôle cible :** TechLead
 **Priorité :** P0 (bloquant)
 **Dépendances :** TASK-003, TASK-008
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -49,37 +49,37 @@ Valider que les 3 services (PostgreSQL, FastAPI, React/Vite) démarrent ensemble
 **Checklist complète de validation :**
 
 1. `cp .env.example .env && docker-compose up --build`
-   - [ ] Les 3 services démarrent sans erreur dans les logs
-   - [ ] PostgreSQL est prêt (log `database system is ready to accept connections`)
-   - [ ] Alembic applique la migration (log `Running upgrade -> initial_schema`)
-   - [ ] Uvicorn démarre (log `Uvicorn running on http://0.0.0.0:8000`)
-   - [ ] Vite démarre (log `Local: http://localhost:5173`)
+   - [x] Les 3 services démarrent sans erreur dans les logs
+   - [x] PostgreSQL est prêt (log `database system is ready to accept connections`)
+   - [x] Alembic applique la migration (log `Running upgrade -> initial_schema`)
+   - [x] Uvicorn démarre (log `Uvicorn running on http://0.0.0.0:8000`)
+   - [x] Vite démarre (log `Local: http://localhost:5173`)
 
 2. Vérification des endpoints :
-   - [ ] `curl http://localhost:8000/health` → `{"status":"ok","environment":"development"}`
-   - [ ] `http://localhost:8000/docs` → Swagger UI accessible
-   - [ ] `http://localhost:5173` → page React affichée
+   - [x] `curl http://localhost:8000/health` → `{"status":"ok","environment":"development"}`
+   - [x] `http://localhost:8000/docs` → Swagger UI accessible
+   - [x] `http://localhost:5173` → page React affichée
 
 3. Vérification base de données :
-   - [ ] `docker-compose exec db psql -U provencial_user -d provencial_db -c '\dt'` → 8 tables + `alembic_version`
-   - [ ] `docker-compose exec db psql -U provencial_user -d provencial_db -c '\dx'` → `pg_trgm` installée
+   - [x] `docker-compose exec db psql -U provencial_user -d provencial_db -c '\dt'` → 8 tables + `alembic_version`
+   - [x] `docker-compose exec db psql -U provencial_user -d provencial_db -c '\dx'` → `pg_trgm` installée
 
 4. Vérification auth (après seed user) :
-   - [ ] Créer un user via le script seed
-   - [ ] `POST /api/v1/auth/login` → token reçu
-   - [ ] `POST /api/v1/auth/logout` avec le token → déconnexion réussie
-   - [ ] Réutilisation du token → 401
+   - [x] Créer un user via le script seed
+   - [x] `POST /api/v1/auth/login` → token reçu
+   - [x] `POST /api/v1/auth/logout` avec le token → déconnexion réussie
+   - [x] Réutilisation du token → 401
 
 5. Nettoyage :
-   - [ ] `docker-compose down -v` → arrêt propre, volumes supprimés
+   - [x] `docker-compose down -v` → arrêt propre, volumes supprimés
 
 ## Critères de "Done"
 
-- [ ] `docker-compose up --build` démarre les 3 services sans erreur
-- [ ] Les migrations Alembic s'appliquent automatiquement au démarrage du backend
-- [ ] Les 8 tables sont créées en BDD avec `pg_trgm`
-- [ ] `/health` retourne 200
-- [ ] Swagger UI est accessible
-- [ ] Le frontend React est accessible sur le port 5173
-- [ ] Le cycle login/logout fonctionne de bout en bout
-- [ ] `docker-compose down -v` nettoie tout proprement
+- [x] `docker-compose up --build` démarre les 3 services sans erreur
+- [x] Les migrations Alembic s'appliquent automatiquement au démarrage du backend
+- [x] Les 8 tables sont créées en BDD avec `pg_trgm`
+- [x] `/health` retourne 200
+- [x] Swagger UI est accessible
+- [x] Le frontend React est accessible sur le port 5173
+- [x] Le cycle login/logout fonctionne de bout en bout
+- [x] `docker-compose down -v` nettoie tout proprement

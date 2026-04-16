@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Backend
 **Priorité :** P0 (bloquant)
 **Dépendances :** TASK-001, TASK-002
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -56,10 +56,10 @@ Implémenter l'endpoint d'authentification `POST /api/v1/auth/login` qui vérifi
 
 ## Critères de "Done"
 
-- [ ] `POST /api/v1/auth/login` fonctionne et retourne un JWT
-- [ ] Message d'erreur générique identique pour pseudo inconnu et mauvais mot de passe
-- [ ] Schémas Pydantic `LoginRequest` et `TokenResponse` validés
-- [ ] Routeur enregistré dans `main.py` sous `/api/v1`
-- [ ] Visible dans Swagger UI (`/docs`) en environnement dev
-- [ ] `test_auth.py` passe (4 tests minimum)
-- [ ] Aucune régression sur `test_health.py`
+- [x] `POST /api/v1/auth/login` fonctionne et retourne un JWT
+- [x] Message d'erreur générique identique pour pseudo inconnu et mauvais mot de passe
+- [x] Schémas Pydantic `LoginRequest` et `TokenResponse` validés
+- [x] Routeur enregistré dans `main.py` sous `/api/v1`
+- [x] Visible dans Swagger UI (`/docs`) en environnement dev
+- [x] `test_auth.py` passe (4 tests minimum)
+- [x] Aucune régression sur `test_health.py`

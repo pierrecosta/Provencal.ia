@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Backend
 **Priorité :** P0 (bloquant)
 **Dépendances :** TASK-001, TASK-002
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
@@ -57,8 +57,8 @@ Initialiser Alembic pour le versionnement du schéma BDD et générer la premiè
 
 ## Critères de "Done"
 
-- [ ] `alembic.ini` et `alembic/env.py` configurés en mode async
-- [ ] Migration initiale générée et contient les 8 tables + `pg_trgm`
-- [ ] `alembic upgrade head` s'exécute sans erreur sur une base vide
-- [ ] `alembic downgrade base` fonctionne (réversible)
-- [ ] Aucune régression sur les tests existants
+- [x] `alembic.ini` et `alembic/env.py` configurés en mode async
+- [x] Migration initiale générée et contient les 8 tables + `pg_trgm`
+- [x] `alembic upgrade head` s'exécute sans erreur sur une base vide
+- [x] `alembic downgrade base` fonctionne (réversible)
+- [x] Aucune régression sur les tests existants
