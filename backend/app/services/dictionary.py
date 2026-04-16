@@ -1,13 +1,20 @@
 import chardet
 from fastapi import HTTPException, status
-from sqlalchemy import and_, select, text
+from sqlalchemy import and_, delete, select, text, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.models.dict_entry import DictEntry
 from app.models.dict_translation import DictTranslation
-from app.schemas.dictionary import DictEntryResponse, ThemeCategoriesResponse, TranslationResponse
+from app.schemas.dictionary import (
+    DictEntryDetailOut,
+    DictEntryResponse,
+    DictEntryUpdate,
+    ThemeCategoriesResponse,
+    TranslationResponse,
+)
 from app.schemas.pagination import paginate
+from app.services.locking import is_locked
 
 _SIMILARITY_THRESHOLD = 0.1
 
@@ -301,3 +308,134 @@ async def import_dictionary(
 
     await db.commit()
     return {"imported": imported_entries, "skipped": 0}
+
+
+# ── Lecture détaillée ────────────────────────────────────────────────────────
+
+async def get_entry_detail(db: AsyncSession, entry_id: int) -> DictEntryDetailOut | None:
+    result = await db.execute(
+        select(DictEntry)
+        .where(DictEntry.id == entry_id)
+        .options(selectinload(DictEntry.translations))
+    )
+    entry = result.scalar_one_or_none()
+    if entry is None:
+        return None
+    return DictEntryDetailOut.model_validate(entry)
+
+
+# ── Modification ─────────────────────────────────────────────────────────────
+
+async def update_entry(
+    db: AsyncSession,
+    entry_id: int,
+    data: DictEntryUpdate,
+    user_id: int,
+) -> DictEntryDetailOut:
+    from app.services.edit_log import log_action
+
+    result = await db.execute(
+        select(DictEntry)
+        .where(DictEntry.id == entry_id)
+        .options(selectinload(DictEntry.translations))
+    )
+    entry = result.scalar_one_or_none()
+    if entry is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Entrée introuvable")
+
+    if is_locked(entry, user_id):
+        raise HTTPException(
+            status_code=status.HTTP_423_LOCKED,
+            detail="Entrée verrouillée par un autre contributeur",
+        )
+
+    old_data = {
+        "mot_fr": entry.mot_fr,
+        "synonyme_fr": entry.synonyme_fr,
+        "description": entry.description,
+        "theme": entry.theme,
+        "categorie": entry.categorie,
+    }
+
+    entry.mot_fr = data.mot_fr.strip()
+    entry.synonyme_fr = data.synonyme_fr.strip() if data.synonyme_fr else None
+    entry.description = data.description.strip() if data.description else None
+    entry.theme = data.theme
+    entry.categorie = data.categorie
+
+    # Remplace toutes les traductions
+    await db.execute(delete(DictTranslation).where(DictTranslation.entry_id == entry_id))
+    for t in data.translations:
+        db.add(DictTranslation(
+            entry_id=entry_id,
+            source=t.source or None,
+            traduction=t.traduction,
+            graphie=t.graphie or None,
+            region=t.region or None,
+        ))
+
+    new_data = {
+        "mot_fr": entry.mot_fr,
+        "synonyme_fr": entry.synonyme_fr,
+        "description": entry.description,
+        "theme": entry.theme,
+        "categorie": entry.categorie,
+    }
+
+    await log_action(
+        db,
+        table_name="dict_entries",
+        row_id=entry_id,
+        action="UPDATE",
+        old_data=old_data,
+        new_data=new_data,
+        user_id=user_id,
+    )
+
+    await db.flush()
+    await db.refresh(entry)
+    return DictEntryDetailOut.model_validate(entry)
+
+
+# ── Suppression ───────────────────────────────────────────────────────────────
+
+async def delete_entry(
+    db: AsyncSession,
+    entry_id: int,
+    user_id: int,
+) -> None:
+    from app.services.edit_log import log_action
+
+    result = await db.execute(
+        select(DictEntry).where(DictEntry.id == entry_id)
+    )
+    entry = result.scalar_one_or_none()
+    if entry is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Entrée introuvable")
+
+    if is_locked(entry, user_id):
+        raise HTTPException(
+            status_code=status.HTTP_423_LOCKED,
+            detail="Entrée verrouillée par un autre contributeur",
+        )
+
+    old_data = {
+        "mot_fr": entry.mot_fr,
+        "synonyme_fr": entry.synonyme_fr,
+        "description": entry.description,
+        "theme": entry.theme,
+        "categorie": entry.categorie,
+    }
+
+    await log_action(
+        db,
+        table_name="dict_entries",
+        row_id=entry_id,
+        action="DELETE",
+        old_data=old_data,
+        new_data=None,
+        user_id=user_id,
+    )
+
+    await db.delete(entry)
+    await db.flush()

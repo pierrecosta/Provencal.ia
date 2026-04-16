@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useDictionary } from '../hooks/useDictionary'
 import { importDictionary } from '../services/dictionaryService'
+import type { DictEntryDetail } from '../services/types'
 import DictionarySearch from '../components/dictionary/DictionarySearch'
 import DictionaryFilters from '../components/dictionary/DictionaryFilters'
 import DictionaryResults from '../components/dictionary/DictionaryResults'
@@ -111,7 +112,15 @@ export default function DictionnairePage() {
         loading={loading}
         direction={direction}
         q={q}
+        isAuthenticated={isAuthenticated}
         onSuggestionClick={handleQ}
+        onEntryUpdated={(entry: DictEntryDetail) => {
+          refresh()
+          void entry
+        }}
+        onEntryDeleted={() => {
+          refresh()
+        }}
       />
 
       {total > 0 && (

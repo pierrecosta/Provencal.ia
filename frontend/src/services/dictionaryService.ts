@@ -1,6 +1,14 @@
 import { apiFetch } from './api'
 import { ApiError } from './types'
-import type { ThemeCategories, DictEntry, DictSearchParams, ProvSearchParams, DictPage } from './types'
+import type {
+  ThemeCategories,
+  DictEntry,
+  DictEntryDetail,
+  DictEntryUpdate,
+  DictSearchParams,
+  ProvSearchParams,
+  DictPage,
+} from './types'
 
 export async function fetchThemes(): Promise<ThemeCategories> {
   const res = await apiFetch('/api/v1/dictionary/themes')
@@ -43,6 +51,41 @@ export async function importDictionary(file: File): Promise<{ imported: number; 
     throw new ApiError(res.status, err.detail ?? "Erreur lors de l'import")
   }
   return res.json() as Promise<{ imported: number; skipped: number }>
+}
+
+export async function fetchEntryDetail(id: number): Promise<DictEntryDetail> {
+  const res = await apiFetch(`/api/v1/dictionary/${id}`)
+  if (!res.ok) throw new ApiError(res.status, 'Entrée introuvable')
+  return res.json() as Promise<DictEntryDetail>
+}
+
+export async function updateEntry(id: number, data: DictEntryUpdate): Promise<DictEntryDetail> {
+  const res = await apiFetch(`/api/v1/dictionary/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  })
+  if (!res.ok) throw new ApiError(res.status, 'Erreur modification')
+  return res.json() as Promise<DictEntryDetail>
+}
+
+export async function deleteEntry(id: number): Promise<void> {
+  const res = await apiFetch(`/api/v1/dictionary/${id}`, { method: 'DELETE' })
+  if (!res.ok) throw new ApiError(res.status, 'Erreur suppression')
+}
+
+export async function lockEntry(id: number): Promise<void> {
+  const res = await apiFetch(`/api/v1/dictionary/${id}/lock`, { method: 'POST' })
+  if (!res.ok) throw new ApiError(res.status, 'Erreur verrouillage')
+}
+
+export async function unlockEntry(id: number): Promise<void> {
+  const res = await apiFetch(`/api/v1/dictionary/${id}/lock`, { method: 'DELETE' })
+  if (!res.ok) throw new ApiError(res.status, 'Erreur déverrouillage')
+}
+
+export async function rollbackEntry(id: number): Promise<void> {
+  const res = await apiFetch(`/api/v1/dictionary/${id}/rollback`, { method: 'POST' })
+  if (!res.ok) throw new ApiError(res.status, 'Erreur rollback')
 }
 
 // Re-export DictEntry pour usage dans les pages sans import supplémentaire

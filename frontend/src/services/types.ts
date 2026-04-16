@@ -161,9 +161,32 @@ export interface DictTranslation {
 export interface DictEntry {
   id: number
   mot_fr: string
+  synonyme_fr: string | null
+  description: string | null
   theme: string | null
   categorie: string | null
   translations: DictTranslation[]
+  locked_by: number | null
+}
+
+export interface DictEntryDetail extends DictEntry {
+  locked_at: string | null
+}
+
+export interface DictTranslationIn {
+  source: string
+  traduction: string
+  graphie: string | null
+  region: string | null
+}
+
+export interface DictEntryUpdate {
+  mot_fr: string
+  synonyme_fr: string | null
+  description: string | null
+  theme: string
+  categorie: string
+  translations: DictTranslationIn[]
 }
 
 export type ThemeCategories = Record<string, string[]>

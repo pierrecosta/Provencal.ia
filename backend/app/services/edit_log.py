@@ -45,6 +45,7 @@ def _get_model_class(table_name: str):
     from app.models.article import Article
     from app.models.library_entry import LibraryEntry
     from app.models.a_propos import AProposContent
+    from app.models.dict_entry import DictEntry
 
     mapping = {
         "sayings": Saying,
@@ -52,6 +53,7 @@ def _get_model_class(table_name: str):
         "articles": Article,
         "library_entries": LibraryEntry,
         "a_propos_content": AProposContent,
+        "dict_entries": DictEntry,
     }
     return mapping.get(table_name)
 

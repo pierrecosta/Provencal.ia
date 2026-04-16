@@ -4,7 +4,7 @@
 **Rôle cible :** Dev Full-stack
 **Priorité :** P1 (important)
 **Dépendances :** TASK-029 (endpoints lecture), TASK-007 (authentification)
-**Statut :** À faire
+**Statut :** Terminé
 
 ## Objectif
 
