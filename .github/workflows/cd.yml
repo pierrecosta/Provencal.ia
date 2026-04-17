@@ -1,0 +1,86 @@
+# ============================================================================
+# GitHub Actions — CD : Déploiement sur VPS OVH
+#
+# Déclenché après succès de CI sur main/tags, ou manuellement
+# Secrets requis dans GitHub → Settings → Secrets :
+#   VPS_HOST             : IP du VPS OVH (ex: 57.128.24.1)
+#   VPS_SSH_USER         : utilisateur SSH (ex: ubuntu)
+#   VPS_SSH_KEY          : clé privée SSH ed25519
+#   DOCKERHUB_USERNAME   : pastaga
+#   DOCKERHUB_TOKEN      : token Docker Hub (Read)
+# ============================================================================
+
+name: CD — Deploy VPS
+
+on:
+  workflow_run:
+    workflows: ["CI — Test & Build"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Tag à déployer (latest, sha-xxxx, v1.0.0)'
+        required: false
+        default: 'latest'
+
+jobs:
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+    # Ne déploie que si CI a réussi (ou dispatch manuel)
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    environment: production
+
+    steps:
+      - name: Determine image tag
+        id: tag
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "tag=${{ github.event.inputs.image_tag }}" >> $GITHUB_OUTPUT
+          else
+            SHA_SHORT=$(echo "${{ github.event.workflow_run.head_sha }}" | cut -c1-7)
+            echo "tag=sha-${SHA_SHORT}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_SSH_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script_stop: true
+          script: |
+            set -e
+            cd /opt/provencalia
+
+            # Login Docker Hub
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+            # Mettre à jour le tag dans .env.prod
+            sed -i 's/^IMAGE_TAG=.*/IMAGE_TAG=${{ steps.tag.outputs.tag }}/' .env.prod
+
+            # Pull nouvelles images
+            docker compose -f docker-compose.prod.yml --env-file .env.prod pull
+
+            # Redémarrage
+            docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --remove-orphans
+
+            # Nettoyage images > 7 jours
+            docker image prune -f --filter "until=168h"
+
+            # Health check (attente max 60s)
+            for i in $(seq 1 12); do
+              if curl -sf http://localhost:8000/health | grep -q '"status":"ok"'; then
+                echo "✔ Health check OK — tag: ${{ steps.tag.outputs.tag }}"
+                exit 0
+              fi
+              echo "Attente du backend... ($i/12)"
+              sleep 5
+            done
+
+            echo "✗ Health check échoué après 60s"
+            docker compose -f docker-compose.prod.yml --env-file .env.prod logs --tail=50
+            exit 1
