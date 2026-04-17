@@ -134,7 +134,7 @@ sudo docker-compose up --build
 ### 2.5 Stratégie de développement
 
 - **Phase 1 (en cours) :** Stack lancée via docker-compose (Front + Back + BDD en conteneurs). Pas de K8s en local (overhead inutile pour un développeur solo).
-- **Phase 2 (production) :** Déploiement sur cluster Kubernetes, CI/CD via GitHub Actions, SSL Let's Encrypt automatique.
+- **Phase 2 (production) :** Déploiement sur VPS OVH (d2-2) via Docker Compose prod, CI/CD GitHub Actions, SSL Let's Encrypt automatique, reverse proxy Nginx.
 
 ---
 
@@ -657,27 +657,88 @@ Body: { file: <fichier CSV ou XLSX> }
 
 | Aspect | Choix |
 |--------|-------|
-| **Orchestration** | Kubernetes (3 pods minimum : Front, Back, BDD) |
-| **Provider cloud** | **Non encore choisi** — OVH, Scaleway ou Hetzner en évaluation |
-| **Nom de domaine** | `le-provencal.ovh` (réservé) |
-| **SSL** | Let's Encrypt automatique (Certbot ou Ingress Controller) |
+| **Provider cloud** | OVH Public Cloud |
+| **Instance** | d2-2 (1 vCPU, 2 Go RAM, 25 Go SSD) — **prix fixe ~3,50 €/mois** |
+| **OS serveur** | Ubuntu 24.04 LTS |
+| **Orchestration** | Docker Compose (fichier `docker-compose.prod.yml`) — 5 services : nginx, certbot, frontend, backend, db |
+| **Nom de domaine** | `le-provencal.ovh` (réservé chez OVH) |
+| **SSL** | Let's Encrypt automatique via Certbot (sidecar container) |
+| **Reverse proxy** | Nginx 1.27-alpine (rate limiting, headers sécu, pages d'erreur custom) |
+| **Images Docker** | Docker Hub **privé** : `pastaga/provencal-front`, `pastaga/provencal-back` |
+| **CI/CD** | GitHub Actions → Build → Push Docker Hub → SSH deploy → Health check |
+| **Coût mensuel total** | ~4 €/mois (instance + domaine, bande passante incluse) |
 
 ### 8.2 Stockage des images
 
 | Environnement | Mécanisme | Chemin |
 |---------------|-----------|--------|
 | **Développement** | Filesystem local | `backend/static/images/` — servi par FastAPI via `/static/images/<nom>` |
-| **Production** | Bucket S3-compatible | OVH Object Storage, Scaleway ou AWS S3. `image_ref` contient l'URL S3 complète. |
+| **Production** | OVH Object Storage (S3-compatible) | Bucket privé, accès via URL signées. `image_ref` contient l'URL S3 complète. |
 
 **Logique frontend :** Le champ `image_ref` accepte indifféremment un chemin local (`/static/images/xxx.jpg`) ou une URL web (`https://...`). Le frontend choisit le mode de rendu selon le préfixe.
 
-### 8.3 Disponibilité et maintenance
+### 8.3 Réseaux Docker (isolation)
+
+| Réseau | Services | Rôle |
+|--------|----------|------|
+| `frontend-net` | nginx ↔ frontend | Proxy vers le SPA React |
+| `backend-net` | nginx ↔ backend | Proxy vers l'API FastAPI |
+| `db-net` (**internal**) | backend ↔ db | PostgreSQL isolé — **aucun accès internet** |
+
+> Le réseau `db-net` est marqué `internal: true` dans Docker Compose. PostgreSQL n'est jamais exposé sur un port de l'hôte.
+
+### 8.4 Disponibilité et maintenance
 
 | Aspect | Règle |
 |--------|-------|
-| **Arrêt nocturne** | Pods automatiquement arrêtés de 20h à 8h via CronJob K8s (économie de ressources) |
-| **Sauvegardes** | Hebdomadaires — dump du volume PostgreSQL |
+| **Arrêt nocturne** | `docker compose stop` à 20h, `docker compose start` à 8h (cron root) |
+| **Sauvegardes** | Hebdomadaires (dimanche 3h) — `pg_dump` compressé gzip, rotation 4 semaines |
 | **Logs** | Console Docker (stdout/stderr) |
+| **Mises à jour OS** | `unattended-upgrades` pour les patches de sécurité |
+
+### 8.5 Sécurité réseau & serveur
+
+| Protection | Implémentation |
+|-----------|----------------|
+| **Pare-feu** | UFW : ports 22 (SSH), 80 (HTTP→HTTPS), 443 (HTTPS) uniquement |
+| **Anti brute-force SSH** | Fail2ban : 3 tentatives → ban 24h |
+| **SSH** | Authentification par clé uniquement, mot de passe désactivé |
+| **Rate limiting API** | Nginx : 10 req/s global (burst 20), 3 req/s login (burst 5) |
+| **Headers HTTP** | `Server` supprimé, `X-Powered-By` supprimé, HSTS, CSP, X-Frame-Options, Referrer-Policy: no-referrer |
+| **Pages d'erreur** | Custom HTML (aucun leak de stack technique) |
+| **WHOIS** | OWO (OVH WHOIS Obfuscation) activé sur le-provencal.ovh |
+| **DDoS / surfacturation** | Instance à prix fixe mensuel — pas d'auto-scaling |
+
+### 8.6 Dockerfiles de production
+
+| Image | Fichier | Particularités |
+|-------|---------|----------------|
+| Backend | `backend/Dockerfile.prod` | Pas de `--reload`, 2 workers Uvicorn, `--proxy-headers` |
+| Frontend | `frontend/Dockerfile.prod` | Multi-stage : build Vite → Nginx 1.27-alpine servant les fichiers statiques |
+
+### 8.7 Configuration backend en production
+
+| Variable | Valeur prod |
+|----------|-------------|
+| `ENVIRONMENT` | `production` |
+| `CORS allow_origins` | `["https://le-provencal.ovh"]` |
+| `Swagger/ReDoc/OpenAPI` | Désactivé (ENVIRONMENT=production) |
+| `Uvicorn` | `--workers 2 --proxy-headers` (pas de --reload) |
+| `SECRET_KEY` | Clé aléatoire 128 caractères hex (`openssl rand -hex 64`) |
+| Cookies | `SameSite=Strict`, `HttpOnly`, `Secure` |
+
+### 8.8 Fichiers infra
+
+| Fichier | Rôle |
+|---------|------|
+| `docker-compose.prod.yml` | Orchestration production (5 services) |
+| `.env.example.prod` | Template des variables production |
+| `infra/nginx/nginx.conf` | Config Nginx (reverse proxy, TLS, rate limiting, headers) |
+| `infra/nginx/error-pages/*.html` | Pages d'erreur custom (400, 403, 404, 429, 500, 502, 503) |
+| `infra/deploy.sh` | Script de déploiement (init VPS, certbot, update, health, cron) |
+| `infra/backup.sh` | Sauvegarde PostgreSQL hebdomadaire + rotation |
+| `.github/workflows/deploy.yml` | Pipeline CI/CD (tests → build → push → deploy → health check) |
+| `docs/checklist-securite-prod.md` | Checklist sécurité & anonymat à valider post-déploiement |
 
 ---
 
@@ -1007,9 +1068,9 @@ Toutes les décisions ont été prises le 14/04/2026 :
 
 | # | Sujet | Décision | Justification |
 |---|-------|----------|---------------|
-| 1 | **Environnements** | Docker Compose (dev), Kubernetes (prod) | Simplicité en dev solo, scalabilité en prod |
+| 1 | **Environnements** | Docker Compose (dev et prod) | Simplicité, coût minimal, pas de K8s overhead pour un site léger |
 | 2 | **Nom de domaine** | `le-provencal.ovh` | Réservé, extension locale |
-| 3 | **Provider cloud** | Non encore choisi (OVH / Scaleway / Hetzner) | Évaluation en cours |
+| 3 | **Provider cloud** | OVH Public Cloud — instance d2-2 (prix fixe ~3,50 €/mois) | Coût minimal, pas de facturation à l'usage, anti-DDoS budgétaire |
 | 4 | **Graphie site** | Graphie neutre (1 traduction, sans contrôle source) | Simplicité hors dictionnaire |
 | 5 | **Graphie dictionnaire** | Mistralienne + Classique IEO à égalité | Neutralité linguistique |
 | 6 | **Stockage images** | Filesystem local (dev) → S3 (prod). `image_ref VARCHAR(500)` = chemin local OU URL web | Simplicité dev, scalabilité prod |
@@ -1038,9 +1099,13 @@ Toutes les décisions ont été prises le 14/04/2026 :
 | Aspect | Choix |
 |--------|-------|
 | **Plateforme** | GitHub Actions |
-| **Déclencheur** | Push sur `main` + Pull Requests |
-| **Étapes** | Lint → Tests unitaires → Build Docker → Push image → Deploy K8s |
-| **Tests en CI** | Pas de certificat SSL requis (uniquement en local pour les tests manuels) |
+| **Fichier** | `.github/workflows/deploy.yml` |
+| **Déclencheur** | Push sur `main` + tags `v*` + `workflow_dispatch` |
+| **Job `test`** | Pytest avec PostgreSQL 16 en service container |
+| **Job `build`** | Build multi-stage + Push vers Docker Hub privé (pastaga/*) |
+| **Job `deploy`** | SSH vers VPS OVH → pull images → compose up → health check |
+| **Tags images** | `latest` + `sha-<commit>` (+ tag version si tag git `v*`) |
+| **Secrets requis** | `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, `VPS_HOST`, `VPS_SSH_KEY`, `VPS_SSH_USER` |
 
 ### 15.3 Conventions de développement
 

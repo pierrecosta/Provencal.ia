@@ -1,0 +1,161 @@
+# ============================================================================
+# GitHub Actions — Build, Push Docker Hub (privé) & Deploy sur VPS OVH
+#
+# Déclenché sur : push sur main, tags v*
+# Secrets requis dans GitHub → Settings → Secrets :
+#   DOCKERHUB_USERNAME   : pastaga
+#   DOCKERHUB_TOKEN      : token Docker Hub (Read/Write)
+#   VPS_HOST             : IP ou FQDN du VPS OVH
+#   VPS_SSH_KEY          : clé privée SSH (ed25519 ou RSA)
+#   VPS_SSH_USER         : utilisateur SSH (ex: root ou deploy)
+# ============================================================================
+
+name: Build & Deploy
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+env:
+  FRONT_IMAGE: pastaga/provencal-front
+  BACK_IMAGE:  pastaga/provencal-back
+
+jobs:
+  # ── Tests backend ────────────────────────────────────────────────────
+  test:
+    name: Tests backend
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_pass
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U test_user -d test_db"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt
+
+      - name: Run tests
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql+asyncpg://test_user:test_pass@localhost:5432/test_db
+          SECRET_KEY: test-secret-key-for-ci
+          ENVIRONMENT: development
+        run: pytest -x -q
+
+  # ── Build & Push images Docker ──────────────────────────────────────
+  build:
+    name: Build & Push Docker images
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Docker meta (tags)
+        id: meta
+        run: |
+          SHA_SHORT=$(echo "${{ github.sha }}" | cut -c1-7)
+          echo "sha_tag=sha-${SHA_SHORT}" >> $GITHUB_OUTPUT
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            echo "version_tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build & Push backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile.prod
+          push: true
+          tags: |
+            ${{ env.BACK_IMAGE }}:latest
+            ${{ env.BACK_IMAGE }}:${{ steps.meta.outputs.sha_tag }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build & Push frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile.prod
+          push: true
+          tags: |
+            ${{ env.FRONT_IMAGE }}:latest
+            ${{ env.FRONT_IMAGE }}:${{ steps.meta.outputs.sha_tag }}
+          build-args: |
+            VITE_API_URL=https://le-provencal.ovh
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ── Déploiement sur VPS ─────────────────────────────────────────────
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    environment: production
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_SSH_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script_stop: true
+          script: |
+            cd /opt/provencalia
+
+            # Login Docker Hub
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+            # Pull nouvelles images
+            docker compose -f docker-compose.prod.yml --env-file .env.prod pull
+
+            # Redémarrage
+            docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --remove-orphans
+
+            # Nettoyage
+            docker image prune -f --filter "until=168h"
+
+            # Health check (attente max 60s)
+            for i in $(seq 1 12); do
+              if curl -sf http://localhost:8000/health | grep -q '"status":"ok"'; then
+                echo "✔ Health check OK"
+                exit 0
+              fi
+              echo "Attente du backend... ($i/12)"
+              sleep 5
+            done
+
+            echo "✗ Health check échoué après 60s"
+            docker compose -f docker-compose.prod.yml --env-file .env.prod logs --tail=50
+            exit 1

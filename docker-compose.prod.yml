@@ -1,0 +1,119 @@
+# ============================================================================
+# docker-compose.prod.yml — Production (OVH VPS d2-2)
+# Usage : docker compose -f docker-compose.prod.yml --env-file .env.prod up -d
+# ============================================================================
+
+services:
+  # ── Reverse proxy Nginx + Let's Encrypt ─────────────────────────────────
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: provencalia-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./infra/nginx/error-pages:/usr/share/nginx/error-pages:ro
+      - certbot-webroot:/var/www/certbot:ro
+      - certbot-certs:/etc/letsencrypt:ro
+    depends_on:
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - frontend-net
+      - backend-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost/health-nginx || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ── Certbot (renewal sidecar) ──────────────────────────────────────────
+  certbot:
+    image: certbot/certbot:latest
+    container_name: provencalia-certbot
+    volumes:
+      - certbot-webroot:/var/www/certbot
+      - certbot-certs:/etc/letsencrypt
+    # Renouvelle toutes les 12h, ne fait rien si le cert est encore valide
+    entrypoint: /bin/sh -c "trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 43200; done"
+    restart: unless-stopped
+    networks: []
+
+  # ── Frontend React/Vite (build statique servi par nginx interne) ───────
+  frontend:
+    image: pastaga/provencal-front:${IMAGE_TAG:-latest}
+    container_name: provencalia-front
+    environment:
+      - VITE_API_URL=https://${DOMAIN}
+    restart: unless-stopped
+    networks:
+      - frontend-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:80/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ── Backend FastAPI/Uvicorn ────────────────────────────────────────────
+  backend:
+    image: pastaga/provencal-back:${IMAGE_TAG:-latest}
+    container_name: provencalia-back
+    env_file:
+      - .env.prod
+    environment:
+      - ENVIRONMENT=production
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - backend-net
+      - db-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ── PostgreSQL 16 ─────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: provencalia-db
+    env_file:
+      - .env.prod
+    volumes:
+      - pgdata-prod:/var/lib/postgresql/data
+    # Aucun port exposé — uniquement accessible via le réseau Docker interne
+    restart: unless-stopped
+    networks:
+      - db-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+# ── Volumes persistants ─────────────────────────────────────────────────
+volumes:
+  pgdata-prod:
+    name: provencalia-pgdata-prod
+  certbot-webroot:
+  certbot-certs:
+
+# ── Réseaux isolés ──────────────────────────────────────────────────────
+# frontend-net : nginx ↔ frontend
+# backend-net  : nginx ↔ backend
+# db-net       : backend ↔ db (JAMAIS exposé au frontend ni à nginx)
+networks:
+  frontend-net:
+    driver: bridge
+  backend-net:
+    driver: bridge
+  db-net:
+    driver: bridge
+    internal: true   # Pas d'accès internet depuis ce réseau
